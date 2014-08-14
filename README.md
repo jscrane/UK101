@@ -9,7 +9,7 @@ Software:
 of Henning Karlsen's [UTFT library]
 (http://henningkarlsen.com/electronics/library.php?id=52),
 - [Rei Vilo's port](https://github.com/rei-vilo/SD_TM4C) of 
-the Arduino [SD library](http://arduino.cc/en/Reference/SD),
+Adafruit/Sparkfun's [SD library](https://github.com/adafruit/SD),
 - [My port](https://github.com/jscrane/PS2Keyboard) of PJRC's 
 [PS/2 Keyboard library](http://www.pjrc.com/teensy/td_libs_PS2Keyboard.html),
 
