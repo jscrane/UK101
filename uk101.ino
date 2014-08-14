@@ -70,17 +70,25 @@ void setup() {
 
       if (KBD_DEV.available()) {
         unsigned key = KBD_DEV.read();
+        const char *file = 0;
         switch (key) {
           case PS2_F1:
             cpu.reset();
             break;
           case PS2_F2:
-            acia.advance();
+            file = acia.advance();
+            break;
+          case PS2_F3:
+            file = acia.rewind();
             break;
           default:
             kbd.down(key);
             break;
           }
+        if (file) {
+          Serial.print("Next file: ");
+          Serial.println(file);
+        }
       }
     }    
   }

@@ -22,7 +22,7 @@
 #define RAM_SIZE  8192
 #define DISPLAY_SIZE 2048
 
-// PS/2 and Serial keyboards (yuk)
+// PS/2 and Serial keyboards
 //#define SER_KBD
 //#define KBD_DEV  Serial
 #define PS2_KBD

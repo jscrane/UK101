@@ -23,24 +23,21 @@ void tape::operator= (byte b) {
   // FIXME: saving...
 }
 
-static bool next_file(File &dir, File &file) {
+const char *tape::advance() {
   while (true) {
     file = dir.openNextFile();
-    if (!file) {
-      dir.close();
-      dir = SD.open("/");
-    } else if (!file.isDirectory())
-      return true;
+    if (!file)
+      dir.rewindDirectory();
+    else if (!file.isDirectory())
+      break;
   }
+  return file.name();
 }
 
-void tape::advance() {
-  Serial.println("reading dir");
-  if (next_file(dir, file)) {
-    Serial.print("next file is [");
-    Serial.print(file.name());
-    Serial.println("]");
-  }
+const char *tape::rewind() {
+  dir.rewindDirectory();
+  file = dir.openNextFile();
+  return file.name();
 }
 
 tape::operator byte () {
