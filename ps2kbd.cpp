@@ -1,6 +1,7 @@
 #include <Energia.h>
 #include <PS2Keyboard.h>
 
+#include "config.h"
 #include "Memory.h"
 #include "ps2kbd.h"
 
@@ -32,7 +33,7 @@ ps2kbd::ps2kbd (): Memory::Device(1024), _last(0), _delay(128) {
   _set(0x00, true);
   _key = 0;
   _millis = 0;
-  kbd.begin(PB_0, PB_1, PS2Keymap_UK);
+  kbd.begin(KBD_DATA, KBD_IRQ, PS2Keymap_UK);
 }
 
 void ps2kbd::operator= (byte row) {

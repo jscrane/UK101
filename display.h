@@ -11,6 +11,6 @@ public:
 private:
 	void _set(Memory::address a, byte c);
 
-	byte _mem[2048];
+	byte _mem[DISPLAY_SIZE];
 };
 #endif

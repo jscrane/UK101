@@ -2,28 +2,22 @@
 #include <SPI.h>
 #include <UTFT.h>
 #include <PS2Keyboard.h>
-
-//#include <Adafruit_GFX.h>
-//#include <Adafruit_ST7735.h>
-#include <ffconf.h>
-#include <fatfs.h>
+#include <SD.h>
 
 #include <setjmp.h>
 #include <stdarg.h>
+
+#include "config.h"
 #include "Memory.h"
 #include "cpu.h"
 #include "r6502.h"
 #include "ram.h"
 #include "prom.h"
 #include "display.h"
-//#include "display1k.h"
 //#include "serialkbd.h"
 #include "ps2kbd.h"
 #include "tape.h"
-#include "cegmon_jsc.h"
-//#include "mon02.h"
-//#include "cegmon_c2.h"
-//#include "bambleweeny.h"
+#include MONITOR
 #include "basic.h"
 
 static bool halted = false;
@@ -43,22 +37,15 @@ void setup() {
   pinMode(PUSH2, INPUT_PULLUP);
   
   Memory memory;
-//  prom monitor(bambleweeny, 2048);
-  prom monitor(cegmon_jsc, 2048);
-//  prom monitor(mon02, 2048);
+
+  prom monitor(monitor_rom, 2048);
   memory.put(monitor, 0xf800);
   prom msbasic(basic, 8192);
   memory.put(msbasic, 0xa000);
 
-  ram p0, p1, p2, p3, p4, p5, p6, p7;
-  memory.put(p0, 0x0000);
-  memory.put(p1, 0x0400);
-  memory.put(p2, 0x0800);
-  memory.put(p3, 0x0c00);
-  memory.put(p4, 0x1000);
-  memory.put(p5, 0x1400);
-  memory.put(p6, 0x1800);
-  memory.put(p7, 0x1c00);
+  ram pages[RAM_SIZE / 1024];
+  for (int i = 0; i < RAM_SIZE; i += 1024)
+    memory.put(pages[i / 1024], i);
 
   tape acia;
   memory.put(acia, 0xf000);
@@ -67,7 +54,6 @@ void setup() {
   memory.put(kbd, 0xdf00);
   
   display disp;
-//  display1k disp;
   memory.put(disp, 0xd000);
   
   jmp_buf ex;
