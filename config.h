@@ -20,8 +20,10 @@
 #define RAM_SIZE  8192
 
 // PS/2 keyboard
+#define KBD_DEV    PS2
 #define KBD_DATA    PB_0
 #define KBD_IRQ     PB_1
+//#define KBD_DEV  Serial
 
 // various monitor roms
 //#define MONITOR "cegmon_c2.h"
@@ -31,6 +33,9 @@
 //#define MONITOR "mon02.h"
 
 // must be a multiple of 1024
-#define DISPLAY_SIZE 1024
+#define DISPLAY_SIZE 2048
+
+// watch the CPU execute (slowly) on the serial port
+//#define CPU_DEBUG 1
 
 #endif

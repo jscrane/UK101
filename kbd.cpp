@@ -1,7 +1,9 @@
 #include <Energia.h>
+#include <PS2Keyboard.h>
 
+#include "config.h"
 #include "Memory.h"
-#include "serialkbd.h"
+#include "kbd.h"
 
 static unsigned short keymap[128] = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
@@ -22,36 +24,40 @@ static unsigned short keymap[128] = {
 	0x0027, 0x0043, 0x0015, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
 };
 
-void serialkbd::operator= (byte row) {
-	_last = row;
+kbd::kbd (): Memory::Device(1024), _last(0), _delay(128) {
+  for (int i=8; i--; )
+    _rows[i] = 0;
+  // shift-lock on
+  _set(0x00, true);
+  _key = 0;
+  _millis = 0;
 }
 
-byte serialkbd::pattern() {
-	  int r = 255-_last;
-	  byte pattern = 0;
-	  for (int i=8; i--; r>>=1) 
-	    if (r & 1)
-	      pattern |= _rows[7-i];
+void kbd::operator= (byte row) {
+  _last = row;
+}
 
-    // hokey serial port handling
-    if (_key != 0) {
-      long now = millis();
-      if (now - _millis > 100 || _millis > now) {
-        up(_key);
-        _key = 0;
-        _millis = 0;
-      }
-    } else if (Serial.available()) {
-      _key = Serial.read();
-      _millis = millis();
-      down(_key);
+byte kbd::pattern() {
+  int r = 255-_last;
+  byte pattern = 0;
+  for (int i=8; i--; r>>=1) 
+    if (r & 1)
+      pattern |= _rows[7-i];
+
+  if (_key != 0) {
+    long now = millis();
+    if (now - _millis > 100 || _millis > now) {
+      up(_key);
+      _key = 0;
+      _millis = 0;
     }
+  }
 
-	  return pattern ^ 0xff;
+  return pattern ^ 0xff;
 }
 
 // returns whether shift-lock is pressed
-bool serialkbd::_map (unsigned key, unsigned short &map) {
+bool kbd::_map (unsigned key, unsigned short &map) {
   switch (key) {
     case 0x08: 
       map = 0x62;
@@ -69,35 +75,37 @@ bool serialkbd::_map (unsigned key, unsigned short &map) {
   return true;
 }
 
-void serialkbd::_reset (byte k) {
-	byte &r = _rows[(k & 0xf0) >> 4];
-	byte c = 1 << (k & 0x0f);
-	r &= ~c;
+void kbd::_reset (byte k) {
+  byte &r = _rows[(k & 0xf0) >> 4];
+  byte c = 1 << (k & 0x0f);
+  r &= ~c;
 }
 
-void serialkbd::up (unsigned key) {
-	unsigned short k;
-	if (_map (key, k) && k != 0xffff) {
-		if (k > 0xff) _reset (k/0xff);
-		_reset (k&0xff);
-	}
+void kbd::up (unsigned key) {
+  unsigned short k;
+  if (_map (key, k) && k != 0xffff) {
+    if (k > 0xff) _reset (k/0xff);
+      _reset (k&0xff);
+  }
 }
 
-void serialkbd::_set (byte k, bool lock) {
-	byte &r = _rows[(k & 0xf0) >> 4];
-	byte c = 1 << (k & 0x0f);
-	if (lock)
-		r ^= c;
-	else
-		r |= c;
+void kbd::_set (byte k, bool lock) {
+  byte &r = _rows[(k & 0xf0) >> 4];
+  byte c = 1 << (k & 0x0f);
+  if (lock)
+    r ^= c;
+  else
+    r |= c;
 }
 
-void serialkbd::down (unsigned key) {
-	unsigned short k;
-	bool lock = !_map (key, k);
-	if (k != 0xffff) {
-		if (k > 0xff) _set (k/0xff, lock);
-		_set (k&0xff, lock);
-	}
+void kbd::down (unsigned key) {
+  unsigned short k;
+  bool lock = !_map (key, k);
+  if (k != 0xffff) {
+    if (k > 0xff) _set (k/0xff, lock);
+      _set (k&0xff, lock);
+  }
+  _millis = millis();
+  _key = key;
 }
 

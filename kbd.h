@@ -1,7 +1,7 @@
-#ifndef __PS2KBD_H
-#define __PS2KBD_H
+#ifndef __KBD_H__
+#define __KBD_H__
 
-class ps2kbd: public Memory::Device {
+class kbd: public Memory::Device {
 public:
   void operator= (byte);
   operator byte() { return pattern(); }
@@ -9,7 +9,7 @@ public:
   void up (unsigned);
   void down (unsigned);
 
-  ps2kbd();
+  kbd();
 
 private:
   byte _rows[8];

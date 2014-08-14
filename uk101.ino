@@ -14,8 +14,7 @@
 #include "ram.h"
 #include "prom.h"
 #include "display.h"
-//#include "serialkbd.h"
-#include "ps2kbd.h"
+#include "kbd.h"
 #include "tape.h"
 #include MONITOR
 #include "basic.h"
@@ -31,10 +30,16 @@ void status(const char *fmt, ...) {
   va_end(args);
 }
 
+#if KBD_DEV == PS2
+PS2Keyboard PS2;
+#endif
+
 void setup() {
   Serial.begin(115200);
-  pinMode(PUSH1, INPUT_PULLUP);
-  pinMode(PUSH2, INPUT_PULLUP);
+
+#if KBD_DEV == PS2
+  KBD_DEV.begin(KBD_DATA, KBD_IRQ, PS2Keymap_UK);
+#endif
   
   Memory memory;
 
@@ -49,8 +54,7 @@ void setup() {
 
   tape acia;
   memory.put(acia, 0xf000);
-//  serialkbd kbd;
-  ps2kbd kbd;
+  kbd kbd;
   memory.put(kbd, 0xdf00);
   
   display disp;
@@ -60,24 +64,25 @@ void setup() {
   r6502 cpu(&memory, &ex, status);
 
   cpu.reset();
-  boolean push1 = false, push2 = false;
   if (!setjmp(ex)) {
     while (!halted) {
       cpu.run(100);
 
-      if (!push2 && digitalRead(PUSH2) == 0) {
-        Serial.println(cpu.status());
-        acia.advance();
-        push2 = true;
-      } else if (push2 && digitalRead(PUSH2) == 1)
-        push2 = false;
-
-      if (!push1 && digitalRead(PUSH1) == 0) {
-        cpu.reset();
-        push1 = false;
-      } else if (push1 && digitalRead(PUSH1) == 1)
-        push1 = false;
-    }
+      if (KBD_DEV.available()) {
+        unsigned key = KBD_DEV.read();
+        switch (key) {
+          case PS2_F1:
+            cpu.reset();
+            break;
+          case PS2_F2:
+            acia.advance();
+            break;
+          default:
+            kbd.down(key);
+            break;
+          }
+      }
+    }    
   }
   Serial.println(cpu.status());
   // FIXME: halted or illegal instruction

@@ -1,17 +1,16 @@
 #include <stdio.h>
 
+#include "config.h"
 #include "Memory.h"
 #include "cpu.h"
 #include "r6502.h"
-
-//#define DEBUG 1
 
 void r6502::run (unsigned clocks) {
 	while (clocks--) 
 	{
 		byte op = (*_memory)[PC];
-#ifdef DEBUG
-                _status("Executing %02x at %04x", op, PC);
+#ifdef CPU_DEBUG
+                _status("%04x: %02x", PC, op);
 #endif
 		PC++;
 		(this->*_ops[op])();
@@ -20,7 +19,7 @@ void r6502::run (unsigned clocks) {
 
 char *r6502::status () {
   static char buf[128];
-	sprintf (buf, "aa xx yy sp nv_bdizc  _pc_\n"
+	sprintf (buf, "aa xx yy sp nv_bdizc  _pc_\r\n"
 		 "%02x %02x %02x %02x %d%d1%d%d%d%d%d  %04x", 
 		 A, X, Y, S, (N & 0x80)!=0, V!=0, P.bits.B, 
 		 P.bits.D, P.bits.I, Z==0, C!=0, PC);
