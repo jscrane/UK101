@@ -2,12 +2,13 @@
 #define __CONFIG_H__
 
 // TFT display...
+// NOTE: edit memorysaver.h to select the correct chip for your display!
 // Daniel Rebollo's boosterpack
-// #define TFT_BACKLIGHT	PD_6
-// #define TFT_MODEL	SSD1289
+#define TFT_BACKLIGHT	PD_6
+#define TFT_MODEL	SSD1289
 // TFT01_2.4: http://www.elecfreaks.com/store/24-tft-lcd-tft0124-p-110.html
-#undef TFT_BACKLIGHT
-#define TFT_MODEL	S6D1121_8
+// #undef TFT_BACKLIGHT
+// #define TFT_MODEL	S6D1121_8
 #define TFT_RS		PC_6
 #define TFT_WR		PC_5
 #define TFT_CS		PC_7
@@ -21,11 +22,13 @@
 #define RAM_SIZE  8192
 #define DISPLAY_SIZE 2048
 
-// PS/2 keyboard
-#define KBD_DEV    PS2
-#define KBD_DATA    PB_0
-#define KBD_IRQ     PB_1
+// PS/2 and Serial keyboards (yuk)
+//#define SER_KBD
 //#define KBD_DEV  Serial
+#define PS2_KBD
+#define KBD_DEV  PS2
+#define KBD_DATA    PE_4
+#define KBD_IRQ     PE_5
 
 // various monitor roms...
 //#define MONITOR "cegmon_c2.h"

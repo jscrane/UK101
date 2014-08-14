@@ -10,6 +10,7 @@ static File file, dir;
 
 tape::tape(): _pos(0), _len(0)
 {
+  pinMode(SD_CS, OUTPUT);
   if (!SD.begin(SD_CS, SPI_HALF_SPEED, SD_SPI)) {
     Serial.println("failed to initialise SD card");
     return;

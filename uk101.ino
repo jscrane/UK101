@@ -30,15 +30,15 @@ void status(const char *fmt, ...) {
   va_end(args);
 }
 
-#if KBD_DEV == PS2
+#if defined(PS2_KBD)
 PS2Keyboard PS2;
 #endif
 
 void setup() {
   Serial.begin(115200);
 
-#if KBD_DEV == PS2
-  KBD_DEV.begin(KBD_DATA, KBD_IRQ, PS2Keymap_UK);
+#if defined(PS2_KBD)
+  PS2.begin(KBD_DATA, KBD_IRQ, PS2Keymap_UK);
 #endif
   
   Memory memory;
