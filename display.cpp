@@ -7,15 +7,30 @@
 #include "charset.h"
 
 static UTFT d(TFT_MODEL, TFT_RS, TFT_WR, TFT_CS, TFT_RST);
+static unsigned cx, cy, dx, dy;
 
 display::display() : Memory::Device(sizeof(_mem))
 {
+  extern uint8_t SmallFont[];
+  
 #if defined(TFT_BACKLIGHT)
   pinMode(TFT_BACKLIGHT, OUTPUT);
   digitalWrite(TFT_BACKLIGHT, HIGH);
 #endif
   d.InitLCD();
   d.fillScr(TFT_BG);
+  d.setFont(SmallFont);
+  dx = d.getDisplayXSize();
+  dy = d.getDisplayYSize();
+  cx = d.getFontXsize();  
+  cy = d.getFontYsize();
+}
+
+void display::status(const char *s)
+{
+  unsigned x = dx - cx*strlen(s), y = dy - cy;
+  d.setColor(TFT_FG);
+  d.print(s, x, y);
 }
 
 // either 16 or 32

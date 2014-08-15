@@ -85,15 +85,12 @@ void setup() {
             kbd.down(key);
             break;
           }
-        if (file) {
-          Serial.print("Next file: ");
-          Serial.println(file);
-        }
+        if (file)
+          disp.status(file);
       }
     }    
   }
-  Serial.println(cpu.status());
-  // FIXME: halted or illegal instruction
+  disp.status(cpu.status());
 }
 
 void loop() {

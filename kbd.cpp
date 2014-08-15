@@ -46,7 +46,7 @@ byte kbd::pattern() {
 
   if (_key != 0) {
     long now = millis();
-    if (now - _millis > 100 || _millis > now) {
+    if (now - _millis > 50 || _millis > now) {
       up(_key);
       _key = 0;
       _millis = 0;
