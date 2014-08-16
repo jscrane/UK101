@@ -45,8 +45,11 @@ void display::_set(Memory::address a, byte c)
     int x = 8 * (a % 64), y = CHAR_HT * (a / 64);
     
     // FIXME: hack!
-    x -= 16 * 8;
+    x -= 13 * 8;
     
+    if (x < 0 || x >= dx || y < 0 || y >= dy)
+      return;
+      
     for (int i = 0; i < 8; i++) {
       byte b = charset[c][i];
       for (int j = 0; j < 8; j++) {
