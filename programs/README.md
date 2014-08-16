@@ -23,11 +23,12 @@ should be loaded from the monitor.
 - **doc** Basic Eliza game
 - **editor** Basic Screen Editor, 
 - **ext-mon** Machine Code Extended Monitor
+- **flappy** Basic game, John R. Honniball 2014(!)
 - **gomoku** Basic board game
 - **graphplot** Basic Graph Plotter, Stephen Crane
 - **gunfight** Basic game
 - **hangman** Basic game, John Naulls 1980
-- **hectic** Basic game, Brian D Ungard
+- **hectic** Basic game, Brian D. Ungard
 - **invaders** Basic game, Craig Clapp
 - **life** Basic Conway's game of Life
 - **logic** Basic puzzle game
@@ -35,12 +36,12 @@ should be loaded from the monitor.
 - **mastermind** Basic puzzle game, John Naulls 1980
 - **maze2d** and **maze3d** Basic games
 - **menu9** Machine code utility
-- **ny-taxi** Basic game, K Stephens
+- **ny-taxi** Basic game, K. Stephens
 - **orbital** Basic Orbital Mechanics
 - **pinball** Basic game
 - **plotter** Basic Graph Plotter, John Naulls(?)
 - **race** Basic game
-- **rtclock** Basic utility, John Honniball 1980
+- **rtclock** Basic utility, John R. Honniball 1980
 - **scramble** Machine code game
 - **sound** Basic sound demo, Stephen Crane(?)
 - **spacewar** Basic game, Computing Today March 1980
