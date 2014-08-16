@@ -7,12 +7,14 @@ public:
   virtual operator byte () { return _mem[_acc]; }
 
   void status(const char *s);
+  void toggleSize();
   
   display();
 
 private:
   void _set(Memory::address a, byte c);
 
-  byte _mem[DISPLAY_SIZE];
+  byte _mem[2048];
+  bool _double_size = true;
 };
 #endif

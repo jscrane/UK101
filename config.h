@@ -20,8 +20,6 @@
 
 // must be a multiple of 1024
 #define RAM_SIZE  8192
-//#define DISPLAY_SIZE 2048
-#define DISPLAY_SIZE 1024
 
 // PS/2 and Serial keyboards
 //#define SER_KBD

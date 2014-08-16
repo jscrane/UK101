@@ -16,6 +16,7 @@
 #include "display.h"
 #include "kbd.h"
 #include "tape.h"
+#include "cegmon_101.h"
 #include "cegmon_jsc.h"
 #include "mon02.h"
 #include "bambleweeny.h"
@@ -103,6 +104,10 @@ void setup() {
             if (currmon == sizeof(monitors) / sizeof(monitors[0]))
               currmon = 0;
             memory.put(monitors[currmon], 0xf800);
+            cpu.reset();
+            break; 
+          case PS2_F5:
+            disp.toggleSize();
             cpu.reset();
             break;  
           default:
