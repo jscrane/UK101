@@ -1,17 +1,18 @@
 UK101 programs
 ==============
-UK101 programs from various places around the web, with attribution where
-known. 
+UK101 programs from various places around the web (with attribution where
+known). 
 
 A suffix of _.ceg_ in the filename indicates that it requires CEGMON to run, 
-while _.mo2_ requires MonO2.
+while _.m02_ requires MONUK02.
 
 In the description below, _Basic_ indicates it should be loaded from the
 interpreter (even if it contains machine code) while _Machine code_ programs
 should be loaded from the monitor.
 
 - **asm** Basic 6502 assembler (corrupted)
-- **asteroids** and **asteroids+** Machine code game
+- **asteroids** Machine code game 
+- **asteroids+** As above but for double-height display
 - **bloobers** Basic, PCW September 1980
 - **butterfingers** Basic game
 - **calendar** Basic, John R. Honniball 1980
