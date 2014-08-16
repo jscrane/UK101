@@ -16,8 +16,21 @@
 #include "display.h"
 #include "kbd.h"
 #include "tape.h"
-#include MONITOR
+#include "cegmon_jsc.h"
+#include "mon02.h"
+#include "bambleweeny.h"
 #include "basic.h"
+#ifdef notdef
+#include "encoder.h"
+#include "toolkit2.h"
+#endif
+
+static prom monitors[] = {
+  prom(cegmon_jsc, 2048),
+  prom(monuk02, 2048),
+  prom(bambleweeny, 2048),
+};
+static int currmon = 0;
 
 static bool halted = false;
 
@@ -42,11 +55,15 @@ void setup() {
 #endif
   
   Memory memory;
-
-  prom monitor(monitor_rom, 2048);
-  memory.put(monitor, 0xf800);
+  memory.put(monitors[currmon], 0xf800);
   prom msbasic(basic, 8192);
   memory.put(msbasic, 0xa000);
+#ifdef notdef
+  prom tk2(toolkit2, 2048);
+  memory.put(tk2, 0x8000);
+  prom enc(encoder, 2048);
+  memory.put(enc, 0x8800);
+#endif
 
   ram pages[RAM_SIZE / 1024];
   for (int i = 0; i < RAM_SIZE; i += 1024)
@@ -81,6 +98,13 @@ void setup() {
           case PS2_F3:
             file = acia.rewind();
             break;
+          case PS2_F4:
+            currmon++;
+            if (currmon == sizeof(monitors) / sizeof(monitors[0]))
+              currmon = 0;
+            memory.put(monitors[currmon], 0xf800);
+            cpu.reset();
+            break;  
           default:
             kbd.down(key);
             break;

@@ -18,9 +18,10 @@
 //#define TFT_BG          VGA_WHITE
 //#define TFT_FG          VGA_BLACK
 
-// must be a multiples of 1024
+// must be a multiple of 1024
 #define RAM_SIZE  8192
-#define DISPLAY_SIZE 2048
+//#define DISPLAY_SIZE 2048
+#define DISPLAY_SIZE 1024
 
 // PS/2 and Serial keyboards
 //#define SER_KBD
@@ -29,13 +30,6 @@
 #define KBD_DEV  PS2
 #define KBD_DATA    PE_4
 #define KBD_IRQ     PE_5
-
-// various monitor roms...
-//#define MONITOR "cegmon_c2.h"
-//#define MONITOR "cegmon_101.h"
-#define MONITOR  "cegmon_jsc.h"
-//#define MONITOR  "bambleweeny.h"
-//#define MONITOR "mon02.h"
 
 // "tape" storage...
 #define SD_CS  39
