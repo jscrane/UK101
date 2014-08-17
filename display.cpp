@@ -47,7 +47,7 @@ void display::_set(Memory::address a, byte c)
 {
   if (c != _mem[a]) {
     _mem[a] = c;  
-    int x = 8 * (a % CHARS_PER_LINE - 13);  // hack to view left edge of screen
+    int x = 8 * (a % CHARS_PER_LINE - X_OFF);  // hack to view left edge of screen
     if (x < 0 || x >= dx)
       return;
      

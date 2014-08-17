@@ -27,7 +27,7 @@
 #endif
 
 static prom monitors[] = {
-  prom(cegmon_jsc, 2048),
+  prom(cegmon_101, 2048),
   prom(monuk02, 2048),
   prom(bambleweeny, 2048),
 };

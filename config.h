@@ -17,9 +17,10 @@
 #define TFT_FG                VGA_WHITE
 //#define TFT_BG          VGA_WHITE
 //#define TFT_FG          VGA_BLACK
+#define X_OFF    12
 
 // must be a multiple of 1024
-#define RAM_SIZE  8192
+#define RAM_SIZE  12288
 
 // PS/2 and Serial keyboards
 //#define SER_KBD
