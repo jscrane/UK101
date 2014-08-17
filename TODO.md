@@ -1,0 +1,3 @@
+- dumping ram to raw file
+- loading raw file to ram
+- regular save file functionality
