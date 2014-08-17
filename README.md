@@ -1,7 +1,7 @@
 UK101-Energia
 =============
 
-[UK101](https://en.wikipedia.org/wiki/Compukit_UK101) Hardware simulator on [Stellarpad](http://www.energia.nu/Guide_StellarisLaunchPad.html) using [Energia](http://energia.nu/)
+[UK101](https://en.wikipedia.org/wiki/Compukit_UK101) Hardware simulator on [Stellarpad](http://www.energia.nu/Guide_StellarisLaunchPad.html) using [Energia](http://energia.nu/).
 
 Software:
 ---------
@@ -15,6 +15,7 @@ Adafruit/Sparkfun's [SD library](https://github.com/adafruit/SD),
 
 Hardware:
 ---------
+- A [Stellaris Launchpad](http://www.energia.nu/Guide_StellarisLaunchPad.html),
 - A supported TFT screen,
 - An SD drive,
 - A PS/2 keyboard.
