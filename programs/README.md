@@ -29,6 +29,7 @@ should be loaded from the monitor.
 - **gunfight** Basic game
 - **hangman** Basic game, John Naulls 1980
 - **hectic** Basic game, Brian D. Ungard
+- **hitchhiker** Machine code game
 - **invaders** Basic game, Craig Clapp
 - **life** Basic Conway's game of Life
 - **logic** Basic puzzle game
