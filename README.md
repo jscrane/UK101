@@ -18,3 +18,11 @@ Hardware:
 - A supported TFT screen,
 - An SD drive,
 - A PS/2 keyboard.
+
+Firmware:
+---------
+- F1: reset
+- F2: advance tape
+- F3: rewind tape
+- F4: toggle monitor rom
+- F5: toggle display 16/32 lines
