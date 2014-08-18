@@ -11,12 +11,19 @@ static File file, dir;
 tape::tape(): _pos(0), _len(0)
 {
   pinMode(SD_CS, OUTPUT);
-  if (!SD.begin(SD_CS, SPI_HALF_SPEED, SD_SPI)) {
+  if (!SD.begin(SD_CS, SPI_HALF_SPEED, SD_SPI))
     Serial.println("failed to initialise SD card");
-    return;
-  }    
+}
+
+const char *tape::start()
+{
   dir = SD.open("/");
-  advance();
+  return advance();
+}
+
+void tape::stop()
+{
+  file.close();
 }
 
 void tape::operator= (byte b) {

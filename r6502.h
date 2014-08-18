@@ -5,38 +5,41 @@
 #define _R6502_H
 
 #undef PC
+class Stream;
 
 class r6502: public CPU {
 public:
-	void raise (int);
-	void reset ();
-	void run (unsigned);
-	char *status ();
+  void raise(int);
+  void reset();
+  void run(unsigned);
+  char *status();
+  void checkpoint(Stream &);
+  void restore(Stream &);
 
-	r6502 (Memory *, jmp_buf *, CPU::statfn);
+  r6502 (Memory *, jmp_buf *, CPU::statfn);
 private:
-	/* registers */
-	Memory::address PC;
-	byte S, A, X, Y;
-	byte N, V, B, D, I, Z, C;
-	union {
-		struct {
-			unsigned N:1;
-			unsigned V:1;
-			unsigned _:1;		// unused
-			unsigned B:1;
-			unsigned D:1;
-			unsigned I:1;
-			unsigned Z:1;
-			unsigned C:1;
-		} bits;
-		byte value;
-	} P;
-	byte _toBCD[256], _fromBCD[256];	// BCD maps
-	bool _irq;				// interrupt pending
+  /* registers */
+  Memory::address PC;
+  byte S, A, X, Y;
+  byte N, V, B, D, I, Z, C;
+  union {
+    struct {
+      unsigned N:1;
+      unsigned V:1;
+      unsigned _:1;		// unused
+      unsigned B:1;
+      unsigned D:1;
+      unsigned I:1;
+      unsigned Z:1;
+      unsigned C:1;
+    } bits;
+    byte value;
+  } P;
+  byte _toBCD[256], _fromBCD[256];	// BCD maps
+  bool _irq;				// interrupt pending
 
-	void irq ();
-	void nmi ();
+  void irq();
+  void nmi();
 
 	/* operators */
 	inline void _cmp (byte a) { Z=N=A-a; C=(A>=a); }

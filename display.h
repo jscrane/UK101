@@ -9,12 +9,15 @@ public:
   void status(const char *s);
   void toggleSize();
   
+  void checkpoint(Stream &s);
+  void restore(Stream &s);
+
   display();
 
 private:
   void _set(Memory::address a, byte c);
 
   byte _mem[2048];
-  bool _double_size = true;
+  bool _double_size;
 };
 #endif

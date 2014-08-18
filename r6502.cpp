@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <Stream.h>
+
 #include "config.h"
 #include "Memory.h"
 #include "cpu.h"
@@ -24,6 +26,42 @@ char *r6502::status () {
 		 A, X, Y, S, (N & 0x80)!=0, V!=0, P.bits.B, 
 		 P.bits.D, P.bits.I, Z==0, C!=0, PC);
 	return buf;
+}
+
+void r6502::checkpoint(Stream &s)
+{
+  s.write(PC / 0xff);
+  s.write(PC % 0xff);
+  s.write(S);  
+  s.write(A);  
+  s.write(X);  
+  s.write(Y);  
+  s.write(N);  
+  s.write(V);  
+  s.write(B);  
+  s.write(D);  
+  s.write(I);  
+  s.write(Z);  
+  s.write(C);  
+  s.write(P.value);  
+}
+
+void r6502::restore(Stream &s)
+{
+  byte hi = s.read(), lo = s.read();
+  PC = hi * 0xff + lo;
+  S = s.read();
+  A = s.read();
+  X = s.read();
+  Y = s.read();
+  N = s.read();
+  V = s.read();
+  B = s.read();
+  D = s.read();
+  I = s.read();
+  Z = s.read();
+  C = s.read();
+  P.value = s.read();
 }
 
 void r6502::raise (int level) {

@@ -4,8 +4,13 @@ class tape: public acia {
 public:
   void operator= (byte);
   operator byte ();
+
   const char *advance();
   const char *rewind();
+
+  const char *start();
+  void stop();
+  
   tape();
 
 private:

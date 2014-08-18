@@ -9,7 +9,7 @@
 static UTFT d(TFT_MODEL, TFT_RS, TFT_WR, TFT_CS, TFT_RST);
 static unsigned cx, cy, dx, dy;
 
-display::display() : Memory::Device(sizeof(_mem))
+display::display() : Memory::Device(sizeof(_mem)), _double_size(true)
 {
   extern uint8_t SmallFont[];
   
@@ -67,5 +67,18 @@ void display::_set(Memory::address a, byte c)
       }
     }      
   }
+}
+
+void display::checkpoint(Stream &s)
+{
+  s.write(_double_size); 
+  s.write(_mem, sizeof(_mem));
+}
+
+void display::restore(Stream &s)
+{
+  _double_size = s.read();
+  for (int i = 0; i < sizeof(_mem); i++)
+    _set(i, s.read());
 }
 

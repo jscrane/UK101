@@ -82,22 +82,23 @@ void setup() {
   r6502 cpu(&memory, &ex, status);
 
   cpu.reset();
+  const char *filename = acia.start();
   if (!setjmp(ex)) {
     while (!halted) {
       cpu.run(100);
 
       if (KBD_DEV.available()) {
         unsigned key = KBD_DEV.read();
-        const char *file = 0;
+        File file;
         switch (key) {
           case PS2_F1:
             cpu.reset();
             break;
           case PS2_F2:
-            file = acia.advance();
+            filename = acia.advance();
             break;
           case PS2_F3:
-            file = acia.rewind();
+            filename = acia.rewind();
             break;
           case PS2_F4:
             currmon++;
@@ -109,13 +110,36 @@ void setup() {
           case PS2_F5:
             disp.toggleSize();
             cpu.reset();
-            break;  
+            break; 
+          case PS2_F6:
+            acia.stop();
+            file = SD.open("CHECKPT", O_WRITE | O_CREAT | O_TRUNC);
+            cpu.checkpoint(file);
+            for (int i = 0; i < RAM_SIZE; i += 1024)
+              pages[i / 1024].checkpoint(file);
+            disp.checkpoint(file);
+            file.close();
+            filename = acia.start();
+            break;
+          case PS2_F7:
+            // FIXME: filename
+            acia.stop();
+            file = SD.open("CHECKPT", O_READ);
+            cpu.restore(file);
+            for (int i = 0; i < RAM_SIZE; i += 1024)
+              pages[i / 1024].restore(file);
+            disp.restore(file);
+            file.close();
+            filename = acia.start();
+            break; 
           default:
             kbd.down(key);
             break;
           }
-        if (file)
-          disp.status(file);
+        if (filename) {
+          disp.status(filename);
+          filename = 0;
+        }
       }
     }    
   }
