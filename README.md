@@ -28,4 +28,4 @@ Firmware:
 - F4: toggle monitor rom
 - F5: toggle display 16/32 lines
 - F6: checkpoint to file
-- F7: restore from fil
+- F7: restore from file

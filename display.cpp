@@ -77,6 +77,7 @@ void display::checkpoint(Stream &s)
 
 void display::restore(Stream &s)
 {
+  d.fillScr(TFT_BG);
   _double_size = s.read();
   for (int i = 0; i < sizeof(_mem); i++)
     _set(i, s.read());

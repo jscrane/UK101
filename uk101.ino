@@ -93,6 +93,7 @@ void setup() {
         switch (key) {
           case PS2_F1:
             cpu.reset();
+            kbd.reset();
             break;
           case PS2_F2:
             filename = acia.advance();
@@ -113,6 +114,7 @@ void setup() {
             break; 
           case PS2_F6:
             acia.stop();
+            // FIXME: filename suffix: increment
             file = SD.open("CHECKPT", O_WRITE | O_CREAT | O_TRUNC);
             cpu.checkpoint(file);
             for (int i = 0; i < RAM_SIZE; i += 1024)
@@ -122,7 +124,7 @@ void setup() {
             filename = acia.start();
             break;
           case PS2_F7:
-            // FIXME: filename
+            // FIXME: user-selectable filename, read suffix
             acia.stop();
             file = SD.open("CHECKPT", O_READ);
             cpu.restore(file);

@@ -6,10 +6,13 @@ public:
   void operator= (byte);
   operator byte() { return pattern(); }
 
-  void up (unsigned);
-  void down (unsigned);
+  void up(unsigned);
+  void down(unsigned);
+  void reset();
 
-  kbd();
+  kbd(): Memory::Device(1024), _last(0), _delay(128) {
+    reset();
+  }
 
 private:
   byte _rows[8];
