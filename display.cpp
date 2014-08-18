@@ -54,7 +54,7 @@ void display::_set(Memory::address a, byte c)
     int y = (_double_size? 16: 8) * (a / CHARS_PER_LINE);    
     if (y < 0 || y >= dy)
       return;
-      
+
     for (int i = 0; i < 8; i++) {
       byte b = charset[c][i];
       for (int j = 0; j < 8; j++) {
