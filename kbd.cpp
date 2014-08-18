@@ -59,10 +59,12 @@ byte kbd::pattern() {
 // returns whether shift-lock is pressed
 bool kbd::_map (unsigned key, unsigned short &map) {
   switch (key) {
-    case 0x08: 
+    case 0x7f:
+      // rubout 
       map = 0x62;
       break;
     case 0x0d:
+      // return
       map = 0x53;
       break;
     case 0x0a:

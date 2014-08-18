@@ -1,2 +1,3 @@
 - regular save file functionality
-- fix backspace handling
+- checkpoint filename for loading
+- restore exact state, incl monitor
