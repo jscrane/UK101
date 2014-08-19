@@ -11,8 +11,10 @@ interpreter (even if it contains machine code) while _Machine code_ programs
 should be loaded from the monitor.
 
 - **asm** Basic 6502 assembler (corrupted)
+- **aastroids** Basic game, Arcadia 1979
 - **asteroids** Machine code game 
 - **asteroids+** As above but for double-height display
+- **blackbox** Basic game, C. McGregor and J. Ralston 1979
 - **bloobers** Basic, PCW September 1980
 - **butterfingers** Basic game
 - **calendar** Basic, John R. Honniball 1980
@@ -30,7 +32,7 @@ should be loaded from the monitor.
 - **hangman** Basic game, John Naulls 1980
 - **hectic** Basic game, Brian D. Ungard
 - **hitchhiker** Machine code game
-- **invaders** Basic game, Craig Clapp
+- **invaders** Machine code game
 - **life** Basic Conway's game of Life
 - **logic** Basic puzzle game
 - **logo** Basic Logo interpreter
@@ -39,6 +41,7 @@ should be loaded from the monitor.
 - **menu9** Machine code utility
 - **ny-taxi** Basic game, K. Stephens
 - **orbital** Basic Orbital Mechanics
+- **passetemp** Basic game, A. Knight 1979
 - **pinball** Basic game
 - **plotter** Basic Graph Plotter, John Naulls(?)
 - **race** Basic game
@@ -46,6 +49,6 @@ should be loaded from the monitor.
 - **scramble** Machine code game
 - **sound** Basic sound demo, Stephen Crane(?)
 - **spacewar** Basic game, Computing Today March 1980
-- **superinvaders** Basic game
+- **superinvaders** Basic game, Craig Clapp (doesn't load)
 - **temple** Basic game (corrupt)
 - **tower** Basic game
