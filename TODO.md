@@ -1,2 +1,3 @@
 - regular save file functionality
-- checkpoint filename for loading
+- sort out processor display
+- refactor loop out of setup

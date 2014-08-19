@@ -58,7 +58,6 @@ byte kbd::pattern() {
 
 // returns whether shift-lock is pressed
 bool kbd::_map (unsigned key, unsigned short &map) {
-  Serial.println(key, 16);
   switch (key) {
     case 0x0d:
       map = 0x0053;

@@ -83,12 +83,16 @@ void setup() {
 
   cpu.reset();
   const char *filename = acia.start();
+  const char *status = filename;
+  char chkpt[] = { "CHKPT" };
+  int cpid = 0, n;
   if (!setjmp(ex)) {
     while (!halted) {
       cpu.run(100);
 
       if (KBD_DEV.available()) {
         unsigned key = KBD_DEV.read();
+        char cpbuf[13];
         File file;
         switch (key) {
           case PS2_F1:
@@ -96,10 +100,10 @@ void setup() {
             kbd.reset();
             break;
           case PS2_F2:
-            filename = acia.advance();
+            status = filename = acia.advance();
             break;
           case PS2_F3:
-            filename = acia.rewind();
+            status = filename = acia.rewind();
             break;
           case PS2_F4:
             currmon++;
@@ -114,33 +118,35 @@ void setup() {
             break; 
           case PS2_F6:
             acia.stop();
-            // FIXME: filename suffix: increment
-            file = SD.open("CHECKPT", O_WRITE | O_CREAT | O_TRUNC);
+            snprintf(cpbuf, sizeof(cpbuf), "%s.%03d", chkpt, cpid++);
+            file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
             cpu.checkpoint(file);
             for (int i = 0; i < RAM_SIZE; i += 1024)
               pages[i / 1024].checkpoint(file);
             disp.checkpoint(file);
             file.close();
             filename = acia.start();
+            status = cpbuf;
             break;
           case PS2_F7:
-            // FIXME: user-selectable filename, read suffix
             acia.stop();
-            file = SD.open("CHECKPT", O_READ);
+            file = SD.open(filename, O_READ);
             cpu.restore(file);
             for (int i = 0; i < RAM_SIZE; i += 1024)
               pages[i / 1024].restore(file);
             disp.restore(file);
             file.close();
-            filename = acia.start();
+            n = sscanf(filename, "%[A-Z].%d", cpbuf, &cpid);
+            cpid++;
+            status = filename = acia.start();
             break; 
           default:
             kbd.down(key);
             break;
           }
-        if (filename) {
-          disp.status(filename);
-          filename = 0;
+        if (status) {
+          disp.status(status);
+          status = 0;
         }
       }
     }    
