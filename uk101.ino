@@ -16,15 +16,13 @@
 #include "display.h"
 #include "kbd.h"
 #include "tape.h"
-#include "cegmon_101.h"
+//#include "cegmon_101.h"
 #include "cegmon_jsc.h"
 #include "mon02.h"
 #include "bambleweeny.h"
 #include "basic.h"
-#ifdef notdef
 #include "encoder.h"
 #include "toolkit2.h"
-#endif
 
 static prom monitors[] = {
   prom(cegmon_jsc, 2048),
@@ -59,12 +57,10 @@ void setup() {
   memory.put(monitors[currmon], 0xf800);
   prom msbasic(basic, 8192);
   memory.put(msbasic, 0xa000);
-#ifdef notdef
   prom tk2(toolkit2, 2048);
   memory.put(tk2, 0x8000);
   prom enc(encoder, 2048);
   memory.put(enc, 0x8800);
-#endif
 
   ram pages[RAM_SIZE / 1024];
   for (int i = 0; i < RAM_SIZE; i += 1024)
@@ -137,7 +133,7 @@ void setup() {
             disp.restore(file);
             file.close();
             n = sscanf(filename, "%[A-Z].%d", cpbuf, &cpid);
-            cpid++;
+            cpid = (n == 1)? 0: cpid+1;
             status = filename = acia.start();
             break; 
           default:

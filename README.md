@@ -1,7 +1,7 @@
 UK101-Energia
 =============
 
-[UK101](https://en.wikipedia.org/wiki/Compukit_UK101) Hardware simulator on [Stellarpad](http://www.energia.nu/Guide_StellarisLaunchPad.html) using [Energia](http://energia.nu/).
+[UK101](https://en.wikipedia.org/wiki/Compukit_UK101) Hardware emulator on [Stellarpad](http://www.energia.nu/Guide_StellarisLaunchPad.html) using [Energia](http://energia.nu/).
 
 Software:
 ---------
@@ -27,5 +27,5 @@ Firmware:
 - F3: rewind tape
 - F4: toggle monitor rom
 - F5: toggle display 16/32 lines
-- F6: checkpoint to file
-- F7: restore from file
+- F6: checkpoint to file (default CHKPOINT.xxx)
+- F7: restore from checkpoint (select with F2)
