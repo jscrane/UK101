@@ -84,7 +84,7 @@ void setup() {
   int cpid = 0, n;
   if (!setjmp(ex)) {
     while (!halted) {
-      cpu.run(100);
+      cpu.run(10000);
 
       if (KBD_DEV.available()) {
         unsigned key = KBD_DEV.read();
