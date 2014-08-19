@@ -3,3 +3,4 @@
 - refactor loop out of setup
 - find tkii and encoder manuals and scan them
 - track down disk bootstrap and emulate it
+- adaptive number of instructions per loop

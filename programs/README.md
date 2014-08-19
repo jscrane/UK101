@@ -32,7 +32,7 @@ should be loaded from the monitor.
 - **hangman** Basic game, John Naulls 1980
 - **hectic** Basic game, Brian D. Ungard
 - **hitchhiker** Machine code game
-- **invaders** Machine code game
+- **invaders** Machine code game, Premier Publications, Phil Reeve, 1981
 - **life** Basic Conway's game of Life
 - **logic** Basic puzzle game
 - **logo** Basic Logo interpreter

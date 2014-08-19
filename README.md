@@ -16,9 +16,10 @@ Adafruit/Sparkfun's [SD library](https://github.com/adafruit/SD),
 Hardware:
 ---------
 - A [Stellaris Launchpad](http://www.energia.nu/Guide_StellarisLaunchPad.html),
-- A supported TFT screen,
+- A supported TFT screen, such as [this one](http://forum.stellarisiti.com/topic/626-ssd1289-32-320x240-tft-16bit-parallel-interface-touch-libraries/),
 - An SD drive,
 - A PS/2 keyboard.
+- see config.h for wiring details.
 
 Firmware:
 ---------

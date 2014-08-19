@@ -13,28 +13,28 @@
 #define TFT_WR		PC_5
 #define TFT_CS		PC_7
 #define TFT_RST		PC_4
-#define TFT_BG                VGA_BLACK
-#define TFT_FG                VGA_WHITE
-//#define TFT_BG          VGA_WHITE
-//#define TFT_FG          VGA_BLACK
-#define X_OFF    12
+#define TFT_BG		VGA_BLACK
+#define TFT_FG		VGA_WHITE
+//#define TFT_BG	VGA_WHITE
+//#define TFT_FG	VGA_BLACK
+#define X_OFF		12
 
 // must be a multiple of 1024
-#define RAM_SIZE  12288
+#define RAM_SIZE	12288
 
 // PS/2 and Serial keyboards
 //#define SER_KBD
-//#define KBD_DEV  Serial
+//#define KBD_DEV	Serial
 #define PS2_KBD
-#define KBD_DEV  PS2
-#define KBD_DATA    PE_4
-#define KBD_IRQ     PE_5
+#define KBD_DEV		PS2
+#define KBD_DATA	PE_4
+#define KBD_IRQ		PE_5
 
 // "tape" storage...
-#define SD_CS  39
-#define SD_SPI  1
+#define SD_CS		39
+#define SD_SPI		1
 
 // watch the CPU execute (slowly) on the serial port
-//#define CPU_DEBUG 1
+//#define CPU_DEBUG
 
 #endif
