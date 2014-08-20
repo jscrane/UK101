@@ -8,11 +8,10 @@
 
 static File file, dir;
 
-void tape::begin()
+bool tape::begin(int cs, int module)
 {
-  pinMode(SD_CS, OUTPUT);
-  if (!SD.begin(SD_CS, SPI_HALF_SPEED, SD_SPI))
-    Serial.println("failed to initialise SD card");
+  pinMode(cs, OUTPUT);
+  return SD.begin(cs, SPI_HALF_SPEED, module);
 }
 
 const char *tape::start()
@@ -31,6 +30,7 @@ void tape::operator= (byte b) {
 }
 
 const char *tape::advance() {
+  // FIXME: potential infinite loop here if card removed
   while (true) {
     file = dir.openNextFile();
     if (!file)

@@ -65,6 +65,13 @@ void reset() {
   kbd.reset();  
   cpu.reset();
 
+  bool sd = acia.begin(SD_CS, SD_SPI);
+  disp.begin();
+  if (sd)
+    filename = acia.start();
+  else
+    disp.status("No SD Card");
+
   if (setjmp(ex)) {
     halted = true;
     disp.status(cpu.status());
@@ -91,10 +98,6 @@ void setup() {
   memory.put(kbd, 0xdf00);
   memory.put(disp, 0xd000);
 
-  acia.begin();
-  disp.begin();
-
-  filename = acia.start();
   reset();  
 }
 

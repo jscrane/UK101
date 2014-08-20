@@ -10,7 +10,7 @@ public:
 
   const char *start();
   void stop();
-  void begin();
+  bool begin(int cs, int module);
   
   tape(): _pos(0), _len(0) {}
 
