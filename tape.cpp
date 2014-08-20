@@ -8,7 +8,7 @@
 
 static File file, dir;
 
-tape::tape(): _pos(0), _len(0)
+void tape::begin()
 {
   pinMode(SD_CS, OUTPUT);
   if (!SD.begin(SD_CS, SPI_HALF_SPEED, SD_SPI))

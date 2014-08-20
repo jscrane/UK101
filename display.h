@@ -12,7 +12,8 @@ public:
   void checkpoint(Stream &s);
   void restore(Stream &s);
 
-  display();
+  display() : Memory::Device(sizeof(_mem)), _double_size(true) {}
+  void begin();
 
 private:
   void _set(Memory::address a, byte c);

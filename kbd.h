@@ -10,9 +10,7 @@ public:
   void down(unsigned);
   void reset();
 
-  kbd(): Memory::Device(1024), _last(0), _delay(128) {
-    reset();
-  }
+  kbd(): Memory::Device(1024), _last(0), _delay(128) {}
 
 private:
   byte _rows[8];

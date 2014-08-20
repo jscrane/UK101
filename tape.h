@@ -10,8 +10,9 @@ public:
 
   const char *start();
   void stop();
+  void begin();
   
-  tape();
+  tape(): _pos(0), _len(0) {}
 
 private:
   unsigned int _pos, _len;

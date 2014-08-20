@@ -9,7 +9,7 @@
 static UTFT d(TFT_MODEL, TFT_RS, TFT_WR, TFT_CS, TFT_RST);
 static unsigned cx, cy, dx, dy;
 
-display::display() : Memory::Device(sizeof(_mem)), _double_size(true)
+void display::begin()
 {
   extern uint8_t SmallFont[];
   

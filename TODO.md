@@ -1,8 +1,6 @@
 - regular save file functionality
-- sort out processor display
-- refactor loop out of setup
+- sort out processor status display
 - find tkii and encoder manuals and scan them
-- track down disk bootstrap and emulate it
 - adaptive number of instructions per loop
 - rewrite PS/2 Keyboard driver to handle control and shift-keys properly
 - use a SPI ram chip (e.g., 23k256) to boost user memory to 40k
