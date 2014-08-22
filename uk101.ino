@@ -102,7 +102,6 @@ void loop() {
     char cpbuf[13];
     int n;
     File file;
-    Serial.println(key, HEX);
     switch (key) {
       case PS2_F1:
         if (ps2.isbreak())

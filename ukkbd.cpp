@@ -47,14 +47,10 @@ unsigned short ukkbd::_map(byte sc)
   // left- or right-shift
   if (sc == 0x12 || sc == 0x59) {
     _shifted = !_shifted;
-    Serial.print("map ");
-    Serial.println(_shifted);
     return scanmap[sc];
   } 
   if (_shifted) {
     unsigned short sh = shiftmap[sc];
-    Serial.print("shift ");
-    Serial.println(sh, HEX);
     if (sh == 0x0000)
       return 0xffff;
     if (sh != 0xffff)
@@ -89,8 +85,6 @@ void ukkbd::_reset (byte k) {
 }
 
 void ukkbd::up (byte scan) {
-  Serial.print("up ");
-  Serial.println(scan, HEX);
   unsigned short k = _map(scan);
   if (k != 0xffff) {
     if (!_shifted && k > 0xff) 
@@ -105,8 +99,6 @@ void ukkbd::_set (byte k) {
 }
 
 void ukkbd::down (byte scan) {
-  Serial.print("down ");
-  Serial.println(scan, HEX);
   unsigned short k = _map(scan);
   if (k != 0xffff) {
     if (_shifted) {
