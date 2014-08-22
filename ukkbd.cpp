@@ -3,7 +3,7 @@
 #include "Memory.h"
 #include "ukkbd.h"
 
-// maps scan codes to uk101 rows/cols + modifiers
+// maps scan codes to uk101 rows/cols + left-shift (where applicable)
 static const unsigned short scanmap[128] = {
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,    // 0x00 
   0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,    // 0x08 

@@ -1,8 +1,10 @@
 #include <Energia.h>
 #include "ps2drv.h"
 
-static volatile uint8_t last;
-static volatile bool isbrk;
+#define BUFFER_SIZE 8
+static volatile uint8_t buffer[BUFFER_SIZE];
+static volatile uint8_t head, tail;
+static bool isbrk;
 static uint8_t DataPin;
 
 // The ISR for the external interrupt
@@ -27,11 +29,11 @@ void ps2interrupt(void)
   }
   bitcount++;
   if (bitcount == 11) {
-    if (incoming == 0xf0) {
-      last = 0;
-      isbrk = true;
-    } else {
-      last = incoming;
+    uint8_t i = head + 1;    
+    if (i == BUFFER_SIZE) i = 0;
+    if (i != tail) {
+      buffer[i] = incoming;
+      head = i;
     }
     bitcount = 0;
     incoming = 0;
@@ -39,7 +41,14 @@ void ps2interrupt(void)
 }
 
 bool PS2Driver::available() {
-  return last != 0;
+  if (head == tail)
+    return false;
+
+  uint8_t i = tail+1;
+  if (i == BUFFER_SIZE) i = 0;
+  if (buffer[i] == 0xf0)
+    return i != head;
+  return true;
 }
 
 bool PS2Driver::isbreak() {
@@ -49,11 +58,17 @@ bool PS2Driver::isbreak() {
 }
 
 int PS2Driver::read() {
-  if (!last)
+  if (head == tail)
     return -1;
-  uint8_t res = last;
-  last = 0;
-  return res;
+
+  uint8_t i = tail+1;
+  if (i == BUFFER_SIZE) i = 0;
+  tail = i;
+  if (buffer[i] == 0xf0) {
+    isbrk = true;
+    return read();
+  }
+  return buffer[i];
 }
 
 void PS2Driver::begin(uint8_t data_pin, uint8_t irq_pin)
@@ -62,4 +77,5 @@ void PS2Driver::begin(uint8_t data_pin, uint8_t irq_pin)
   pinMode(irq_pin, INPUT_PULLUP);
   pinMode(data_pin, INPUT_PULLUP);
   attachInterrupt(irq_pin, ps2interrupt, FALLING);
+  head = tail = 0;
 }
