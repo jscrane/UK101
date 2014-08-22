@@ -22,11 +22,7 @@
 // must be a multiple of 1024
 #define RAM_SIZE	12288
 
-// PS/2 and Serial keyboards
-//#define SER_KBD
-//#define KBD_DEV	Serial
-#define PS2_KBD
-#define KBD_DEV		PS2
+// PS/2 keyboard
 #define KBD_DATA	PE_4
 #define KBD_IRQ		PE_5
 
