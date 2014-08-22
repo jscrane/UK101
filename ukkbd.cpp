@@ -56,7 +56,7 @@ unsigned short ukkbd::_map(byte sc)
     Serial.print("shift ");
     Serial.println(sh, HEX);
     if (sh == 0x0000)
-      return 0;
+      return 0xffff;
     if (sh != 0xffff)
       return sh;
   }
@@ -85,19 +85,18 @@ byte ukkbd::pattern() {
 }
 
 void ukkbd::_reset (byte k) {
-  byte &r = _rows[(k & 0xf0) >> 4];
-  byte c = 1 << (k & 0x0f);
-  r &= ~c;
+  _rows[(k & 0xf0) >> 4] &= ~(1 << (k & 0x0f));
 }
 
 void ukkbd::up (byte scan) {
   Serial.print("up ");
   Serial.println(scan, HEX);
   unsigned short k = _map(scan);
-  if (k != 0xffff && k != 0) {
+  if (k != 0xffff) {
     if (!_shifted && k > 0xff) 
       _reset (k / 0xff);
-    _reset (k & 0xff);
+    if (k > 0)
+      _reset (k & 0xff);
   }
 }
 
@@ -109,13 +108,16 @@ void ukkbd::down (byte scan) {
   Serial.print("down ");
   Serial.println(scan, HEX);
   unsigned short k = _map(scan);
-  if (k != 0xffff && k != 0) {
+  if (k != 0xffff) {
     if (_shifted) {
       if (k < 0xff)
         _reset(0x02);
-    } else
+    } else if (k > 0xff)
       _set(k / 0xff);
-    _set(k & 0xff);
+    if (k > 0)
+      _set(k & 0xff);
+    else  // toggle caps lock
+      _rows[0] ^= 1;
   }
 }
 
