@@ -30,6 +30,3 @@ Firmware:
 - F5: toggle display 16/32 lines
 - F6: checkpoint to file (default CHKPT.xxx)
 - F7: restore from checkpoint (select with F2)
-- F8: ctrl key (for games)
-- F9: left-shift key
-- F10: right-shift key
