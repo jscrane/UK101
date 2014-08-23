@@ -1,5 +1,6 @@
 #include <Energia.h>
 #include <SPI.h>
+#include <SpiRAM.h>
 #include <UTFT.h>
 #include <SD.h>
 
@@ -11,6 +12,7 @@
 #include "cpu.h"
 #include "r6502.h"
 #include "ram.h"
+#include "spiram.h"
 #include "prom.h"
 #include "display.h"
 #include "ps2drv.h"
@@ -48,6 +50,7 @@ prom msbasic(basic, 8192);
 prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
 ram pages[RAM_SIZE / 1024];
+spiram sram(SPIRAM_SIZE);
 tape acia;
 ukkbd kbd;
 display disp;
@@ -89,11 +92,15 @@ void setup() {
   for (int i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
+  memory.put(sram, SPIRAM_BASE);
   memory.put(acia, 0xf000);
   memory.put(kbd, 0xdf00);
   memory.put(disp, 0xd000);
 
   reset();  
+
+  // must initialise spiram after SD card
+  sram.begin(SPIRAM_CS, SPIRAM_SPI);
 }
 
 void loop() {

@@ -11,7 +11,7 @@ static File file, dir;
 bool tape::begin(int cs, int module)
 {
   pinMode(cs, OUTPUT);
-  return SD.begin(cs, SPI_HALF_SPEED, module);
+  return SD.begin(cs, 3, module);
 }
 
 const char *tape::start()

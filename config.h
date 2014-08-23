@@ -20,14 +20,20 @@
 #define X_OFF		12
 
 // must be a multiple of 1024
-#define RAM_SIZE	12288
+#define RAM_SIZE	0x2000
+
+#define SPIRAM_CS       PE_0
+#define SPIRAM_SPI      1
+#define SPIRAM_SIZE     0x6000
+#define SPIRAM_BASE     0x2000
+#define SPIRAM_DEV      SPI_for_SD
 
 // PS/2 keyboard
 #define KBD_DATA	PE_4
 #define KBD_IRQ		PE_5
 
 // "tape" storage...
-#define SD_CS		39
+#define SD_CS		PF_3
 #define SD_SPI		1
 
 // watch the CPU execute (slowly) on the serial port

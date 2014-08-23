@@ -10,6 +10,8 @@ of Henning Karlsen's [UTFT library]
 (http://henningkarlsen.com/electronics/library.php?id=52),
 - [Rei Vilo's port](https://github.com/rei-vilo/SD_TM4C) of 
 Adafruit/Sparkfun's [SD library](https://github.com/adafruit/SD),
+- [My port](https://github.com/jscrane/SpiRAM) 
+of Phil Stewart's [SpiRAM library](http://playground.arduino.cc/Main/SpiRAM)
 
 Hardware:
 ---------
