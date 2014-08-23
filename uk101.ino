@@ -72,6 +72,9 @@ void reset() {
   else
     disp.status("No SD Card");
 
+  // must initialise spiram after SD card (if it shares the same bus)
+  sram.begin(SPIRAM_CS, SPIRAM_SPI);
+
   if (setjmp(ex)) {
     halted = true;
     disp.status(cpu.status());
@@ -98,9 +101,6 @@ void setup() {
   memory.put(disp, 0xd000);
 
   reset();  
-
-  // must initialise spiram after SD card
-  sram.begin(SPIRAM_CS, SPIRAM_SPI);
 }
 
 void loop() {
