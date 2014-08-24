@@ -147,9 +147,10 @@ void loop() {
           snprintf(cpbuf, sizeof(cpbuf), "%s.%03d", chkpt, cpid++);
           file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
           cpu.checkpoint(file);
+          disp.checkpoint(file);
           for (int i = 0; i < RAM_SIZE; i += 1024)
             pages[i / 1024].checkpoint(file);
-          disp.checkpoint(file);
+          sram.checkpoint(file);
           file.close();
           filename = acia.start();
           disp.status(cpbuf);
@@ -160,9 +161,10 @@ void loop() {
           acia.stop();
           file = SD.open(filename, O_READ);
           cpu.restore(file);
+          disp.restore(file);
           for (int i = 0; i < RAM_SIZE; i += 1024)
             pages[i / 1024].restore(file);
-          disp.restore(file);
+          sram.restore(file);
           file.close();
           n = sscanf(filename, "%[A-Z].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;

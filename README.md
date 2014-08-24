@@ -19,6 +19,7 @@ Hardware:
 - A supported TFT screen, such as [this one](http://forum.stellarisiti.com/topic/626-ssd1289-32-320x240-tft-16bit-parallel-interface-touch-libraries/),
 - An SD drive,
 - A PS/2 keyboard.
+- A 23k256 SPI RAM chip (optional)
 (see config.h for wiring details)
 
 Firmware:

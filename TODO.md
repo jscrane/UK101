@@ -4,4 +4,3 @@
 - adaptive number of instructions per loop
 - get superinvaders working (possible cpu emulation bug)
 - No SD card being reported sometimes (when there is one)
-- Checkpoint/Restore spiram class

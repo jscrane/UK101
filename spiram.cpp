@@ -29,11 +29,19 @@ spiram::operator byte()
 
 void spiram::checkpoint(Stream &s)
 {
-  // FIXME
+  char buf[Memory::page_size];
+  for (int i = 0; i < pages(); i++) {
+    spiRam.read_stream(i * Memory::page_size, buf, sizeof(buf));
+    s.write((byte *)buf, sizeof(buf));
+  }
 }
 
 void spiram::restore(Stream &s)
 {
-  // FIXME
+  char buf[Memory::page_size];
+  for (int i = 0; i < pages(); i++) {
+    s.readBytes(buf, sizeof(buf));
+    spiRam.write_stream(i * Memory::page_size, buf, sizeof(buf));
+  }
 }
 
