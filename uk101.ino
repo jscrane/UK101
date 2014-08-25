@@ -166,7 +166,7 @@ void loop() {
             pages[i / 1024].restore(file);
           sram.restore(file);
           file.close();
-          n = sscanf(filename, "%[A-Z].%d", chkpt, &cpid);
+          n = sscanf(filename, "%[A-Z0-9].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;
           filename = acia.start();
           disp.status(filename);
