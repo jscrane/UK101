@@ -4,3 +4,5 @@ Checkpointed Memory Images
 - HITCHHKR.000: Galactic Hitchhiker
 - SCRAMBLE.000: Super Scramble
 - INVADERS.000: Premier Invaders
+- AASTROIDS.000: Premier Asteroids
+- MENU9.000: Empty Menu-9 image
