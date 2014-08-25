@@ -25,18 +25,18 @@ void tape::stop()
   file.close();
 }
 
-void tape::operator= (byte b) {
-  // FIXME: saving...
-}
-
 const char *tape::advance() {
-  // FIXME: potential infinite loop here if card removed
+  bool rewound = false;
   while (true) {
     file = dir.openNextFile();
-    if (!file)
+    if (file) {
+      if (!file.isDirectory())
+        break;
+    } else if (!rewound) {
       dir.rewindDirectory();
-    else if (!file.isDirectory())
-      break;
+      rewound = true;
+    } else      
+      return 0;
   }
   return file.name();
 }
@@ -47,7 +47,11 @@ const char *tape::rewind() {
   return file.name();
 }
 
-tape::operator byte () {
+void tape::operator=(byte b) {
+  // FIXME?
+}
+
+tape::operator byte() {
   if (_acc & 1)			// read data
     return _buf[_pos++];
   
@@ -60,5 +64,5 @@ tape::operator byte () {
       return 0;    // eof
     }
   }
-  return acia::rdrf || acia::tdre;
+  return rdrf | tdre;
 }
