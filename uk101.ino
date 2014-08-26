@@ -180,5 +180,5 @@ void loop() {
         break;
     }
   } else if (!halted)
-    cpu.run(10000);
+    cpu.run(1000);
 }

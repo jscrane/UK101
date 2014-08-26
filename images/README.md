@@ -6,3 +6,4 @@ Checkpointed Memory Images
 - INVADERS.000: Premier Invaders
 - AASTROIDS.000: Premier Asteroids
 - MENU9.000: Empty Menu-9 image
+- GAMES1.000: Butterfingers, Flappy, Hangman, Life, Logic
