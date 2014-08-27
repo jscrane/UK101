@@ -7,6 +7,7 @@ public:
   virtual operator byte () { return _mem[_acc]; }
 
   void status(const char *s);
+  void error(char *s);
   void toggleSize();
   
   void checkpoint(Stream &s);

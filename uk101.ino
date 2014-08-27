@@ -34,15 +34,6 @@ static int currmon = 0;
 
 static bool halted = false;
 
-void status(const char *fmt, ...) {
-  char tmp[128];  
-  va_list args;
-  va_start(args, fmt);
-  vsnprintf(tmp, sizeof(tmp), fmt, args);
-  Serial.println(tmp);
-  va_end(args);
-}
-
 PS2Driver ps2;
 
 Memory memory;
@@ -54,6 +45,16 @@ spiram sram(SPIRAM_SIZE);
 tape acia;
 ukkbd kbd;
 display disp;
+
+void status(const char *fmt, ...) {
+  char tmp[256];  
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(tmp, sizeof(tmp), fmt, args);
+  disp.error(tmp);
+  va_end(args);
+}
+
 jmp_buf ex;
 r6502 cpu(&memory, &ex, status);
 
@@ -75,11 +76,7 @@ void reset() {
   // must initialise spiram after SD card (if it shares the same bus)
   sram.begin(SPIRAM_CS, SPIRAM_SPI);
 
-  if (setjmp(ex)) {
-    halted = true;
-    disp.status(cpu.status());
-  } else
-    halted = false;
+  halted = (setjmp(ex) != 0);
 }
 
 void setup() {

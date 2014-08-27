@@ -7,7 +7,7 @@
 #include "charset.h"
 
 static UTFT d(TFT_MODEL, TFT_RS, TFT_WR, TFT_CS, TFT_RST);
-static unsigned cx, cy, dx, dy;
+static unsigned cx, cy, dx, dy, oxs;
 
 void display::begin()
 {
@@ -24,6 +24,7 @@ void display::begin()
   dy = d.getDisplayYSize();
   cx = d.getFontXsize();  
   cy = d.getFontYsize();
+  oxs = dx;
 }
 
 void display::toggleSize()
@@ -32,13 +33,35 @@ void display::toggleSize()
   d.fillScr(TFT_BG);
 }
 
+void display::error(char *s)
+{
+  d.fillScr(TFT_BG);
+  d.setColor(TFT_FG);
+  char *lines[5];
+  int l = 0;
+  for (char *p = s, *q = s; *p; p++)
+    if (*p == '\n') {
+      *p++ = 0;
+      lines[l++] = q;
+      q = p;
+    }
+  unsigned y = (dy - l*cy)/2;
+  for (int i = 0; i < l; i++) {
+    char *p = lines[i];
+    unsigned x = (dx - strlen(p)*cx)/2;
+    d.print(p, x, y);
+    y += cy;
+  }
+}
+
 void display::status(const char *s)
 {
-  unsigned x = dx - cx*12, y = dy - cy, n = strlen(s);
   d.setColor(TFT_FG);
-  d.print(s, x, y);
-  for (x += cx * n; x < dx; x += cx)
+  unsigned y = dy - cy, n = strlen(s), xs = dx - n*cx;
+  for (unsigned x = oxs; x < xs; x += cx)
     d.print(" ", x, y);
+  d.print(s, xs, y);
+  oxs = xs;
 }
 
 #define CHARS_PER_LINE 64

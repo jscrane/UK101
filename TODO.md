@@ -1,6 +1,5 @@
 - regular save file functionality
-- sort out processor status display
 - find tkii and encoder manuals and scan them
 - adaptive number of instructions per loop
-- get superinvaders working (possible cpu emulation bug)
+- get superinvaders working
 - No SD card being reported sometimes (when there is one)
