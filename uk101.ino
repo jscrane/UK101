@@ -100,7 +100,7 @@ void setup() {
   memory.put(kbd, 0xdf00);
   memory.put(disp, 0xd000);
 
-  reset();  
+  reset();
 }
 
 void loop() {
