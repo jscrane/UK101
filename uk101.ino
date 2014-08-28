@@ -21,7 +21,11 @@
 #include "cegmon_jsc.h"
 #include "mon02.h"
 #include "bambleweeny.h"
+#ifdef ORIGINAL_BASIC
 #include "basic.h"
+#else
+#include "nbasic.h"
+#endif
 #include "encoder.h"
 #include "toolkit2.h"
 

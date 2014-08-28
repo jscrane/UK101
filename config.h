@@ -39,4 +39,8 @@
 // watch the CPU execute (slowly) on the serial port
 //#define CPU_DEBUG
 
+// for the original (to me) Compukit basic
+// if not defined, get the string garbage-collection fix
+// from: http://neoncluster.com
+//#define ORIGINAL_BASIC
 #endif
