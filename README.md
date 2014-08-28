@@ -3,6 +3,8 @@ UK101-Energia
 
 [UK101](https://en.wikipedia.org/wiki/Compukit_UK101) Hardware emulator on [Stellarpad](http://www.energia.nu/Guide_StellarisLaunchPad.html) using [Energia](http://energia.nu/).
 
+See blog [article](http://programmablehardware.blogspot.ie/2014/08/retrocomputer-resurrection.html).
+
 Software:
 ---------
 - [My port](https://github.com/jscrane/UTFT-Energia) 
@@ -20,7 +22,8 @@ Hardware:
 - An SD drive,
 - A PS/2 keyboard.
 - A 23k256 SPI RAM chip (optional)
-(see config.h for wiring details)
+
+See config.h for wiring details.
 
 Firmware:
 ---------
