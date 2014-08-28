@@ -64,6 +64,7 @@ void ukkbd::reset() {
     _rows[i] = 0;
   // shift-lock on
   _rows[0] = 1;
+  _shifted = false;
 }
 
 void ukkbd::operator= (byte row) {

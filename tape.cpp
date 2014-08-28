@@ -27,10 +27,13 @@ void tape::stop()
 
 const char *tape::advance() {
   bool rewound = false;
+  file.close();
   while (true) {
     file = dir.openNextFile();
     if (file) {
-      if (!file.isDirectory())
+      if (file.isDirectory())
+        file.close();
+      else
         break;
     } else if (!rewound) {
       dir.rewindDirectory();
@@ -43,8 +46,7 @@ const char *tape::advance() {
 
 const char *tape::rewind() {
   dir.rewindDirectory();
-  file = dir.openNextFile();
-  return file.name();
+  return advance();
 }
 
 void tape::operator=(byte b) {

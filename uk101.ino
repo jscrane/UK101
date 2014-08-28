@@ -21,13 +21,14 @@
 #include "cegmon_jsc.h"
 #include "mon02.h"
 #include "bambleweeny.h"
-#ifdef ORIGINAL_BASIC
+#if defined(ORIGINAL_BASIC)
 #include "basic.h"
 #else
 #include "nbasic.h"
 #endif
 #include "encoder.h"
 #include "toolkit2.h"
+#include "exmon.h"
 
 static prom monitors[] = {
   prom(cegmon_jsc, 2048),
@@ -88,10 +89,10 @@ void setup() {
 
   ps2.begin(KBD_DATA, KBD_IRQ);
   
-  memory.put(monitors[currmon], 0xf800);
-  memory.put(msbasic, 0xa000);
   memory.put(tk2, 0x8000);
   memory.put(enc, 0x8800);
+  memory.put(msbasic, 0xa000);
+  memory.put(monitors[currmon], 0xf800);
 
   for (int i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);

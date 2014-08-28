@@ -13,7 +13,7 @@ public:
   void checkpoint(Stream &s);
   void restore(Stream &s);
 
-  display() : Memory::Device(sizeof(_mem)), _double_size(true) {}
+  display() : Memory::Device(sizeof(_mem)), _double_size(false) {}
   void begin();
 
 private:
