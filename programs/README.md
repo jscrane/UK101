@@ -10,6 +10,7 @@ In the description below, _Basic_ indicates it should be loaded from the
 interpreter (even if it contains machine code) while _Machine code_ programs
 should be loaded from the monitor.
 
+- **adventure** Basic game, http://forum.6502.org/viewtopic.php?t=1819
 - **asm** Basic 6502 assembler (corrupted)
 - **aastroids** Basic game, Arcadia 1979
 - **asteroids** Machine code game 
