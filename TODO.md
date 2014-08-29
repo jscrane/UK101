@@ -2,4 +2,5 @@
 - find tkii and encoder manuals and scan them
 - adaptive number of instructions per loop
 - get superinvaders working
-- No SD card being reported sometimes (when there is one)
+- "No SD card" being reported sometimes (when there is one)
+- configuration setting for OSI Superboard II
