@@ -4,7 +4,8 @@ UK101 programs from various places around the web (with attribution where
 known). 
 
 A suffix of _.ceg_ in the filename indicates that it requires CEGMON to run, 
-while _.m02_ requires MONUK02.
+_.m02_ requires MONUK02, while _.LOD_ is a machine-code game for the
+Superboard, from the [WinOSI emulator](http://osi.marks-lab.com).
 
 In the description below, _Basic_ indicates it should be loaded from the
 interpreter (even if it contains machine code) while _Machine code_ programs
