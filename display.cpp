@@ -64,8 +64,6 @@ void display::status(const char *s)
   oxs = xs;
 }
 
-#define CHARS_PER_LINE 64
-
 void display::_set(Memory::address a, byte c)
 {
   if (c != _mem[a]) {

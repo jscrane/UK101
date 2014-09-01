@@ -1,6 +1,9 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+//#define UK101
+#define SUPERBOARD
+
 // TFT display...
 // NOTE: edit memorysaver.h to select the correct chip for your display!
 // Daniel Rebollo's boosterpack
@@ -17,7 +20,17 @@
 #define TFT_FG		VGA_WHITE
 //#define TFT_BG	VGA_WHITE
 //#define TFT_FG	VGA_BLACK
-#define X_OFF		12
+
+// X-offset (in characters)
+#if defined(UK101)
+#define X_OFF		 12
+#define CHARS_PER_LINE   64
+#define DISPLAY_RAM_SIZE 2048
+#else
+#define X_OFF          0
+#define CHARS_PER_LINE 32
+#define DISPLAY_RAM_SIZE 1024
+#endif
 
 // must be a multiple of 1024
 #define RAM_SIZE	0x2000
@@ -42,5 +55,19 @@
 // for the original (to me) Compukit basic
 // if not defined, get the string garbage-collection fix
 // from: http://neoncluster.com
+#if defined(UK101)
 //#define ORIGINAL_BASIC
+#else
+#define OSI_BASIC
+#endif
+
+// 0: CEGMON
+// 1: MONUK02
+// 2: Bambleweeny
+// 3: Ohiomon
+#if defined(UK101)
+#define DEFAULT_MONITOR 0
+#else
+#define DEFAULT_MONITOR 3
+#endif
 #endif

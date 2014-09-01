@@ -19,7 +19,7 @@ public:
 private:
   void _set(Memory::address a, byte c);
 
-  byte _mem[2048];
+  byte _mem[DISPLAY_RAM_SIZE];
   bool _double_size;
 };
 #endif

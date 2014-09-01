@@ -21,8 +21,13 @@
 #include "cegmon_jsc.h"
 #include "mon02.h"
 #include "bambleweeny.h"
+#include "synmon.h"
+#include "syn600.h"
+#include "ohiomon.h"
 #if defined(ORIGINAL_BASIC)
 #include "basic.h"
+#elif defined(OSI_BASIC)
+#include "osibasic.h"
 #else
 #include "nbasic.h"
 #endif
@@ -34,8 +39,11 @@ static prom monitors[] = {
   prom(cegmon_jsc, 2048),
   prom(monuk02, 2048),
   prom(bambleweeny, 2048),
+//  prom(synmon, 2048),
+  prom(syn600, 2048),
+  prom(ohiomon, 2048),
 };
-static int currmon = 0;
+static int currmon = DEFAULT_MONITOR;
 
 static bool halted = false;
 
