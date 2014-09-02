@@ -3,3 +3,4 @@
 - adaptive number of instructions per loop
 - get superinvaders working
 - "No SD card" being reported sometimes (when there is one)
+- "seam carving" map to remove blank rows and columns from charset

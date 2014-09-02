@@ -39,7 +39,6 @@ static prom monitors[] = {
   prom(cegmon_jsc, 2048),
   prom(monuk02, 2048),
   prom(bambleweeny, 2048),
-//  prom(synmon, 2048),
   prom(syn600, 2048),
   prom(ohiomon, 2048),
 };

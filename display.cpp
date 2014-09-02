@@ -68,23 +68,24 @@ void display::_set(Memory::address a, byte c)
 {
   if (c != _mem[a]) {
     _mem[a] = c;  
-    int x = 8 * (a % CHARS_PER_LINE - X_OFF);  // hack to view left edge of screen
+    int x = CHAR_WIDTH * (a % CHARS_PER_LINE - X_OFF);  // hack to view left edge of screen
     if (x < 0 || x >= dx)
       return;
      
-    int y = (_double_size? 16: 8) * (a / CHARS_PER_LINE);    
+    int y = (_double_size? 2*CHAR_HEIGHT: CHAR_HEIGHT) * (a / CHARS_PER_LINE);    
     if (y < 0 || y >= dy)
       return;
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < CHAR_HEIGHT; i++) {
       byte b = charset[c][i];
-      for (int j = 0; j < 8; j++) {
+      for (int j = 0; j < CHAR_WIDTH; j++) {
+        int cx = x + CHAR_WIDTH - j;
         d.setColor((b & (1 << j))? TFT_FG: TFT_BG);
         if (_double_size) {
-          d.drawPixel(x + 8 - j, y + 2*i);
-          d.drawPixel(x + 8 - j, y + 2*i + 1);
+          d.drawPixel(cx, y + 2*i);
+          d.drawPixel(cx, y + 2*i + 1);
         } else
-          d.drawPixel(x + 8 - j, y + i);
+          d.drawPixel(cx, y + i);
       }
     }      
   }

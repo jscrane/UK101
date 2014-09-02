@@ -1,8 +1,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-//#define UK101
-#define SUPERBOARD
+#define UK101
+//#define SUPERBOARD
 
 // TFT display...
 // NOTE: edit memorysaver.h to select the correct chip for your display!
@@ -32,9 +32,16 @@
 #define DISPLAY_RAM_SIZE 1024
 #endif
 
-// must be a multiple of 1024
+// character width and height in pixels
+// reduce to display more chars on screen (at expense of legibility, and graphics)
+// 7x7 just works
+#define CHAR_WIDTH  7
+#define CHAR_HEIGHT 8
+
+// RAM provided by uC (must be a multiple of 1024)
 #define RAM_SIZE	0x2000
 
+// SPI-RAM
 #define SPIRAM_CS       PE_0
 #define SPIRAM_SPI      1
 #define SPIRAM_SIZE     0x6000
