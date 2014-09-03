@@ -27,15 +27,38 @@ void display::begin()
   oxs = dx;
 }
 
-void display::toggleSize()
+static struct resolution {
+  const char *name;
+  unsigned cw, ch;
+  boolean double_size;
+} resolutions[] = {
+#if defined(UK101)
+  {"40x30", 8, 8, false},
+  {"40x15", 8, 8, true},
+  {"45x30", 7, 8, false},
+  {"45x32", 7, 7, false},
+  {"45x16", 7, 7, true},
+#else
+  {"32x30", 8, 8, false},
+  {"32x32", 8, 7, false},
+#endif
+};
+
+const char *display::changeResolution()
 {
-  _double_size = !_double_size;
+  _resolution++;
+  if (_resolution > sizeof(resolutions) / sizeof(resolutions[0]))
+    _resolution = 0;
+  return resolutions[_resolution].name;
+}
+
+void display::clear()
+{
   d.fillScr(TFT_BG);
 }
 
 void display::error(char *s)
 {
-  d.fillScr(TFT_BG);
   d.setColor(TFT_FG);
   char *lines[5];
   int l = 0;
@@ -68,20 +91,21 @@ void display::_set(Memory::address a, byte c)
 {
   if (c != _mem[a]) {
     _mem[a] = c;  
-    int x = CHAR_WIDTH * (a % CHARS_PER_LINE - X_OFF);  // hack to view left edge of screen
+    struct resolution &r = resolutions[_resolution];
+    int x = r.cw * (a % CHARS_PER_LINE - X_OFF);  // hack to view left edge of screen
     if (x < 0 || x >= dx)
       return;
      
-    int y = (_double_size? 2*CHAR_HEIGHT: CHAR_HEIGHT) * (a / CHARS_PER_LINE);    
+    int y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);    
     if (y < 0 || y >= dy)
       return;
 
-    for (int i = 0; i < CHAR_HEIGHT; i++) {
+    for (int i = 0; i < r.ch; i++) {
       byte b = charset[c][i];
-      for (int j = 0; j < CHAR_WIDTH; j++) {
-        int cx = x + CHAR_WIDTH - j;
+      for (int j = 0; j < r.cw; j++) {
+        int cx = x + r.cw - j;
         d.setColor((b & (1 << j))? TFT_FG: TFT_BG);
-        if (_double_size) {
+        if (r.double_size) {
           d.drawPixel(cx, y + 2*i);
           d.drawPixel(cx, y + 2*i + 1);
         } else
@@ -93,14 +117,13 @@ void display::_set(Memory::address a, byte c)
 
 void display::checkpoint(Stream &s)
 {
-  s.write(_double_size); 
+  s.write(_resolution); 
   s.write(_mem, sizeof(_mem));
 }
 
 void display::restore(Stream &s)
 {
-  d.fillScr(TFT_BG);
-  _double_size = s.read();
+  _resolution = s.read();
   for (int i = 0; i < sizeof(_mem); i++)
     _set(i, s.read());
 }

@@ -68,13 +68,4 @@
 #define OSI_BASIC
 #endif
 
-// 0: CEGMON
-// 1: MONUK02
-// 2: Bambleweeny
-// 3: Ohiomon
-#if defined(UK101)
-#define DEFAULT_MONITOR 0
-#else
-#define DEFAULT_MONITOR 3
-#endif
 #endif

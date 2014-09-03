@@ -8,18 +8,19 @@ public:
 
   void status(const char *s);
   void error(char *s);
-  void toggleSize();
+  const char *changeResolution();
+  void clear();
   
   void checkpoint(Stream &s);
   void restore(Stream &s);
 
-  display() : Memory::Device(sizeof(_mem)), _double_size(false) {}
+  display() : Memory::Device(sizeof(_mem)), _resolution(0) {}
   void begin();
 
 private:
   void _set(Memory::address a, byte c);
 
   byte _mem[DISPLAY_RAM_SIZE];
-  bool _double_size;
+  int _resolution;
 };
 #endif

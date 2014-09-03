@@ -36,13 +36,16 @@
 #include "exmon.h"
 
 static prom monitors[] = {
+#if defined(UK101)
   prom(cegmon_jsc, 2048),
   prom(monuk02, 2048),
   prom(bambleweeny, 2048),
+#else
   prom(syn600, 2048),
   prom(ohiomon, 2048),
+#endif
 };
-static int currmon = DEFAULT_MONITOR;
+static int currmon = 0;
 
 static bool halted = false;
 
@@ -63,6 +66,7 @@ void status(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   vsnprintf(tmp, sizeof(tmp), fmt, args);
+  disp.clear();
   disp.error(tmp);
   va_end(args);
 }
@@ -146,7 +150,8 @@ void loop() {
         break; 
       case PS2_F5:
         if (ps2.isbreak()) {
-          disp.toggleSize();
+          disp.clear();
+          disp.status(disp.changeResolution());
           cpu.reset();
         }
         break; 
@@ -170,6 +175,7 @@ void loop() {
           acia.stop();
           file = SD.open(filename, O_READ);
           cpu.restore(file);
+          disp.clear();
           disp.restore(file);
           for (int i = 0; i < RAM_SIZE; i += 1024)
             pages[i / 1024].restore(file);
