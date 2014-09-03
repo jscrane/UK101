@@ -23,14 +23,15 @@ Hardware:
 - A PS/2 keyboard.
 - A 23k256 SPI RAM chip (optional)
 
-See config.h for wiring details.
+See config.h for wiring details and other options.
 
 Firmware:
 ---------
+Some of the function keys on the PS/2 keyboard control the machine's inner workings:
 - F1: full reset (cpu, keyboard, SD card, etc.)
-- F2: advance tap
+- F2: advance tape
 - F3: rewind tape
 - F4: toggle monitor rom
-- F5: change display resolution: 40x30, 40x15, 45x30, 45x32, 45x16
+- F5: change display resolution: 40x30, 40x15, 45x30, 45x32, 45x16 (on UK101); 32x30, 32x32 (on Superboard)
 - F6: checkpoint to file (default CHKPOINT.xxx)
 - F7: restore from checkpoint (select image with F2)
