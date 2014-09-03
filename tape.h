@@ -8,7 +8,7 @@ public:
   const char *advance();
   const char *rewind();
 
-  const char *start();
+  void start();
   void stop();
   bool begin(int cs, int module);
   

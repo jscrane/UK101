@@ -47,7 +47,7 @@ static struct resolution {
 const char *display::changeResolution()
 {
   _resolution++;
-  if (_resolution > sizeof(resolutions) / sizeof(resolutions[0]))
+  if (_resolution == sizeof(resolutions) / sizeof(struct resolution))
     _resolution = 0;
   return resolutions[_resolution].name;
 }

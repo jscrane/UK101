@@ -14,10 +14,9 @@ bool tape::begin(int cs, int module)
   return SD.begin(cs, 3, module);
 }
 
-const char *tape::start()
+void tape::start()
 {
   dir = SD.open("/");
-  return advance();
 }
 
 void tape::stop()

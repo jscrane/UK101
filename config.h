@@ -53,6 +53,9 @@
 // watch the CPU execute (slowly) on the serial port
 //#define CPU_DEBUG
 
+// number of CPU instructions to run per loop
+#define CPU_INSTRUCTIONS  1000
+
 // for the original (to me) Compukit basic
 // if not defined, get the string garbage-collection fix
 // from: http://neoncluster.com

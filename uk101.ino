@@ -85,7 +85,7 @@ void reset() {
   bool sd = acia.begin(SD_CS, SD_SPI);
   disp.begin();
   if (sd)
-    filename = acia.start();
+    acia.start();
   else
     disp.status("No SD Card");
 
@@ -166,12 +166,12 @@ void loop() {
             pages[i / 1024].checkpoint(file);
           sram.checkpoint(file);
           file.close();
-          filename = acia.start();
+          acia.start();
           disp.status(cpbuf);
         }
         break;
       case PS2_F7:
-        if (ps2.isbreak()) {
+        if (ps2.isbreak() && filename) {
           acia.stop();
           file = SD.open(filename, O_READ);
           cpu.restore(file);
@@ -183,8 +183,7 @@ void loop() {
           file.close();
           n = sscanf(filename, "%[A-Z0-9].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;
-          filename = acia.start();
-          disp.status(filename);
+          acia.start();
         }
         break; 
       default:
@@ -195,5 +194,5 @@ void loop() {
         break;
     }
   } else if (!halted)
-    cpu.run(1000);
+    cpu.run(CPU_INSTRUCTIONS);
 }
