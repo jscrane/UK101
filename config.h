@@ -32,12 +32,6 @@
 #define DISPLAY_RAM_SIZE 1024
 #endif
 
-// character width and height in pixels
-// reduce to display more chars on screen (at expense of legibility, and graphics)
-// 7x7 just works
-#define CHAR_WIDTH  7
-#define CHAR_HEIGHT 8
-
 // RAM provided by uC (must be a multiple of 1024)
 #define RAM_SIZE	0x2000
 

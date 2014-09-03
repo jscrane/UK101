@@ -31,6 +31,6 @@ Firmware:
 - F2: advance tap
 - F3: rewind tape
 - F4: toggle monitor rom
-- F5: toggle display 16/32 lines
+- F5: change display resolution: 40x30, 40x15, 45x30, 45x32, 45x16
 - F6: checkpoint to file (default CHKPOINT.xxx)
 - F7: restore from checkpoint (select image with F2)
