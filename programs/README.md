@@ -41,6 +41,7 @@ should be loaded from the monitor.
 - **mastermind** Basic puzzle game, John Naulls 1980
 - **maze2d** and **maze3d** Basic games
 - **menu9** Machine code utility
+- **Moon_Landing** Basic game
 - **ny-taxi** Basic game, K. Stephens
 - **orbital** Basic Orbital Mechanics
 - **passetemp** Basic game, A. Knight 1979
@@ -50,6 +51,8 @@ should be loaded from the monitor.
 - **rtclock** Basic utility, John R. Honniball 1980
 - **scramble** Machine code game
 - **sound** Basic sound demo, Stephen Crane(?)
+- **Star_Trek_4k** Basic game
+- **Real_Time_Star_Trek** Basic game
 - **spacewar** Basic game, Computing Today March 1980
 - **superinvaders** Basic game, Craig Clapp (doesn't load)
 - **temple** Basic game (corrupt)
