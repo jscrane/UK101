@@ -2,6 +2,7 @@
 #include <SpiRAM.h>
 #include "Memory.h"
 #include "spiram.h"
+#include "hardware.h"
 #include "config.h"
 
 extern SPIClass SPIRAM_DEV;

@@ -1,6 +1,7 @@
 #include <Energia.h>
 #include <UTFT.h>
 
+#include "hardware.h"
 #include "config.h"
 #include "Memory.h"
 #include "display.h"

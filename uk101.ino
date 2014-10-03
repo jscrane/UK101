@@ -7,6 +7,7 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
+#include "hardware.h"
 #include "config.h"
 #include "Memory.h"
 #include "cpu.h"
