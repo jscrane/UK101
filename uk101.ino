@@ -57,7 +57,7 @@ prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
 ram pages[RAM_SIZE / 1024];
 spiram sram(SPIRAM_SIZE);
-tape acia;
+tape tape;
 ukkbd kbd;
 display disp;
 
@@ -82,10 +82,10 @@ void reset() {
   kbd.reset();  
   cpu.reset();
 
-  bool sd = acia.begin(SD_CS, SD_SPI);
+  bool sd = tape.begin(SD_CS, SD_SPI);
   disp.begin();
   if (sd)
-    acia.start();
+    tape.start();
   else
     disp.status("No SD Card");
 
@@ -96,8 +96,6 @@ void reset() {
 }
 
 void setup() {
-  Serial.begin(115200);
-
   ps2.begin(KBD_DATA, KBD_IRQ);
   
   memory.put(tk2, 0x8000);
@@ -109,7 +107,7 @@ void setup() {
     memory.put(pages[i / 1024], i);
 
   memory.put(sram, SPIRAM_BASE);
-  memory.put(acia, 0xf000);
+  memory.put(tape, 0xf000);
   memory.put(kbd, 0xdf00);
   memory.put(disp, 0xd000);
 
@@ -129,13 +127,13 @@ void loop() {
         break;
       case PS2_F2:
         if (ps2.isbreak()) {
-          filename = acia.advance();
+          filename = tape.advance();
           disp.status(filename);
         }
         break;
       case PS2_F3:
         if (ps2.isbreak()) {
-          filename = acia.rewind();
+          filename = tape.rewind();
           disp.status(filename);
         }
         break;
@@ -157,7 +155,7 @@ void loop() {
         break; 
       case PS2_F6:
         if (ps2.isbreak()) {
-          acia.stop();
+          tape.stop();
           snprintf(cpbuf, sizeof(cpbuf), "%s.%03d", chkpt, cpid++);
           file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
           cpu.checkpoint(file);
@@ -166,13 +164,13 @@ void loop() {
             pages[i / 1024].checkpoint(file);
           sram.checkpoint(file);
           file.close();
-          acia.start();
+          tape.start();
           disp.status(cpbuf);
         }
         break;
       case PS2_F7:
         if (ps2.isbreak() && filename) {
-          acia.stop();
+          tape.stop();
           file = SD.open(filename, O_READ);
           cpu.restore(file);
           disp.clear();
@@ -183,7 +181,7 @@ void loop() {
           file.close();
           n = sscanf(filename, "%[A-Z0-9].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;
-          acia.start();
+          tape.start();
         }
         break; 
       default:
