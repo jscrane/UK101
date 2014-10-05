@@ -196,7 +196,7 @@ private:
   void eor_iy () { _eor ((*_memory)[_iy()]); }
   void eor_zx () { _eor ((*_memory)[_zx()]); }
   void lsr_zx () { _lsr (_zx()); }
-  void cli () { P.bits.I = 0; }
+  void cli ();
   void eor_ay () { _eor ((*_memory)[_ay()]); }
   void eor_ax () { _eor ((*_memory)[_ax()]); }
   void lsr_ax () { _lsr (_ax()); }

@@ -12,7 +12,7 @@ Memory::address r6502::run (unsigned clocks) {
   {
     byte op = (*_memory)[PC];
 #ifdef CPU_DEBUG
-    _status ("%04x: %02x [%02x %02x %02x, %02x]\n", PC, op, A, X, Y, flags());
+    _status ("%04x: %02x [%02x %02x %02x, %02x]\r", PC, op, A, X, Y, flags());
 #endif
     PC++;
     (this->*_ops[op])();
@@ -32,8 +32,8 @@ byte r6502::flags() {
 char *r6502::status () {
   static char buf[128];
   flags();
-  sprintf (buf, "aa xx yy sp nv_bdizc  _pc_\n"
-     "%02x %02x %02x %02x %d%d%d%d%d%d%d%d  %04x\n", 
+  sprintf (buf, "aa xx yy sp nv_bdizc  _pc_\r\n"
+     "%02x %02x %02x %02x %d%d%d%d%d%d%d%d  %04x\r\n", 
      A, X, Y, S, P.bits.N, P.bits.V, P.bits._, P.bits.B, 
      P.bits.D, P.bits.I, P.bits.Z, P.bits.C, PC);
   return buf;
@@ -85,13 +85,43 @@ void r6502::raise (int level) {
 }
 
 void r6502::irq () {
-  pusha (PC+1);
+  pusha (PC);
   P.bits.B = 0;
   pushb (flags ());
   P.bits.B = 1;
   P.bits.I = 1;
   PC = vector (ibvec);
   _irq = false;
+}
+
+void r6502::brk () {
+  if (!P.bits.I) {
+    pusha (PC);
+    P.bits.B = 1;
+    php ();
+    P.bits.I = 1;
+    PC = vector (ibvec);
+  }
+  P.bits.B = 1;
+  P.bits._ = 1;
+}
+
+void r6502::rti () {
+  plp ();
+  PC = popa ();
+}
+
+void r6502::cli () {
+  P.bits.I = 0;
+  if (_irq)
+    irq();
+}
+
+void r6502::nmi () {
+  pusha (PC);
+  php ();
+  P.bits.I = 1;
+  PC = vector (nmivec);
 }
 
 // php and plp are complicated by the representation
@@ -111,30 +141,6 @@ void r6502::plp () {
 
 void r6502::rts () {
   PC = popa ()+1;
-}
-
-void r6502::rti () {
-  plp ();
-  PC = popa ();
-}
-
-void r6502::nmi () {
-  pusha (PC);
-  php ();
-  P.bits.I = 1;
-  PC = vector (nmivec);
-}
-
-void r6502::brk () {
-  if (!P.bits.I) {
-    pusha (PC+1);
-    P.bits.B = 1;
-    php ();
-    P.bits.I = 1;
-    PC = vector (ibvec);
-  }
-  P.bits.B = 1;
-  P.bits._ = 1;
 }
 
 void r6502::jsr () {
@@ -170,17 +176,18 @@ void r6502::sbcd (byte d) {
 }
 
 void r6502::ill () {
-  _status ("Illegal instruction at %04x!\n%s", (PC-1), status());
+  _status ("Illegal instruction at %04x!\r\n%s", (PC-1), status());
   longjmp (*_err, 1);
 }
 
-void r6502::reset () {
+void r6502::reset ()
+{
   P.value = 0;
   P.bits._ = 1;
   P.bits.B = 1;
   _irq = false;
   S = 0xff;
-  PC = vector (resvec);
+  PC = vector(resvec);
 }
 
 r6502::r6502 (Memory *m, jmp_buf *e, CPU::statfn s): CPU (m,e,s) {
