@@ -1,7 +1,7 @@
 #include <Energia.h>
 #include "ps2drv.h"
 
-#define BUFFER_SIZE 8
+#define BUFFER_SIZE 16
 static volatile uint8_t buffer[BUFFER_SIZE];
 static volatile uint8_t head, tail;
 static bool isbrk;
