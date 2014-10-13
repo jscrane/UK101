@@ -98,12 +98,12 @@ void display::_set(Memory::address a, byte c)
       return;
      
     int y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);    
-    if (y < 0 || y >= dy)
+    if (y >= dy)
       return;
 
-    for (int i = 0; i < r.ch; i++) {
+    for (unsigned i = 0; i < r.ch; i++) {
       byte b = charset[c][i];
-      for (int j = 0; j < r.cw; j++) {
+      for (unsigned j = 0; j < r.cw; j++) {
         int cx = x + r.cw - j;
         d.setColor((b & (1 << j))? TFT_FG: TFT_BG);
         if (r.double_size) {
@@ -125,7 +125,7 @@ void display::checkpoint(Stream &s)
 void display::restore(Stream &s)
 {
   _resolution = s.read();
-  for (int i = 0; i < sizeof(_mem); i++)
+  for (unsigned i = 0; i < sizeof(_mem); i++)
     _set(i, s.read());
 }
 
