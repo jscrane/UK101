@@ -5,7 +5,7 @@
 #include "config.h"
 #include "Memory.h"
 #include "display.h"
-#include "charset.h"
+#include "roms/charset.h"
 
 static UTFT d(TFT_MODEL, TFT_RS, TFT_WR, TFT_CS, TFT_RST);
 static unsigned cx, cy, dx, dy, oxs;
@@ -97,7 +97,7 @@ void display::_set(Memory::address a, byte c)
     if (x < 0 || x >= dx)
       return;
      
-    int y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);    
+    unsigned y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);    
     if (y >= dy)
       return;
 

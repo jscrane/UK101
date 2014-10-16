@@ -19,22 +19,22 @@
 #include "ps2drv.h"
 #include "ukkbd.h"
 #include "tape.h"
-#include "cegmon_jsc.h"
-#include "mon02.h"
-#include "bambleweeny.h"
-#include "synmon.h"
-#include "syn600.h"
-#include "ohiomon.h"
+#include "roms/cegmon_jsc.h"
+#include "roms/mon02.h"
+#include "roms/bambleweeny.h"
+#include "roms/synmon.h"
+#include "roms/syn600.h"
+#include "roms/ohiomon.h"
 #if defined(ORIGINAL_BASIC)
 #include "basic.h"
 #elif defined(OSI_BASIC)
-#include "osibasic.h"
+#include "roms/osibasic.h"
 #else
-#include "nbasic.h"
+#include "roms/nbasic.h"
 #endif
-#include "encoder.h"
-#include "toolkit2.h"
-#include "exmon.h"
+#include "roms/encoder.h"
+#include "roms/toolkit2.h"
+#include "roms/exmon.h"
 
 static prom monitors[] = {
 #if defined(UK101)
