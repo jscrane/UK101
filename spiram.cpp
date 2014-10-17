@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <SpiRAM.h>
-#include "Memory.h"
+#include "memory.h"
 #include "spiram.h"
 #include "hardware.h"
 #include "config.h"

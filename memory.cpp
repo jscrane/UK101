@@ -1,4 +1,4 @@
-#include "Memory.h"
+#include "memory.h"
 
 void Memory::put (Device &dev, address b) {
   Device **d = _pages + b/page_size;

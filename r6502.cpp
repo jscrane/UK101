@@ -3,7 +3,7 @@
 #include <Stream.h>
 
 #include "config.h"
-#include "Memory.h"
+#include "memory.h"
 #include "cpu.h"
 #include "r6502.h"
 

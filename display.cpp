@@ -3,7 +3,7 @@
 
 #include "hardware.h"
 #include "config.h"
-#include "Memory.h"
+#include "memory.h"
 #include "display.h"
 #include "roms/charset.h"
 

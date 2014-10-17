@@ -1,6 +1,6 @@
 #include <Energia.h>
 
-#include "Memory.h"
+#include "memory.h"
 #include "ukkbd.h"
 
 // maps scan codes to uk101 rows/cols + left-shift (where applicable)

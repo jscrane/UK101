@@ -1,9 +1,9 @@
 /*
- * tape.cc -- UK101 Tape Interface
+ * tape.cpp -- UK101 Tape Interface
  */
 #include <SD.h>
 #include "config.h"
-#include "Memory.h"
+#include "memory.h"
 #include "tape.h"
 
 static File file, dir;
