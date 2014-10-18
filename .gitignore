@@ -3,3 +3,4 @@
 libcore.a
 uk101.elf
 uk101.bin
+.*.d
