@@ -1,22 +1,15 @@
-#include <Energia.h>
 #include <SPI.h>
 #include <SpiRAM.h>
 #include <UTFT.h>
 #include <SD.h>
+#include <r65emu.h>
 
 #include <setjmp.h>
 #include <stdarg.h>
 
 #include "hardware.h"
 #include "config.h"
-#include "memory.h"
-#include "cpu.h"
-#include "r6502.h"
-#include "ram.h"
-#include "spiram.h"
-#include "prom.h"
 #include "display.h"
-#include "ps2drv.h"
 #include "ukkbd.h"
 #include "tape.h"
 #include "roms/cegmon_jsc.h"
