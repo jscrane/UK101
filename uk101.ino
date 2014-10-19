@@ -7,7 +7,6 @@
 #include <setjmp.h>
 #include <stdarg.h>
 
-#include "hardware.h"
 #include "config.h"
 #include "display.h"
 #include "ukkbd.h"
