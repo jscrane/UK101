@@ -91,19 +91,19 @@ void reset() {
 
 void setup() {
   ps2.begin(KBD_DATA, KBD_IRQ);
-  
-  memory.put(tk2, 0x8000);
-  memory.put(enc, 0x8800);
-  memory.put(msbasic, 0xa000);
-  memory.put(monitors[currmon], 0xf800);
 
   for (int i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
   memory.put(sram, SPIRAM_BASE);
-  memory.put(tape, 0xf000);
-  memory.put(kbd, 0xdf00);
+  memory.put(tk2, 0x8000);
+  memory.put(enc, 0x8800);
+  memory.put(msbasic, 0xa000);
+
   memory.put(disp, 0xd000);
+  memory.put(kbd, 0xdf00);
+  memory.put(tape, 0xf000);
+  memory.put(monitors[currmon], 0xf800);
 
   reset();
 }
