@@ -10,7 +10,6 @@ public:
 
   void start();
   void stop();
-  bool begin(int cs, int module);
   
   tape(): Memory::Device(2048), _pos(0), _len(0) {}
 

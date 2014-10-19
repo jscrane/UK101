@@ -8,12 +8,6 @@
 
 static File file, dir;
 
-bool tape::begin(int cs, int module)
-{
-  pinMode(cs, OUTPUT);
-  return SD.begin(cs, 3, module);
-}
-
 void tape::start()
 {
   dir = SD.open("/");

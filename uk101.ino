@@ -43,14 +43,10 @@ static int currmon = 0;
 
 static bool halted = false;
 
-PS2Driver ps2;
-
-Memory memory;
 prom msbasic(basic, 8192);
 prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
 ram pages[RAM_SIZE / 1024];
-spiram sram(SPIRAM_SIZE);
 tape tape;
 ukkbd kbd;
 display disp;
@@ -73,25 +69,21 @@ char chkpt[] = { "CHKPOINT" };
 int cpid = 0;
 
 void reset() {
+  bool sd = hardware_init();
+
   kbd.reset();  
   cpu.reset();
 
-  bool sd = tape.begin(SD_CS, SD_SPI);
   disp.begin();
   if (sd)
     tape.start();
   else
     disp.status("No SD Card");
 
-  // must initialise spiram after SD card (if it shares the same bus)
-  sram.begin(SPIRAM_CS, SPIRAM_SPI);
-
   halted = (setjmp(ex) != 0);
 }
 
 void setup() {
-  ps2.begin(KBD_DATA, KBD_IRQ);
-
   for (int i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
