@@ -14,6 +14,7 @@
 
 #if defined(UK101)
 #include "uk101/cegmon_jsc.h"
+#include "uk101/cegmon_101.h"
 #include "uk101/mon02.h"
 #include "uk101/bambleweeny.h"
 #include "uk101/encoder.h"
@@ -31,6 +32,7 @@ prom enc(encoder, 2048);
 static prom monitors[] = {
   prom(cegmon_jsc, 2048),
   prom(monuk02, 2048),
+  prom(cegmon_101, 2048),
   prom(bambleweeny, 2048),
 };
 
