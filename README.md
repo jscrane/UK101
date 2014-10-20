@@ -24,6 +24,8 @@ Some of the function keys on the PS/2 keyboard control the machine's inner worki
 - F2: advance tape
 - F3: rewind tape
 - F4: toggle monitor rom
-- F5: change display resolution: 40x30, 40x15, 45x30, 45x32, 45x16 (on UK101); 32x30, 32x32 (on Superboard)
+- F5: change display resolution: 
+  - 40x30, 40x15, 45x30, 45x32, 45x16 (on UK101)
+  - 32x30, 32x32 (on Superboard)
 - F6: checkpoint to file (default CHKPOINT.xxx)
 - F7: restore from checkpoint (select image with F2)
