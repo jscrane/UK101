@@ -11,40 +11,45 @@
 #include "display.h"
 #include "ukkbd.h"
 #include "tape.h"
-#include "roms/cegmon_jsc.h"
-#include "roms/mon02.h"
-#include "roms/bambleweeny.h"
-#include "roms/synmon.h"
-#include "roms/syn600.h"
-#include "roms/ohiomon.h"
+
+#if defined(UK101)
+#include "uk101/cegmon_jsc.h"
+#include "uk101/mon02.h"
+#include "uk101/bambleweeny.h"
+#include "uk101/encoder.h"
+#include "uk101/toolkit2.h"
+#include "uk101/exmon.h"
 #if defined(ORIGINAL_BASIC)
-#include "basic.h"
-#elif defined(OSI_BASIC)
-#include "roms/osibasic.h"
+#include "uk101/basic.h"
 #else
-#include "roms/nbasic.h"
+#include "uk101/nbasic.h"
 #endif
-#include "roms/encoder.h"
-#include "roms/toolkit2.h"
-#include "roms/exmon.h"
+
+prom tk2(toolkit2, 2048);
+prom enc(encoder, 2048);
 
 static prom monitors[] = {
-#if defined(UK101)
   prom(cegmon_jsc, 2048),
   prom(monuk02, 2048),
   prom(bambleweeny, 2048),
+};
+
 #else
+#include "ohio/synmon.h"
+#include "ohio/syn600.h"
+#include "ohio/ohiomon.h"
+#include "ohio/osibasic.h"
+
+static prom monitors[] = {
   prom(syn600, 2048),
   prom(ohiomon, 2048),
-#endif
 };
-static int currmon = 0;
+#endif
 
+static int currmon = 0;
 static bool halted = false;
 
 prom msbasic(basic, 8192);
-prom tk2(toolkit2, 2048);
-prom enc(encoder, 2048);
 ram pages[RAM_SIZE / 1024];
 tape tape;
 ukkbd kbd;
@@ -87,8 +92,10 @@ void setup() {
     memory.put(pages[i / 1024], i);
 
   memory.put(sram, SPIRAM_BASE);
+#if defined(UK101)
   memory.put(tk2, 0x8000);
   memory.put(enc, 0x8800);
+#endif
   memory.put(msbasic, 0xa000);
 
   memory.put(disp, 0xd000);

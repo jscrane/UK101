@@ -1,7 +1,7 @@
 #ifndef __UKKBD_H
 #define __UKKBD_H
 
-class ukkbd: public Memory::Device {
+class ukkbd: public Memory::Device, public Keyboard {
 public:
   void operator= (byte);
   operator byte() { return pattern(); }
