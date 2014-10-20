@@ -1,9 +1,0 @@
-Checkpointed Memory Images
-==========================
-- TK2ENC.000: Cegmon 40x30 with Toolkit-2 initialised
-- HITCHHKR.000: Galactic Hitchhiker
-- SCRAMBLE.000: Super Scramble
-- INVADERS.000: Premier Invaders
-- AASTROIDS.000: Premier Asteroids
-- MENU9.000: Empty Menu-9 image
-- GAMES1.000: Butterfingers, Flappy, Hangman, Life, Logic
