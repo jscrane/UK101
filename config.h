@@ -34,10 +34,10 @@
 // from: http://neoncluster.com
 #if defined(UK101)
 //#define ORIGINAL_BASIC
-#define PROGRAMS	"/uk101"
+#define PROGRAMS	"/uk101/"
 #else
 #define OSI_BASIC
-#define PROGRAMS	"/ohio"
+#define PROGRAMS	"/ohio/"
 #endif
 
 #endif

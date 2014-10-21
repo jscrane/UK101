@@ -111,7 +111,7 @@ void setup() {
 void loop() {
   if (ps2.available()) {
     unsigned key = ps2.read();
-    char cpbuf[13];
+    char cpbuf[32];
     int n;
     File file;
     switch (key) {
@@ -150,7 +150,7 @@ void loop() {
       case PS2_F6:
         if (ps2.isbreak()) {
           tape.stop();
-          snprintf(cpbuf, sizeof(cpbuf), "%s.%03d", chkpt, cpid++);
+          snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s.%03d", chkpt, cpid++);
           file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
           cpu.checkpoint(file);
           disp.checkpoint(file);
@@ -164,8 +164,9 @@ void loop() {
         break;
       case PS2_F7:
         if (ps2.isbreak() && filename) {
+          snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s", filename);
           tape.stop();
-          file = SD.open(filename, O_READ);
+          file = SD.open(cpbuf, O_READ);
           cpu.restore(file);
           disp.clear();
           disp.restore(file);
@@ -173,7 +174,7 @@ void loop() {
             pages[i / 1024].restore(file);
           sram.restore(file);
           file.close();
-          n = sscanf(filename, "%[A-Z0-9].%d", chkpt, &cpid);
+          n = sscanf(cpbuf + strlen(PROGRAMS), "%[A-Z0-9].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;
           tape.start();
         }
