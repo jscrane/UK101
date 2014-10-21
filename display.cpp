@@ -73,6 +73,6 @@ void display::restore(Stream &s)
 {
 	_resolution = s.read();
 	for (unsigned i = 0; i < sizeof(_mem); i++)
-		_draw(i, s.read());
+		_set(i, s.read());
 }
 
