@@ -75,11 +75,9 @@ char chkpt[] = { "CHKPOINT" };
 int cpid = 0;
 
 void reset() {
-  bool sd = hardware_init();
+  bool sd = hardware_init(cpu);
 
   kbd.reset();  
-  cpu.reset();
-
   disp.begin();
   if (sd)
     tape.start();
@@ -90,7 +88,8 @@ void reset() {
 }
 
 void setup() {
-  for (int i = 0; i < RAM_SIZE; i += 1024)
+Serial.begin(115200);
+  for (unsigned i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
   memory.put(sram, SPIRAM_BASE);
@@ -152,11 +151,8 @@ void loop() {
           tape.stop();
           snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s.%03d", chkpt, cpid++);
           file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
-          cpu.checkpoint(file);
-          disp.checkpoint(file);
-          for (int i = 0; i < RAM_SIZE; i += 1024)
-            pages[i / 1024].checkpoint(file);
-          sram.checkpoint(file);
+          file.write(currmon);
+          hardware_checkpoint(file);
           file.close();
           tape.start();
           disp.status(cpbuf);
@@ -164,15 +160,12 @@ void loop() {
         break;
       case PS2_F7:
         if (ps2.isbreak() && filename) {
-          snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s", filename);
           tape.stop();
+          snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s", filename);
           file = SD.open(cpbuf, O_READ);
-          cpu.restore(file);
-          disp.clear();
-          disp.restore(file);
-          for (int i = 0; i < RAM_SIZE; i += 1024)
-            pages[i / 1024].restore(file);
-          sram.restore(file);
+          currmon = file.read();
+          memory.put(monitors[currmon], 0xf800);
+          hardware_restore(file);
           file.close();
           n = sscanf(cpbuf + strlen(PROGRAMS), "%[A-Z0-9].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;
