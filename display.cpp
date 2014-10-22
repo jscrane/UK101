@@ -71,7 +71,10 @@ void display::checkpoint(Stream &s)
 
 void display::restore(Stream &s)
 {
+	int r = _resolution;
 	_resolution = s.read();
+	if (_resolution != r)
+		clear();
 	for (unsigned i = 0; i < sizeof(_mem); i++)
 		_set(i, s.read());
 }

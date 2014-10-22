@@ -35,9 +35,11 @@
 #if defined(UK101)
 //#define ORIGINAL_BASIC
 #define PROGRAMS	"/uk101/"
+#define SPIRAM_EXTENT	(24 * 1024 / 256)
 #else
 #define OSI_BASIC
 #define PROGRAMS	"/ohio/"
+#define SPIRAM_EXTENT	(32 * 1024 / 256)
 #endif
 
 #endif

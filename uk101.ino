@@ -95,7 +95,7 @@ void setup() {
   for (unsigned i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
-  memory.put(sram, SPIRAM_BASE);
+  memory.put(sram, SPIRAM_BASE, SPIRAM_EXTENT);
 #if defined(UK101)
   memory.put(tk2, 0x8000);
   memory.put(enc, 0x8800);

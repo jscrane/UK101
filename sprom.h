@@ -17,20 +17,20 @@ private:
 // manages a set of proms
 class promswitch: public Checkpointable {
 public:
-	promswitch(sprom *sproms, int n, Memory::address addr): _sproms(sproms), _n(n), _last(0), _curr(0), _addr(addr) {
+	promswitch(sprom *sproms, int n, Memory::address addr): _sproms(sproms), _n(n), _curr(0), _addr(addr) {
 		for (int i = 0; i < n; i++)
 			sproms[i].delegate(this);
 	}
 
 	void set(int c) { _curr=c; memory.put(_sproms[c], _addr); }
-	void next() { int c=_curr; set(++c == _last? 0: c); }
+	void next() { int c=_curr; set(++c == _n? 0: c); }
 
 	void checkpoint(Stream &s) { s.write(_curr); }
 	void restore(Stream &s) { set(s.read()); }
 
 private:
 	sprom *_sproms;
-	int _n, _last, _curr;
+	int _n, _curr;
 	Memory::address _addr;
 };
 
