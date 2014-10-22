@@ -11,6 +11,7 @@
 #include "display.h"
 #include "ukkbd.h"
 #include "tape.h"
+#include "sprom.h"
 
 #if defined(UK101)
 #include "uk101/cegmon_jsc.h"
@@ -29,26 +30,29 @@
 prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
 
-static prom monitors[] = {
-  prom(cegmon_jsc, 2048),
-  prom(monuk02, 2048),
-  prom(cegmon_101, 2048),
-  prom(bambleweeny, 2048),
+static sprom sproms[] = {
+  sprom(cegmon_jsc, 2048),
+  sprom(monuk02, 2048),
+  sprom(cegmon_101, 2048),
+  sprom(bambleweeny, 2048),
 };
+promswitch monitors(sproms, 4, 0xf800);
 
 #else
 #include "ohio/synmon.h"
 #include "ohio/syn600.h"
 #include "ohio/ohiomon.h"
+#include "ohio/cegmon_c2.h"
 #include "ohio/osibasic.h"
 
-static prom monitors[] = {
-  prom(syn600, 2048),
-  prom(ohiomon, 2048),
+static sprom sproms[] = {
+  sprom(syn600, 2048);
+  sprom(ohiomon, 2048);
+  sprom(cegmon_c2, 2048);
 };
+promswitch monitors(sproms, 3, 0xf800);
 #endif
 
-static int currmon = 0;
 static bool halted = false;
 
 prom msbasic(basic, 8192);
@@ -88,7 +92,6 @@ void reset() {
 }
 
 void setup() {
-Serial.begin(115200);
   for (unsigned i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
@@ -102,7 +105,7 @@ Serial.begin(115200);
   memory.put(disp, 0xd000);
   memory.put(kbd, 0xdf00);
   memory.put(tape, 0xf000);
-  memory.put(monitors[currmon], 0xf800);
+  monitors.set(0);
 
   reset();
 }
@@ -115,8 +118,10 @@ void loop() {
     File file;
     switch (key) {
       case PS2_F1:
-        if (ps2.isbreak())
+        if (ps2.isbreak()) {
+          monitors.set(0);
           reset();
+        }
         break;
       case PS2_F2:
         if (ps2.isbreak()) {
@@ -132,10 +137,7 @@ void loop() {
         break;
       case PS2_F4:
         if (ps2.isbreak()) {
-          currmon++;
-          if (currmon == sizeof(monitors) / sizeof(monitors[0]))
-            currmon = 0;
-          memory.put(monitors[currmon], 0xf800);
+          monitors.next();
           cpu.reset();
         }
         break; 
@@ -151,7 +153,6 @@ void loop() {
           tape.stop();
           snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s.%03d", chkpt, cpid++);
           file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
-          file.write(currmon);
           hardware_checkpoint(file);
           file.close();
           tape.start();
@@ -163,8 +164,6 @@ void loop() {
           tape.stop();
           snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s", filename);
           file = SD.open(cpbuf, O_READ);
-          currmon = file.read();
-          memory.put(monitors[currmon], 0xf800);
           hardware_restore(file);
           file.close();
           n = sscanf(cpbuf + strlen(PROGRAMS), "%[A-Z0-9].%d", chkpt, &cpid);
