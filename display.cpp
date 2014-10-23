@@ -73,9 +73,18 @@ void display::restore(Stream &s)
 {
 	int r = _resolution;
 	_resolution = s.read();
-	if (_resolution != r)
-		clear();
-	for (unsigned i = 0; i < sizeof(_mem); i++)
-		_set(i, s.read());
-}
 
+	if (_resolution == r) {
+		char buf[Memory::page_size];
+		for (unsigned p = 0; p < pages(); p++) {
+			s.readBytes(buf, sizeof(buf));
+			for (unsigned i = 0; i < Memory::page_size; i++)
+				_set(i + p*Memory::page_size, buf[i]);
+		}
+	} else {
+		clear();
+		s.readBytes((char *)_mem, sizeof(_mem));
+		for (unsigned i = 0; i < sizeof(_mem); i++)
+			_draw(i, _mem[i]);
+	}
+}
