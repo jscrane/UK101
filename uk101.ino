@@ -118,10 +118,8 @@ void loop() {
     File file;
     switch (key) {
       case PS2_F1:
-        if (ps2.isbreak()) {
-          monitors.set(0);
+        if (ps2.isbreak())
           reset();
-        }
         break;
       case PS2_F2:
         if (ps2.isbreak()) {
