@@ -29,3 +29,10 @@ Some of the function keys on the PS/2 keyboard control the machine's inner worki
   - 32x30, 32x32 (on Superboard)
 - F6: checkpoint to file (default CHKPOINT.xxx)
 - F7: restore from checkpoint (select image with F2)
+
+Keyboard:
+---------
+- Some keys on the Numeric Keypad have special mappings:
+  - NUM: ^E, 0: ^Q
+  - 2: ^F, 4: ^A, 6: ^D, 8: ^S
+  - /, *, -, +

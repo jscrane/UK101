@@ -113,52 +113,44 @@ void setup() {
 void loop() {
   if (ps2.available()) {
     unsigned key = ps2.read();
-    char cpbuf[32];
-    int n;
-    File file;
-    switch (key) {
+    if (!ps2.isbreak())
+      kbd.down(key);
+    else {
+      char cpbuf[32];
+      int n;
+      File file;
+      switch (key) {
       case PS2_F1:
-        if (ps2.isbreak())
-          reset();
+        reset();
         break;
       case PS2_F2:
-        if (ps2.isbreak()) {
-          filename = tape.advance();
-          disp.status(filename);
-        }
+        filename = tape.advance();
+        disp.status(filename);
         break;
       case PS2_F3:
-        if (ps2.isbreak()) {
-          filename = tape.rewind();
-          disp.status(filename);
-        }
+        filename = tape.rewind();
+        disp.status(filename);
         break;
       case PS2_F4:
-        if (ps2.isbreak()) {
-          monitors.next();
-          cpu.reset();
-        }
+        monitors.next();
+        cpu.reset();
         break; 
       case PS2_F5:
-        if (ps2.isbreak()) {
-          disp.clear();
-          disp.status(disp.changeResolution());
-          cpu.reset();
-        }
+        disp.clear();
+        disp.status(disp.changeResolution());
+        cpu.reset();
         break; 
       case PS2_F6:
-        if (ps2.isbreak()) {
-          tape.stop();
-          snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s.%03d", chkpt, cpid++);
-          file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
-          hardware_checkpoint(file);
-          file.close();
-          tape.start();
-          disp.status(cpbuf);
-        }
+        tape.stop();
+        snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s.%03d", chkpt, cpid++);
+        file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
+        hardware_checkpoint(file);
+        file.close();
+        tape.start();
+        disp.status(cpbuf);
         break;
       case PS2_F7:
-        if (ps2.isbreak() && filename) {
+        if (filename) {
           tape.stop();
           snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s", filename);
           file = SD.open(cpbuf, O_READ);
@@ -170,11 +162,9 @@ void loop() {
         }
         break; 
       default:
-        if (ps2.isbreak())
-          kbd.up(key);
-        else
-          kbd.down(key);      
+        kbd.up(key);
         break;
+      }
     }
   } else if (!halted)
     cpu.run(CPU_INSTRUCTIONS);
