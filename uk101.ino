@@ -10,6 +10,7 @@
 #include "config.h"
 #include "display.h"
 #include "ukkbd.h"
+#include "acia.h"
 #include "tape.h"
 #include "sprom.h"
 
@@ -84,7 +85,7 @@ void reset() {
   kbd.reset();  
   disp.begin();
   if (sd)
-    tape.start();
+    tape.start(PROGRAMS);
   else
     disp.status("No SD Card");
 
@@ -146,7 +147,7 @@ void loop() {
         file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
         hardware_checkpoint(file);
         file.close();
-        tape.start();
+        tape.start(PROGRAMS);
         disp.status(cpbuf);
         break;
       case PS2_F7:
@@ -158,7 +159,7 @@ void loop() {
           file.close();
           n = sscanf(cpbuf + strlen(PROGRAMS), "%[A-Z0-9].%d", chkpt, &cpid);
           cpid = (n == 1)? 0: cpid+1;
-          tape.start();
+          tape.start(PROGRAMS);
         }
         break; 
       default:

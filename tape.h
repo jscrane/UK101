@@ -1,19 +1,11 @@
-#include "acia.h"
+#ifndef _TAPE_H
+#define _TAPE_H
 
-class tape: public acia, public Memory::Device {
+class tape: public acia, public sdtape, public Memory::Device {
 public:
   void operator= (byte);
   operator byte ();
 
-  const char *advance();
-  const char *rewind();
-
-  void start();
-  void stop();
-  
-  tape(): Memory::Device(2048), _pos(0), _len(0) {}
-
-private:
-  unsigned int _pos, _len;
-  byte _buf[128];
+  tape(): Memory::Device(2048) {}
 };
+#endif
