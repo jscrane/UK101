@@ -80,7 +80,7 @@ char chkpt[] = { "CHKPOINT" };
 int cpid = 0;
 
 void reset() {
-  bool sd = hardware_init(cpu);
+  bool sd = hardware_reset();
 
   kbd.reset();  
   disp.begin();
@@ -93,6 +93,7 @@ void reset() {
 }
 
 void setup() {
+  hardware_init(cpu);
   for (unsigned i = 0; i < RAM_SIZE; i += 1024)
     memory.put(pages[i / 1024], i);
 
