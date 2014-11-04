@@ -49,17 +49,22 @@ void display::_draw(Memory::address a, byte c)
 	if (y >= _dy)
 		return;
 
-	for (unsigned i = 0; i < r.ch; i++) {
-		byte b = charset[c][i];
-		for (unsigned j = 0; j < r.cw; j++) {
-			int _cx = x + r.cw - j;
-			utft.setColor((b & (1 << j))? TFT_FG: TFT_BG);
-			if (r.double_size) {
-				utft.drawPixel(_cx, y + 2*i);
-				utft.drawPixel(_cx, y + 2*i + 1);
-			} else
-				utft.drawPixel(_cx, y + i);
-		}
+	for (unsigned j = 0; j < r.ch; j++) {
+		byte b = charset[c][j];
+		byte m = charset[_mem[a]][j];
+		if (b != m)
+			for (unsigned i = 0; i < r.cw; i++) {
+				unsigned bit = (1 << i);
+				if ((b & bit) != (m & bit)) {
+					int cx = x + r.cw - i;
+					utft.setColor((b & bit)? TFT_FG: TFT_BG);
+					if (r.double_size) {
+						utft.drawPixel(cx, y + 2*j);
+						utft.drawPixel(cx, y + 2*j + 1);
+					} else
+						utft.drawPixel(cx, y + j);
+				}
+			}
 	}
 }
 
