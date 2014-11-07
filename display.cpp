@@ -52,10 +52,10 @@ void display::_draw(Memory::address a, byte c)
 	for (unsigned j = 0; j < r.ch; j++) {
 		byte b = charset[c][j];
 		byte m = charset[_mem[a]][j];
-		if (b != m)
-			for (unsigned i = 0; i < r.cw; i++) {
-				unsigned bit = (1 << i);
-				if ((b & bit) != (m & bit)) {
+		if (b != m) {
+			byte d = (b ^ m);
+			for (unsigned i=1, bit=1; i <= r.cw; i++, bit<<=1)
+				if (d & bit) {
 					int cx = x + r.cw - i;
 					utft.setColor((b & bit)? TFT_FG: TFT_BG);
 					if (r.double_size) {
@@ -64,7 +64,7 @@ void display::_draw(Memory::address a, byte c)
 					} else
 						utft.drawPixel(cx, y + j);
 				}
-			}
+		}
 	}
 }
 
