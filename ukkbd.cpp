@@ -41,12 +41,6 @@ static const unsigned short shiftmap[128] = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x78
 };
 
-static bool isshift(byte scan)
-{
-	// left- or right-shift
-	return scan == 0x12 || scan == 0x59;
-}
-
 unsigned short ukkbd::_map(byte scan)
 {
 	if (_shifted) {

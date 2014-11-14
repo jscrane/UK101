@@ -75,10 +75,6 @@ void status(const char *fmt, ...) {
 jmp_buf ex;
 r6502 cpu(&memory, &ex, status);
 
-const char *filename;
-char chkpt[] = { "CHKPOINT" };
-int cpid = 0;
-
 void reset() {
   bool sd = hardware_reset();
 
@@ -113,14 +109,12 @@ void setup() {
 }
 
 void loop() {
+  static const char *filename;
   if (ps2.available()) {
     unsigned key = ps2.read();
     if (!ps2.isbreak())
       kbd.down(key);
-    else {
-      char cpbuf[32];
-      int n;
-      File file;
+    else
       switch (key) {
       case PS2_F1:
         reset();
@@ -143,31 +137,16 @@ void loop() {
         cpu.reset();
         break; 
       case PS2_F6:
-        tape.stop();
-        snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s.%03d", chkpt, cpid++);
-        file = SD.open(cpbuf, O_WRITE | O_CREAT | O_TRUNC);
-        hardware_checkpoint(file);
-        file.close();
-        tape.start(PROGRAMS);
-        disp.status(cpbuf);
+        disp.status(checkpoint(tape, PROGRAMS));
         break;
       case PS2_F7:
-        if (filename) {
-          tape.stop();
-          snprintf(cpbuf, sizeof(cpbuf), PROGRAMS"%s", filename);
-          file = SD.open(cpbuf, O_READ);
-          hardware_restore(file);
-          file.close();
-          n = sscanf(cpbuf + strlen(PROGRAMS), "%[A-Z0-9].%d", chkpt, &cpid);
-          cpid = (n == 1)? 0: cpid+1;
-          tape.start(PROGRAMS);
-        }
+        if (filename)
+          restore(tape, PROGRAMS, filename);
         break; 
       default:
         kbd.up(key);
         break;
       }
-    }
   } else if (!halted)
     cpu.run(CPU_INSTRUCTIONS);
 }
