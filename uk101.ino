@@ -32,10 +32,10 @@ prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
 
 static sprom sproms[] = {
-  sprom(cegmon_jsc, 2048),
-  sprom(monuk02, 2048),
-  sprom(cegmon_101, 2048),
-  sprom(bambleweeny, 2048),
+	sprom(cegmon_jsc, 2048),
+	sprom(monuk02, 2048),
+	sprom(cegmon_101, 2048),
+	sprom(bambleweeny, 2048),
 };
 promswitch monitors(sproms, 4, 0xf800);
 
@@ -47,9 +47,9 @@ promswitch monitors(sproms, 4, 0xf800);
 #include "ohio/osibasic.h"
 
 static sprom sproms[] = {
-  sprom(syn600, 2048);
-  sprom(ohiomon, 2048);
-  sprom(cegmon_c2, 2048);
+	sprom(syn600, 2048);
+	sprom(ohiomon, 2048);
+	sprom(cegmon_c2, 2048);
 };
 promswitch monitors(sproms, 3, 0xf800);
 #endif
@@ -63,90 +63,90 @@ ukkbd kbd;
 display disp;
 
 void status(const char *fmt, ...) {
-  char tmp[256];  
-  va_list args;
-  va_start(args, fmt);
-  vsnprintf(tmp, sizeof(tmp), fmt, args);
-  disp.clear();
-  disp.error(tmp);
-  va_end(args);
+	char tmp[256];	
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(tmp, sizeof(tmp), fmt, args);
+	disp.clear();
+	disp.error(tmp);
+	va_end(args);
 }
 
 jmp_buf ex;
 r6502 cpu(&memory, &ex, status);
 
 void reset() {
-  bool sd = hardware_reset();
+	bool sd = hardware_reset();
 
-  kbd.reset();  
-  disp.begin();
-  if (sd)
-    tape.start(PROGRAMS);
-  else
-    disp.status("No SD Card");
+	kbd.reset();	
+	disp.begin();
+	if (sd)
+		tape.start(PROGRAMS);
+	else
+		disp.status("No SD Card");
 
-  halted = (setjmp(ex) != 0);
+	halted = (setjmp(ex) != 0);
 }
 
 void setup() {
-  hardware_init(cpu);
-  for (unsigned i = 0; i < RAM_SIZE; i += 1024)
-    memory.put(pages[i / 1024], i);
+	hardware_init(cpu);
+	for (unsigned i = 0; i < RAM_SIZE; i += 1024)
+		memory.put(pages[i / 1024], i);
 
-  memory.put(sram, SPIRAM_BASE, SPIRAM_EXTENT);
+	memory.put(sram, SPIRAM_BASE, SPIRAM_EXTENT);
 #if defined(UK101)
-  memory.put(tk2, 0x8000);
-  memory.put(enc, 0x8800);
+	memory.put(tk2, 0x8000);
+	memory.put(enc, 0x8800);
 #endif
-  memory.put(msbasic, 0xa000);
+	memory.put(msbasic, 0xa000);
 
-  memory.put(disp, 0xd000);
-  memory.put(kbd, 0xdf00);
-  memory.put(tape, 0xf000);
-  monitors.set(0);
+	memory.put(disp, 0xd000);
+	memory.put(kbd, 0xdf00);
+	memory.put(tape, 0xf000);
+	monitors.set(0);
 
-  reset();
+	reset();
 }
 
 void loop() {
-  static const char *filename;
-  if (ps2.available()) {
-    unsigned key = ps2.read();
-    if (!ps2.isbreak())
-      kbd.down(key);
-    else
-      switch (key) {
-      case PS2_F1:
-        reset();
-        break;
-      case PS2_F2:
-        filename = tape.advance();
-        disp.status(filename);
-        break;
-      case PS2_F3:
-        filename = tape.rewind();
-        disp.status(filename);
-        break;
-      case PS2_F4:
-        monitors.next();
-        cpu.reset();
-        break; 
-      case PS2_F5:
-        disp.clear();
-        disp.status(disp.changeResolution());
-        cpu.reset();
-        break; 
-      case PS2_F6:
-        disp.status(checkpoint(tape, PROGRAMS));
-        break;
-      case PS2_F7:
-        if (filename)
-          restore(tape, PROGRAMS, filename);
-        break; 
-      default:
-        kbd.up(key);
-        break;
-      }
-  } else if (!halted)
-    cpu.run(CPU_INSTRUCTIONS);
+	static const char *filename;
+	if (ps2.available()) {
+		unsigned key = ps2.read();
+		if (!ps2.isbreak())
+			kbd.down(key);
+		else
+			switch (key) {
+			case PS2_F1:
+				reset();
+				break;
+			case PS2_F2:
+				filename = tape.advance();
+				disp.status(filename);
+				break;
+			case PS2_F3:
+				filename = tape.rewind();
+				disp.status(filename);
+				break;
+			case PS2_F4:
+				monitors.next();
+				cpu.reset();
+				break; 
+			case PS2_F5:
+				disp.clear();
+				disp.status(disp.changeResolution());
+				cpu.reset();
+				break; 
+			case PS2_F6:
+				disp.status(checkpoint(tape, PROGRAMS));
+				break;
+			case PS2_F7:
+				if (filename)
+					restore(tape, PROGRAMS, filename);
+				break; 
+			default:
+				kbd.up(key);
+				break;
+			}
+	} else if (!halted)
+		cpu.run(CPU_INSTRUCTIONS);
 }
