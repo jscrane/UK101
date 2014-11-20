@@ -2,3 +2,5 @@
 - find tkii and encoder manuals and scan them
 - adaptive number of instructions per loop
 - get superinvaders working
+- menu9 again
+- clock + VIA
