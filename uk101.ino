@@ -74,7 +74,7 @@ void status(const char *fmt, ...) {
 }
 
 jmp_buf ex;
-r6502 cpu(memory, &ex, status);
+r6502 cpu(memory, ex, status);
 
 void reset() {
 	bool sd = hardware_reset();
