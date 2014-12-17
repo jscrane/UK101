@@ -112,8 +112,9 @@ void setup() {
 void loop() {
 	static const char *filename;
 	if (ps2.available()) {
-		unsigned key = ps2.read();
-		if (!ps2.isbreak())
+		unsigned scan = ps2.read2();
+		byte key = scan & 0xff;
+		if (scan < 0x100)
 			kbd.down(key);
 		else
 			switch (key) {
