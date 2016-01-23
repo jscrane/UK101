@@ -5,7 +5,6 @@
 #include <r65emu.h>
 #include <r6502.h>
 
-#include <setjmp.h>
 #include <stdarg.h>
 
 #include "config.h"
@@ -62,19 +61,7 @@ ram pages[RAM_SIZE / 1024];
 tape tape;
 ukkbd kbd;
 display disp;
-
-void status(const char *fmt, ...) {
-	char tmp[256];	
-	va_list args;
-	va_start(args, fmt);
-	vsnprintf(tmp, sizeof(tmp), fmt, args);
-	disp.clear();
-	disp.error(tmp);
-	va_end(args);
-}
-
-jmp_buf ex;
-r6502 cpu(memory, ex, status);
+r6502 cpu(memory);
 
 void reset() {
 	bool sd = hardware_reset();
@@ -85,8 +72,6 @@ void reset() {
 		tape.start(PROGRAMS);
 	else
 		disp.status("No SD Card");
-
-	halted = (setjmp(ex) != 0);
 }
 
 void setup() {
@@ -149,6 +134,6 @@ void loop() {
 				kbd.up(key);
 				break;
 			}
-	} else if (!halted)
+	} else if (!cpu.halted())
 		cpu.run(CPU_INSTRUCTIONS);
 }
