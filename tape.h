@@ -3,8 +3,8 @@
 
 class tape: public acia, public sdtape, public Memory::Device {
 public:
-	void operator= (byte);
-	operator byte ();
+	void operator= (uint8_t);
+	operator uint8_t();
 
 	tape(): Memory::Device(2048) {}
 };

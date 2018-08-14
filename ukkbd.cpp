@@ -1,9 +1,10 @@
+#include <stdint.h>
 #include <memory.h>
 #include <keyboard.h>
 #include "ukkbd.h"
 
 // maps scan codes to uk101 rows/cols + left-shift (where applicable)
-static const unsigned short scanmap[128] = {
+static const uint16_t scanmap[128] = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x00
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x08
 	0xffff, 0xffff, 0x0002, 0xffff, 0x0006, 0x0017, 0x0077, 0xffff,	// 0x10
@@ -22,7 +23,7 @@ static const unsigned short scanmap[128] = {
 	0xffff, 0x0212, 0xffff, 0x0063, 0x0264, 0x0013, 0xffff, 0xffff,	// 0x78
 };
 
-static const unsigned short shiftmap[128] = {
+static const uint16_t shiftmap[128] = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x00
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x08
 	0xffff, 0xffff, 0x0002, 0xffff, 0xffff, 0xffff, 0x0277, 0xffff,	// 0x10
@@ -41,10 +42,10 @@ static const unsigned short shiftmap[128] = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x78
 };
 
-unsigned short ukkbd::_map(byte scan)
+uint16_t ukkbd::_map(uint8_t scan)
 {
 	if (_shifted) {
-		unsigned short sh = shiftmap[scan];
+		uint16_t sh = shiftmap[scan];
 		if (sh == 0x0000)
 			return 0xffff;
 		if (sh != 0xffff)
@@ -61,13 +62,13 @@ void ukkbd::reset() {
 	_shifted = false;
 }
 
-void ukkbd::operator= (byte row) {
+void ukkbd::operator= (uint8_t row) {
 	_last = row;
 }
 
-byte ukkbd::pattern() {
+uint8_t ukkbd::pattern() {
 	int r = 255-_last;
-	byte pattern = 0;
+	uint8_t pattern = 0;
 	for (int i=8; i--; r>>=1)
 		if (r & 1)
 			pattern |= _rows[7-i];
@@ -75,14 +76,14 @@ byte ukkbd::pattern() {
 	return pattern ^ 0xff;
 }
 
-void ukkbd::_reset (byte k) {
+void ukkbd::_reset (uint8_t k) {
 	_rows[(k & 0xf0) >> 4] &= ~(1 << (k & 0x0f));
 }
 
-void ukkbd::up (byte scan) {
+void ukkbd::up (uint8_t scan) {
 	if (isshift(scan))
 		_shifted = false;
-	unsigned short k = _map(scan);
+	uint16_t k = _map(scan);
 	if (k != 0xffff) {
 		if (!_shifted && k > 0xff)
 			_reset (k / 0xff);
@@ -91,17 +92,17 @@ void ukkbd::up (byte scan) {
 	}
 }
 
-void ukkbd::_set (byte k) {
+void ukkbd::_set (uint8_t k) {
 	_rows[(k & 0xf0) >> 4] |= 1 << (k & 0x0f);
 }
 
-void ukkbd::down (byte scan) {
+void ukkbd::down (uint8_t scan) {
 	if (isshift(scan)) {
 		// reset any depressed keys so they don't get stuck
 		reset();
 		_shifted = true;
 	}
-	unsigned short k = _map(scan);
+	uint16_t k = _map(scan);
 	if (k != 0xffff) {
 		if (_shifted) {
 			if (k < 0xff)
