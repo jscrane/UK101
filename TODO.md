@@ -1,5 +1,0 @@
-- regular save file functionality
-- find tkii and encoder manuals and scan them
-- adaptive number of instructions per loop
-- get superinvaders working
-- clock + VIA
