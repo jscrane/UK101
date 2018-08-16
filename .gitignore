@@ -1,6 +1,5 @@
-*.o
+*.cpp.o
 .lib
-libcore.a
-uk101.elf
-uk101.bin
-.*.d
+uk101.ino.elf
+uk101.ino.bin
+*.d
