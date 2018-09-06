@@ -21,10 +21,11 @@
 #endif
 
 // RAM provided by uC (must be a multiple of 1024)
-#define RAM_SIZE	0x3000
+//#define RAM_SIZE	0x3000
+#define RAM_SIZE	0x8000
 
 // SPI-RAM
-#define SPIRAM_BASE     0x3000
+//#define SPIRAM_BASE     0x3000
 
 // number of CPU instructions to run per loop
 #define CPU_INSTRUCTIONS  1000
@@ -34,12 +35,14 @@
 // from: http://neoncluster.com
 #if defined(UK101)
 //#define ORIGINAL_BASIC
-#define PROGRAMS	"/uk101/"
-#define SPIRAM_EXTENT	(20 * 1024 / 256)
+//#define PROGRAMS	"/uk101/"
+#define PROGRAMS	"/"
+//#define SPIRAM_EXTENT	(20 * 1024 / 256)
 #else
 #define OSI_BASIC
-#define PROGRAMS	"/ohio/"
-#define SPIRAM_EXTENT	(28 * 1024 / 256)
+//#define PROGRAMS	"/ohio/"
+#define PROGRAMS	"/"
+//#define SPIRAM_EXTENT	(28 * 1024 / 256)
 #endif
 
 #endif

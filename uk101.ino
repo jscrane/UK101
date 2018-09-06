@@ -1,7 +1,8 @@
+#include <FS.h>
+#include <SPIFFS.h>
+#include <UTFT.h>
 #include <SPI.h>
 #include <SpiRAM.h>
-#include <UTFT.h>
-#include <SD.h>
 #include <r65emu.h>
 #include <r6502.h>
 
@@ -68,10 +69,10 @@ void reset() {
 
 	kbd.reset();	
 	disp.begin();
-	if (sd)
-		tape.start(PROGRAMS);
-	else
+	if (!sd)
 		disp.status("No SD Card");
+	else if (!tape.start(PROGRAMS))
+		disp.status("Failed to open "PROGRAMS);
 }
 
 void setup() {
@@ -110,11 +111,11 @@ void loop() {
 				break;
 			case PS2_F2:
 				filename = tape.advance();
-				disp.status(filename);
+				disp.status(filename? filename: "No file");
 				break;
 			case PS2_F3:
 				filename = tape.rewind();
-				disp.status(filename);
+				disp.status(filename? filename: "No file");
 				break;
 			case PS2_F4:
 				monitors.next();
