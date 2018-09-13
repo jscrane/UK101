@@ -1,11 +1,12 @@
 #ifndef _TAPE_H
 #define _TAPE_H
 
-class tape: public acia, public sdtape, public Memory::Device {
+class tape: public sdtape, public SerialDevice {
 public:
-	void operator= (uint8_t);
-	operator uint8_t();
+	void reset();
+	void write(uint8_t);
 
-	tape(): Memory::Device(2048) {}
+	uint8_t read() { return sdtape::read(); }
+	bool more() { return sdtape::more(); }
 };
 #endif

@@ -60,6 +60,7 @@ static bool halted = false;
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
 tape tape;
+acia acia(&tape);
 ukkbd kbd;
 display disp;
 r6502 cpu(memory);
@@ -91,7 +92,7 @@ void setup() {
 
 	memory.put(disp, 0xd000);
 	memory.put(kbd, 0xdf00);
-	memory.put(tape, 0xf000);
+	memory.put(acia, 0xf000);
 	monitors.set(0);
 
 	reset();
