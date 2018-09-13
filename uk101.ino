@@ -77,6 +77,10 @@ void reset() {
 }
 
 void setup() {
+#if defined(DEBUG) || defined(CPU_DEBUG)
+	Serial.begin(115200);
+#endif
+
 	hardware_init(cpu);
 	for (unsigned i = 0; i < RAM_SIZE; i += 1024)
 		memory.put(pages[i / 1024], i);
@@ -99,6 +103,9 @@ void setup() {
 }
 
 void loop() {
+#if defined(CPU_DEBUG)
+	static bool cpu_debug;
+#endif
 	static const char *filename;
 	if (ps2.available()) {
 		unsigned scan = ps2.read2();
@@ -134,10 +141,25 @@ void loop() {
 				if (filename)
 					restore(tape, PROGRAMS, filename);
 				break; 
+#if defined(CPU_DEBUG)
+			case PS2_F10:
+				cpu_debug = !cpu_debug;
+				break;
+#endif
 			default:
 				kbd.up(key);
 				break;
 			}
-	} else if (!cpu.halted())
+	} else if (!cpu.halted()) {
+#if defined(CPU_DEBUG)
+		if (cpu_debug) {
+			char buf[256];
+			Serial.println(cpu.status(buf, sizeof(buf)));
+			cpu.run(1);
+		} else
+			cpu.run(CPU_INSTRUCTIONS);
+#else
 		cpu.run(CPU_INSTRUCTIONS);
+#endif
+	}
 }
