@@ -48,9 +48,9 @@ promswitch monitors(sproms, 4, 0xf800);
 #include "ohio/osibasic.h"
 
 static sprom sproms[] = {
-	sprom(syn600, 2048);
-	sprom(ohiomon, 2048);
-	sprom(cegmon_c2, 2048);
+	sprom(syn600, 2048),
+	sprom(ohiomon, 2048),
+	sprom(cegmon_c2, 2048),
 };
 promswitch monitors(sproms, 3, 0xf800);
 #endif
