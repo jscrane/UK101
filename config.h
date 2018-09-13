@@ -20,6 +20,9 @@
 #define DISPLAY_RAM_SIZE 1024
 #endif
 
+// default baud rate for tape
+#define BAUD_RATE	300
+
 // RAM provided by uC (must be a multiple of 1024)
 //#define RAM_SIZE	0x3000
 #define RAM_SIZE	0x8000

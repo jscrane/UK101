@@ -15,31 +15,36 @@
 static PWM pwm;
 #endif
 
-// FIXME: control register
-// initialisation sequence is:
-// 0x03: reset
-// 0x11: cd16 | ws8n2
 void tape::reset() {
 #if defined(PWM_SOUND)
 	pwm.begin(PWM_SOUND);
 #endif
+	speed(BAUD_RATE);
 }
 
-static void write_bit(bool bit) {
+void tape::framing(unsigned data_bits, unsigned stop_bits, parity parity) {
+	_data_bits = data_bits;
+	_stop_bits = stop_bits;
+	_parity = parity;
+}
+
+void tape::write_bit(bool bit) {
 #if defined(PWM_SOUND)
 	pwm.set_freq(bit? 2400: 1200);
 #endif
-	delayMicroseconds(3333);
+	delayMicroseconds(_bit_delay);
 }
 
+// FIXME: parity
 void tape::write(uint8_t b) {
 	pwm.set_duty(PWM_DUTY);
 	write_bit(0);
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < _data_bits; i++) {
 		write_bit(b & 1);
 		b >>= 1;
 	}
 	write_bit(1);
-	write_bit(1);
+	if (_stop_bits == 2)
+		write_bit(1);
 	pwm.set_duty(0);
 }
