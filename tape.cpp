@@ -11,9 +11,7 @@
 #include "config.h"
 #include "tape.h"
 
-#if defined(PWM_SOUND)
 static PWM pwm;
-#endif
 
 void tape::reset() {
 #if defined(PWM_SOUND)
@@ -29,15 +27,15 @@ void tape::framing(unsigned data_bits, unsigned stop_bits, parity parity) {
 }
 
 void tape::write_bit(bool bit) {
-#if defined(PWM_SOUND)
 	pwm.set_freq(bit? 2400: 1200);
-#endif
 	delayMicroseconds(_bit_delay);
 }
 
 // FIXME: parity
 void tape::write(uint8_t b) {
+#if defined(PWM_DUTY)
 	pwm.set_duty(PWM_DUTY);
+#endif
 	write_bit(0);
 	for (int i = 0; i < _data_bits; i++) {
 		write_bit(b & 1);
