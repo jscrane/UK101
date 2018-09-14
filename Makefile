@@ -1,6 +1,14 @@
-PROCESSOR_FAMILY := lm4f
-BOARD := lplm4f120h5qr
-# watch the CPU execute
-#LOCAL_CPPFLAGS := -DCPU_DEBUG
+BOARD := node32s
+UPLOAD_SPEED := 921600
+TERM_SPEED := 115200
+CPPFLAGS = -DCPU_DEBUG
 
-include energia10.mk
+uk101: CPPFLAGS += -DUK101
+uk101: SPIFFS_DIR := uk101/programs
+uk101: all fs
+
+ohio: CPPFLAGS += -DOHIO
+ohio: SPIFFS_DIR := ohio/programs
+ohio: all fs
+
+include arduino-esp32.mk

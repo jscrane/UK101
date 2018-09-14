@@ -1,7 +1,8 @@
+#include <FS.h>
+#include <SPIFFS.h>
+#include <UTFT.h>
 #include <SPI.h>
 #include <SpiRAM.h>
-#include <UTFT.h>
-#include <SD.h>
 #include <r65emu.h>
 #include <r6502.h>
 
@@ -47,9 +48,9 @@ promswitch monitors(sproms, 4, 0xf800);
 #include "ohio/osibasic.h"
 
 static sprom sproms[] = {
-	sprom(syn600, 2048);
-	sprom(ohiomon, 2048);
-	sprom(cegmon_c2, 2048);
+	sprom(syn600, 2048),
+	sprom(ohiomon, 2048),
+	sprom(cegmon_c2, 2048),
 };
 promswitch monitors(sproms, 3, 0xf800);
 #endif
@@ -59,6 +60,7 @@ static bool halted = false;
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
 tape tape;
+acia acia(&tape);
 ukkbd kbd;
 display disp;
 r6502 cpu(memory);
@@ -68,13 +70,17 @@ void reset() {
 
 	kbd.reset();	
 	disp.begin();
-	if (sd)
-		tape.start(PROGRAMS);
-	else
+	if (!sd)
 		disp.status("No SD Card");
+	else if (!tape.start(PROGRAMS))
+		disp.status("Failed to open "PROGRAMS);
 }
 
 void setup() {
+#if defined(DEBUG) || defined(CPU_DEBUG)
+	Serial.begin(115200);
+#endif
+
 	hardware_init(cpu);
 	for (unsigned i = 0; i < RAM_SIZE; i += 1024)
 		memory.put(pages[i / 1024], i);
@@ -90,13 +96,16 @@ void setup() {
 
 	memory.put(disp, 0xd000);
 	memory.put(kbd, 0xdf00);
-	memory.put(tape, 0xf000);
+	memory.put(acia, 0xf000);
 	monitors.set(0);
 
 	reset();
 }
 
 void loop() {
+#if defined(CPU_DEBUG)
+	static bool cpu_debug;
+#endif
 	static const char *filename;
 	if (ps2.available()) {
 		unsigned scan = ps2.read2();
@@ -110,11 +119,11 @@ void loop() {
 				break;
 			case PS2_F2:
 				filename = tape.advance();
-				disp.status(filename);
+				disp.status(filename? filename: "No file");
 				break;
 			case PS2_F3:
 				filename = tape.rewind();
-				disp.status(filename);
+				disp.status(filename? filename: "No file");
 				break;
 			case PS2_F4:
 				monitors.next();
@@ -132,10 +141,25 @@ void loop() {
 				if (filename)
 					restore(tape, PROGRAMS, filename);
 				break; 
+#if defined(CPU_DEBUG)
+			case PS2_F10:
+				cpu_debug = !cpu_debug;
+				break;
+#endif
 			default:
 				kbd.up(key);
 				break;
 			}
-	} else if (!cpu.halted())
+	} else if (!cpu.halted()) {
+#if defined(CPU_DEBUG)
+		if (cpu_debug) {
+			char buf[256];
+			Serial.println(cpu.status(buf, sizeof(buf)));
+			cpu.run(1);
+		} else
+			cpu.run(CPU_INSTRUCTIONS);
+#else
 		cpu.run(CPU_INSTRUCTIONS);
+#endif
+	}
 }

@@ -62,7 +62,7 @@ void ukkbd::reset() {
 	_shifted = false;
 }
 
-void ukkbd::operator= (uint8_t row) {
+void ukkbd::operator=(uint8_t row) {
 	_last = row;
 }
 
@@ -76,11 +76,15 @@ uint8_t ukkbd::pattern() {
 	return pattern ^ 0xff;
 }
 
-void ukkbd::_reset (uint8_t k) {
+void ukkbd::_reset(uint8_t k) {
 	_rows[(k & 0xf0) >> 4] &= ~(1 << (k & 0x0f));
 }
 
-void ukkbd::up (uint8_t scan) {
+void ukkbd::up(uint8_t scan) {
+	if (scan > 127) {
+		reset();
+		return;
+	}
 	if (isshift(scan))
 		_shifted = false;
 	uint16_t k = _map(scan);
@@ -88,31 +92,37 @@ void ukkbd::up (uint8_t scan) {
 		if (!_shifted && k > 0xff)
 			_reset (k / 0xff);
 		if (k > 0)
-			_reset (k & 0xff);
+			_reset(k & 0xff);
 	}
 }
 
-void ukkbd::_set (uint8_t k) {
+void ukkbd::_set(uint8_t k) {
 	_rows[(k & 0xf0) >> 4] |= 1 << (k & 0x0f);
 }
 
-void ukkbd::down (uint8_t scan) {
+void ukkbd::down(uint8_t scan) {
+	if (scan > 127) {
+		reset();
+		return;
+	}
 	if (isshift(scan)) {
 		// reset any depressed keys so they don't get stuck
 		reset();
 		_shifted = true;
 	}
 	uint16_t k = _map(scan);
-	if (k != 0xffff) {
-		if (_shifted) {
-			if (k < 0xff)
-				_reset(0x02);
-		} else if (k > 0xff)
-			_set(k / 0xff);
-		if (k > 0)
-			_set(k & 0xff);
-		else	// toggle caps lock
-			_rows[0] ^= 1;
+	if (k == 0xffff) {
+		reset();
+		return;
 	}
+	if (_shifted) {
+		if (k < 0xff)
+			_reset(0x02);
+	} else if (k > 0xff)
+		_set(k / 0xff);
+	if (k > 0)
+		_set(k & 0xff);
+	else	// toggle caps lock
+		_rows[0] ^= 1;
 }
 
