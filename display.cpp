@@ -1,6 +1,6 @@
-#include <UTFT.h>
+#include <Arduino.h>
 #include <memory.h>
-#include <utftdisplay.h>
+#include <tftdisplay.h>
 #include <hardware.h>
 
 #include "config.h"
@@ -9,7 +9,7 @@
 
 void display::begin()
 {
-	UTFTDisplay::begin(TFT_BG, TFT_FG);
+	TFTDisplay::begin(TFT_BG, TFT_FG);
 	clear();
 }
 
@@ -38,7 +38,7 @@ const char *display::changeResolution()
 	return resolutions[_resolution].name;
 }
 
-void display::_draw(Memory::address a, byte c)
+void display::_draw(Memory::address a, uint8_t c)
 {
 	struct resolution &r = resolutions[_resolution];
 	int x = r.cw * (a % CHARS_PER_LINE - X_OFF);	// hack to view left edge of screen
@@ -50,19 +50,19 @@ void display::_draw(Memory::address a, byte c)
 		return;
 
 	for (unsigned j = 0; j < r.ch; j++) {
-		byte b = charset[c][j];
-		byte m = charset[_mem[a]][j];
+		uint8_t b = charset[c][j];
+		uint8_t m = charset[_mem[a]][j];
 		if (b != m) {
-			byte d = (b ^ m);
+			uint8_t d = (b ^ m);
 			for (unsigned i=1, bit=1; i <= r.cw; i++, bit<<=1)
 				if (d & bit) {
 					int cx = x + r.cw - i;
-					utft.setColor((b & bit)? TFT_FG: TFT_BG);
+					unsigned c = (b & bit)? TFT_FG: TFT_BG;
 					if (r.double_size) {
-						utft.drawPixel(cx, y + 2*j);
-						utft.drawPixel(cx, y + 2*j + 1);
+						drawPixel(cx, y + 2*j, c);
+						drawPixel(cx, y + 2*j + 1, c);
 					} else
-						utft.drawPixel(cx, y + j);
+						drawPixel(cx, y + j, c);
 				}
 		}
 	}

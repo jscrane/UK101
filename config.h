@@ -5,10 +5,10 @@
 #define UK101
 #endif
 
-#define TFT_BG		VGA_BLACK
-#define TFT_FG		VGA_WHITE
-//#define TFT_BG	VGA_WHITE
-//#define TFT_FG	VGA_BLACK
+#define TFT_BG		BLACK
+#define TFT_FG		WHITE
+//#define TFT_BG	WHITE
+//#define TFT_FG	BLACK
 
 // X-offset (in characters)
 #if defined(UK101)
