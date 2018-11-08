@@ -9,7 +9,7 @@
 
 void display::begin()
 {
-	TFTDisplay::begin(TFT_BG, TFT_FG);
+	TFTDisplay::begin(TFT_BG, TFT_FG, reverse_landscape);
 	clear();
 }
 
@@ -50,8 +50,8 @@ void display::_draw(Memory::address a, uint8_t c)
 		return;
 
 	for (unsigned j = 0; j < r.ch; j++) {
-		uint8_t b = charset[c][j];
-		uint8_t m = charset[_mem[a]][j];
+		uint8_t b = pgm_read_byte(&charset[c][j]);
+		uint8_t m = pgm_read_byte(&charset[_mem[a]][j]);
 		if (b != m) {
 			uint8_t d = (b ^ m);
 			for (unsigned i=1, bit=1; i <= r.cw; i++, bit<<=1)
