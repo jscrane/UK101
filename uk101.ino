@@ -1,5 +1,7 @@
 #include <FS.h>
+#if defined(ESP32)
 #include <SPIFFS.h>
+#endif
 //#include <UTFT.h>
 #include <TFT_eSPI.h>
 #include <SPI.h>
