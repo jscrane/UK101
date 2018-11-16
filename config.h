@@ -26,7 +26,7 @@
 
 
 // RAM
-#if !defined(SPIRAM_CS)
+#if !defined(USE_SPIRAM)
 
 // RAM provided by uC (must be a multiple of 1024)
 #define RAM_SIZE	0x8000
