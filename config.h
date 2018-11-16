@@ -44,7 +44,13 @@
 // number of CPU instructions to run per loop
 #define CPU_INSTRUCTIONS  1000
 
+#if !defined(USE_SD)
 #define PROGRAMS	"/"
+#elif defined(UK101)
+#define PROGRAMS	"/uk101/"
+#else
+#define PROGRAMS	"/ohio/"
+#endif
 
 // for the original (to me) Compukit basic
 // if not defined, get the string garbage-collection fix
