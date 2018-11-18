@@ -10,6 +10,12 @@
 //#define TFT_BG	WHITE
 //#define TFT_FG	BLACK
 
+#if defined(USE_UTFT)
+#define TFT_ORIENT      landscape
+#elif defined(USE_ESPI)
+#define TFT_ORIENT      reverse_landscape
+#endif
+
 // X-offset (in characters)
 #if defined(UK101)
 #define X_OFF		12
