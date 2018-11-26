@@ -14,10 +14,14 @@
 static PWM pwm;
 
 void tape::reset() {
+	speed(BAUD_RATE);
+}
+
+bool tape::start(const char *programs) {
 #if defined(PWM_SOUND)
 	pwm.begin(PWM_SOUND);
 #endif
-	speed(BAUD_RATE);
+	return sdtape::start(programs);
 }
 
 void tape::framing(unsigned data_bits, unsigned stop_bits, parity parity) {

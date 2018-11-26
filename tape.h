@@ -3,6 +3,7 @@
 
 class tape: public sdtape, public SerialDevice {
 public:
+	bool start(const char *programs);
 	void reset();
 	void framing(unsigned data_bits, unsigned stop_bits, parity p);
 	void speed(unsigned baud) { _bit_delay = 1000000 / baud; }
