@@ -78,7 +78,7 @@ void reset() {
 
 void setup() {
 #if defined(DEBUGGING) || defined(CPU_DEBUG)
-	Serial.begin(115200);
+	Serial.begin(TERM_SPEED);
 #endif
 
 	hardware_init(cpu);
