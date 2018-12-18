@@ -11,17 +11,10 @@
 #include "config.h"
 #include "tape.h"
 
-static PWM pwm;
+extern PWM pwm;
 
 void tape::reset() {
 	speed(BAUD_RATE);
-}
-
-bool tape::start(const char *programs) {
-#if defined(PWM_SOUND)
-	pwm.begin(PWM_SOUND);
-#endif
-	return sdtape::start(programs);
 }
 
 void tape::framing(unsigned data_bits, unsigned stop_bits, parity parity) {

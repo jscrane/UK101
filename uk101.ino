@@ -60,12 +60,16 @@ acia acia(&tape);
 ukkbd kbd;
 display disp;
 r6502 cpu(memory);
+PWM pwm;
 
 void reset() {
 	bool sd = hardware_reset();
 
 	kbd.reset();	
 	disp.begin();
+#if defined(PWM_SOUND)
+	pwm.begin(PWM_SOUND);
+#endif
 	if (!sd)
 		disp.status("No SD Card");
 	else if (!tape.start(PROGRAMS))
@@ -78,6 +82,7 @@ void setup() {
 #endif
 
 	hardware_init(cpu);
+
 	for (unsigned i = 0; i < RAM_SIZE; i += 1024)
 		memory.put(pages[i / 1024], i);
 
