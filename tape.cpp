@@ -15,6 +15,9 @@ extern PWM pwm;
 
 void tape::reset() {
 	speed(BAUD_RATE);
+#if defined(PWM_DUTY)
+	pwm.stop();
+#endif
 }
 
 void tape::framing(unsigned data_bits, unsigned stop_bits, parity parity) {
