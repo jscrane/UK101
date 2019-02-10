@@ -55,8 +55,9 @@ static bool halted = false;
 
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
-tape tape;
-acia acia(&tape);
+tape t;
+filer &tape = t;
+acia acia(t);
 ukkbd kbd;
 display disp;
 r6502 cpu(memory);
