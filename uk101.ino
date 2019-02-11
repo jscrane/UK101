@@ -56,8 +56,8 @@ static bool halted = false;
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
 tape t;
-filer &tape = t;
-acia acia(t);
+filer &files = t;
+acia acia(files);
 ukkbd kbd;
 display disp;
 r6502 cpu(memory);
@@ -73,7 +73,7 @@ void reset() {
 #endif
 	if (!sd)
 		disp.status("No SD Card");
-	else if (!tape.start(PROGRAMS))
+	else if (!files.start(PROGRAMS))
 		disp.status("Failed to open "PROGRAMS);
 }
 
@@ -120,11 +120,11 @@ void loop() {
 				reset();
 				break;
 			case PS2_F2:
-				filename = tape.advance();
+				filename = files.advance();
 				disp.status(filename? filename: "No file");
 				break;
 			case PS2_F3:
-				filename = tape.rewind();
+				filename = files.rewind();
 				disp.status(filename? filename: "No file");
 				break;
 			case PS2_F4:
@@ -137,11 +137,11 @@ void loop() {
 				cpu.reset();
 				break; 
 			case PS2_F6:
-				disp.status(checkpoint(tape, PROGRAMS));
+				disp.status(checkpoint(files, PROGRAMS));
 				break;
 			case PS2_F7:
 				if (filename)
-					restore(tape, PROGRAMS, filename);
+					restore(files, PROGRAMS, filename);
 				break; 
 #if defined(CPU_DEBUG)
 			case PS2_F10:

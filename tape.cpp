@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <stdint.h>
 #include <memory.h>
+#include <serialio.h>
 #include <filer.h>
 #include <acia.h>
 #include <hardware.h>
