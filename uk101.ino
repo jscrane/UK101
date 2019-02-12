@@ -55,8 +55,7 @@ static bool halted = false;
 
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
-tape t;
-filer &files = t;
+flash_filer files;
 acia acia(files);
 ukkbd kbd;
 display disp;
@@ -137,11 +136,11 @@ void loop() {
 				cpu.reset();
 				break; 
 			case PS2_F6:
-				disp.status(checkpoint(files, PROGRAMS));
+				disp.status(files.checkpoint());
 				break;
 			case PS2_F7:
 				if (filename)
-					restore(files, PROGRAMS, filename);
+					files.restore(filename);
 				break; 
 #if defined(CPU_DEBUG)
 			case PS2_F10:
