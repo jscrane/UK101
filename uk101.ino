@@ -56,7 +56,9 @@ static bool halted = false;
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
 
-serial_filer files;
+socket_filer files(HOSTNAME);
+//flash_filer files(PROGRAMS);
+//serial_filer files(Serial);
 //tape tape(files);
 acia acia(files);
 
@@ -75,7 +77,7 @@ void reset() {
 #endif
 	if (!sd)
 		disp.status("No SD Card");
-	else if (!files.start(PROGRAMS))
+	else if (!files.start())
 		disp.status("Failed to open "PROGRAMS);
 }
 
