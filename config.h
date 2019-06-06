@@ -58,6 +58,13 @@
 #define PROGRAMS	"/ohio/"
 #endif
 
+// for socket_filer
+#if defined(UK101)
+#define HOSTNAME	"uk101"
+#else
+#define HOSTNAME	"ohio"
+#endif
+
 // for the original (to me) Compukit basic
 // if not defined, get the string garbage-collection fix
 // from: http://neoncluster.com

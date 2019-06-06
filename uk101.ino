@@ -56,8 +56,8 @@ static bool halted = false;
 prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
 
-socket_filer files(HOSTNAME);
-//flash_filer files(PROGRAMS);
+//socket_filer files(HOSTNAME);
+flash_filer files(PROGRAMS);
 //serial_filer files(Serial);
 //tape tape(files);
 acia acia(files);
