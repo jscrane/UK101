@@ -78,7 +78,7 @@ void reset() {
 	if (!sd)
 		disp.status("No SD Card");
 	else if (!files.start())
-		disp.status("Failed to open "PROGRAMS);
+		disp.status("Failed to open " PROGRAMS);
 }
 
 void setup() {
