@@ -1,8 +1,9 @@
 *.cpp.o
-.lib
+.build
 uk101.ino.elf
 uk101.ino.bin
 *.d
 uk101.ino.partitions.bin
 *.swp
 spiffs.img
+platform.mk
