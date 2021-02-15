@@ -18,7 +18,7 @@ FLASH_SIZE := 4M1M
 F_CPU := 80
 CPPFLAGS = -DUSER_SETUP_LOADED -DILI9341_DRIVER -DTFT_CS=PIN_D8 -DTFT_DC=PIN_D1 \
 	   -DTFT_RST=-1 -DSPI_FREQUENCY=40000000 -DLOAD_GLCD \
-	   -DHARDWARE_H=\"hw/esp8266-pwm-fs.h\" -DTERMINAL_SPEED=$(TERMINAL_SPEED)
+	   -DHARDWARE_H=\"hw/esp8266-pwm-fs-23k256.h\" -DTERMINAL_SPEED=$(TERMINAL_SPEED)
 LIBRARIES = TFT_eSPI
 endif
 
@@ -30,12 +30,12 @@ endif
 
 ifeq ($s, uk101)
 CPPFLAGS += -DUK101
-SPIFFS_DIR := uk101/programs
+FS_DIR := uk101/programs
 endif
 
 ifeq ($s, ohio)
 CPPFLAGS += -DOHIO
-SPIFFS_DIR := ohio/programs
+FS_DIR := ohio/programs
 endif
 
 include $t.mk
