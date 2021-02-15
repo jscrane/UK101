@@ -1,6 +1,7 @@
 #include <stdarg.h>
 
 #include <SPI.h>
+#include <SpiRAM.h>
 #include <r65emu.h>
 #include <r6502.h>
 
@@ -57,10 +58,13 @@ prom msbasic(basic, 8192);
 ram pages[RAM_SIZE / 1024];
 
 //socket_filer files(HOSTNAME);
-flash_filer files(PROGRAMS);
 //serial_filer files(Serial);
-//tape tape(files);
-acia acia(files);
+flash_filer files(PROGRAMS);
+//acia acia(files);
+
+// novelty wrapper to send saved files to audio device
+tape tape(files);
+acia acia(tape);
 
 ukkbd kbd;
 display disp;
