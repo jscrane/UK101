@@ -7,9 +7,10 @@ UK101
 
 See blog [article](http://programmablehardware.blogspot.ie/2014/08/retrocomputer-resurrection.html).
 
-Libraries
----------
-- [6502 Emulation](https://github.com/jscrane/r65emu) library.
+Software
+--------
+- [6502 Emulation](https://github.com/jscrane/r65emu) library
+- [uC-Makefile](https://github.com/jscrane/uC-Makefile)
 
 Hardware
 --------
