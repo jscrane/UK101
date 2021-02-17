@@ -55,7 +55,7 @@ promswitch monitors(sproms, 3, 0xf800);
 static bool halted = false;
 
 prom msbasic(basic, 8192);
-ram pages[RAM_SIZE / 1024];
+ram pages[RAM_PAGES];
 
 //socket_filer files(HOSTNAME);
 //serial_filer files(Serial);
@@ -92,8 +92,8 @@ void setup() {
 
 	hardware_init(cpu);
 
-	for (unsigned i = 0; i < RAM_SIZE; i += 1024)
-		memory.put(pages[i / 1024], i);
+	for (unsigned i = 0; i < RAM_PAGES; i++)
+		memory.put(pages[i], i * ram::page_size);
 
 #if defined(USE_SPIRAM)
 	memory.put(sram, SPIRAM_BASE, SPIRAM_EXTENT);
