@@ -6,4 +6,5 @@ uk101.ino.bin
 uk101.ino.partitions.bin
 *.swp
 spiffs.img
-platform.mk
+*.txt.mk
+serialout.txt
