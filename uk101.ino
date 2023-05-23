@@ -11,6 +11,7 @@
 #include "acia.h"
 #include "tape.h"
 #include "sprom.h"
+#include "disk.h"
 
 #if defined(UK101)
 #include "uk101/cegmon_jsc.h"
@@ -66,6 +67,8 @@ flash_filer files(PROGRAMS);
 tape tape(files);
 acia acia(tape);
 
+disk disk;
+
 ukkbd kbd;
 display disp;
 r6502 cpu(memory);
@@ -83,6 +86,7 @@ void reset() {
 		disp.status("No SD Card");
 	else if (!files.start())
 		disp.status("Failed to open " PROGRAMS);
+	disk.begin();
 }
 
 void setup() {
@@ -103,6 +107,8 @@ void setup() {
 	memory.put(enc, 0x8800);
 #endif
 	memory.put(msbasic, 0xa000);
+
+	memory.put(disk, 0xc000);
 
 	memory.put(disp, 0xd000);
 	memory.put(kbd, 0xdf00);

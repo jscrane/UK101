@@ -30,6 +30,7 @@ Some of the function keys on the PS/2 keyboard control the machine's inner worki
   - 32x30, 32x32 (on Superboard)
 - F6: checkpoint to file (default CHKPOINT.xxx)
 - F7: restore from checkpoint (select image with F2)
+- F10: toggle CPU debugging on serial port
 
 Keyboard
 --------

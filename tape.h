@@ -6,6 +6,8 @@
 // fs_filer
 // serial_filer
 // audio_filer
+class filer;
+
 class tape: public serialio {
 public:
 	tape(filer &f): _f(f) {}
@@ -20,7 +22,7 @@ public:
 private:
 	void write_bit(bool bit);
 
-	class filer &_f;
+	filer &_f;
 	unsigned _data_bits, _stop_bits, _bit_delay;
 	parity _parity;
 };
