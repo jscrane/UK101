@@ -74,6 +74,7 @@ void disk::_set(Memory::address a, uint8_t b) {
 				track--;
 			else
 				track++;
+			off = track * 9 * 256;
 			DBG(printf("off: %04x\r\n", off));
 		}
 		drb = b;
