@@ -2,9 +2,24 @@
 #include <memory.h>
 #include <hardware.h>
 #include <config.h>
+#include <serialio.h>
+#include <filer.h>
+#include <flash_filer.h>
 
 #include "disk.h"
-#include "diskimage.h"
+
+// See https://github.com/jefftranter/6502/blob/master/asm/OSI/diskboot.s for commented disassembly
+// of the CEGMON diskboot routine (option 'D')
+// See https://github.com/jefftranter/6502/blob/master/asm/OSI/os65dv33.s for commented disassembly of OS65D
+//
+// A disk interface consisted of a 6820 PIA mapped at 0xC000-0xC003 and a 6850 ACIA mapped at 0xC010-0xC011.
+// PIA port A reads disk control lines and port B writes them. Data is read a byte at a time through
+// the ACIA's data register.
+//
+// There is a notch at track 0 on the disk, and detection of this is the only way the disk head
+// "knows" where it is. This is flagged by bit #7 low on read of DRA.
+// A high->low transition on bit #3 of DRB indicates that the head should step in the direction
+// given by bit #2: 0xb -> 0x3 means "step out" (increase track number) and 0xb -> 0x7 "step in".
 
 #define DDRA	0x00
 #define DRA	0x00
@@ -24,15 +39,23 @@
 #define STEP_HEAD	0x08
 #define STEP_IN		0x04
 #define HOLE		0x80
+#define TRACK0		0x02
+#define FAULT		0x04
+#define DRIVEAC		0x64
 
 #define ACIA_RESET	0x03
 #define ACIA_RDRF	0x01
 
+// 5.25" floppy disk
+#define TRACK_SECTORS	9
+#define SECTOR_BYTES	256
+
 static uint8_t cra = 0;
+//static uint8_t dra = FAULT;
 static uint8_t dra = 0;
 static uint8_t crb = 0;
 static uint8_t drb = 0;
-static uint16_t off = 0;
+static uint32_t pos = 0;
 static int track = -1;
 
 #if defined(DEBUGGING)
@@ -55,7 +78,8 @@ void disk::_set(Memory::address a, uint8_t b) {
 
 	case DRA:
 		if (!(cra & DR_MASK)) {
-			DBG(printf("DDRA! %02x\r\n", b));
+			// data-direction register A
+			DBG(printf("DDA! %02x\r\n", b));
 			return;
 		}
 		DBG(printf("DRA! %02x\r\n", b));
@@ -63,19 +87,28 @@ void disk::_set(Memory::address a, uint8_t b) {
 
 	case DRB:
 		if (!(crb & DR_MASK)) {
-			DBG(printf("DDRB! %02x\r\n", b));
+			// data-direction register B
+			DBG(printf("DDB! %02x\r\n", b));
 			return;
 		}
 		DBG(printf("DRB! %02x\r\n", b));
-		if (!(b & UNLOAD_HEAD))
-			dra &= ~HOLE;
 		if ((drb & STEP_HEAD) && (!(b & STEP_HEAD))) {
 			if (b & STEP_IN)
 				track--;
 			else
 				track++;
-			off = track * 9 * 256;
-			DBG(printf("off: %04x\r\n", off));
+
+			DBG(printf("track: %d\r\n", track));
+
+			pos = track * TRACK_SECTORS * SECTOR_BYTES;
+
+			_f.seek(pos);
+		}
+		if (!(b & UNLOAD_HEAD)) {
+			if (track == 0)
+				dra &= ~(HOLE | TRACK0);
+			else
+				dra &= ~HOLE;
 		}
 		drb = b;
 		break;
@@ -106,12 +139,14 @@ uint8_t disk::_get(Memory::address a) {
 		return drb;
 
 	case ASR:
-		return off < sizeof(disk_image);
+		b = _f.more();
+		DBG(printf("ASR? %02x\r\n", b));
+		return b;
 
 	case ADR:
-		b = pgm_read_byte(disk_image + off);
-		DBG(printf("ADR? %04x %02x\r\n", off, b));
-		off++;
+		b = _f.read();
+		DBG(printf("ADR? %04x %02x\r\n", pos, b));
+		pos++;
 		return b;
 
 	default:

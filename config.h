@@ -45,13 +45,8 @@
 // number of CPU instructions to run per loop
 #define CPU_INSTRUCTIONS  1000
 
-#if !defined(USE_SD)
+// flash_filer directory containing programs
 #define PROGRAMS	"/"
-#elif defined(UK101)
-#define PROGRAMS	"/uk101/"
-#else
-#define PROGRAMS	"/ohio/"
-#endif
 
 // for socket_filer
 #if defined(UK101)

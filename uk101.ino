@@ -67,7 +67,7 @@ flash_filer files(PROGRAMS);
 tape tape(files);
 acia acia(tape);
 
-disk disk;
+disk disk(files);
 
 ukkbd kbd;
 display disp;
