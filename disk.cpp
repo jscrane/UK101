@@ -106,18 +106,11 @@ void disk::_set(Memory::address a, uint8_t b) {
 				track--;
 
 			DBG(printf("track: %d\r\n", track));
-
-			pos = track * TRACK_SECTORS * SECTOR_BYTES;
-			_f.seek(pos);
+			seek_start(track);
 		}
 		if (!(b & LOAD_HEAD)) {
-			if (track == 0)
-				dra &= ~(INDEX_HOLE | TRACK0);
-			else
-				dra &= ~INDEX_HOLE;
-
-			pos = track * TRACK_SECTORS * SECTOR_BYTES;
-			_f.seek(pos);
+			seek_start(track);
+			set_index(track);
 		}
 		drb = b;
 		break;
@@ -158,13 +151,8 @@ uint8_t disk::_get(Memory::address a) {
 		pos++;
 		// has disk completed one revolution?
 		if ((pos - track * TRACK_SECTORS * SECTOR_BYTES) > TRACK_SECTORS * SECTOR_BYTES) {
-			pos = track * TRACK_SECTORS * SECTOR_BYTES;
-			_f.seek(pos);
-
-			if (track == 0)
-				dra &= ~(INDEX_HOLE | TRACK0);
-			else
-				dra &= ~INDEX_HOLE;
+			seek_start(track);
+			set_index(track);
 			DBG(printf("rev: %d\r\n", track));
 		}
 		return b;
@@ -176,5 +164,15 @@ uint8_t disk::_get(Memory::address a) {
 	return 0x00;
 }
 
-void disk::begin() {
+void disk::seek_start(uint8_t track) {
+	::pos = track * TRACK_SECTORS * SECTOR_BYTES;
+	_f.seek(pos);
+
+}
+
+void disk::set_index(uint8_t track) {
+	if (track == 0)
+		dra &= ~(INDEX_HOLE | TRACK0);
+	else
+		dra &= ~INDEX_HOLE;
 }

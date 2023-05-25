@@ -10,8 +10,10 @@ public:
 	virtual void operator= (uint8_t c) { _set(_acc, c); }
 	virtual operator uint8_t () { return _get(_acc); }
 
-	void begin();
 private:
+	void set_index(uint8_t track);
+	void seek_start(uint8_t track);
+
 	void _set(Memory::address a, uint8_t c);
 	uint8_t _get(Memory::address a);
 
