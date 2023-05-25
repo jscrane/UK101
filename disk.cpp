@@ -12,6 +12,8 @@
 // of the CEGMON diskboot routine (option 'D')
 // See https://github.com/jefftranter/6502/blob/master/asm/OSI/os65dv33.s for commented disassembly of OS65D
 //
+// Disk geometry is discussed here: https://osiweb.org/computes_gazette/Compute_n020_p136_OS65D_Disk_Routines_Part1.pdf
+//
 // A disk interface consisted of a 6820 PIA mapped at 0xC000-0xC003 and a 6850 ACIA mapped at 0xC010-0xC011.
 // PIA port A reads disk control lines and port B writes them. Data is read a byte at a time through
 // the ACIA's data register.
@@ -33,25 +35,29 @@
 #define ASR	0x10
 #define ADR	0x11
 
-#define RESET_CTRL	0xff
-#define LOAD_HEAD	0x7f
-#define UNLOAD_HEAD	0x80
-#define STEP_HEAD	0x08
+// PB commands
 #define STEP_IN		0x04
-#define HOLE		0x80
+#define STEP_HEAD	0x08
+#define LOAD_HEAD	0x80
+
+// PA indicators
 #define TRACK0		0x02
 #define FAULT		0x04
-#define DRIVEAC		0x64
+#define INDEX_HOLE	0x80
 
 #define ACIA_RESET	0x03
 #define ACIA_RDRF	0x01
 
 // 5.25" floppy disk
+#define DISK_TRACKS	40
 #define TRACK_SECTORS	9
 #define SECTOR_BYTES	256
+// 8" disk
+// #define DISK_TRACKS	77
+// #define TRACK_SECTORS	12
+// #define SECTOR_BYTES	256
 
 static uint8_t cra = 0;
-//static uint8_t dra = FAULT;
 static uint8_t dra = 0;
 static uint8_t crb = 0;
 static uint8_t drb = 0;
@@ -93,22 +99,25 @@ void disk::_set(Memory::address a, uint8_t b) {
 		}
 		DBG(printf("DRB! %02x\r\n", b));
 		if ((drb & STEP_HEAD) && (!(b & STEP_HEAD))) {
-			if (b & STEP_IN)
-				track--;
-			else
+			// track numbers increase inwards
+			if (!(b & STEP_IN))
 				track++;
+			else
+				track--;
 
 			DBG(printf("track: %d\r\n", track));
 
 			pos = track * TRACK_SECTORS * SECTOR_BYTES;
-
 			_f.seek(pos);
 		}
-		if (!(b & UNLOAD_HEAD)) {
+		if (!(b & LOAD_HEAD)) {
 			if (track == 0)
-				dra &= ~(HOLE | TRACK0);
+				dra &= ~(INDEX_HOLE | TRACK0);
 			else
-				dra &= ~HOLE;
+				dra &= ~INDEX_HOLE;
+
+			pos = track * TRACK_SECTORS * SECTOR_BYTES;
+			_f.seek(pos);
 		}
 		drb = b;
 		break;
@@ -130,8 +139,8 @@ uint8_t disk::_get(Memory::address a) {
 	case DRA:
 		b = dra;
 		DBG(printf("DRA? %02x\r\n", b));
-		if (!(dra & HOLE))
-			dra |= HOLE;
+		if (!(dra & INDEX_HOLE))
+			dra |= INDEX_HOLE;
 		return b;
 
 	case DRB:
@@ -139,7 +148,7 @@ uint8_t disk::_get(Memory::address a) {
 		return drb;
 
 	case ASR:
-		b = _f.more();
+		b = (dra & INDEX_HOLE) && _f.more();
 		DBG(printf("ASR? %02x\r\n", b));
 		return b;
 
@@ -147,6 +156,17 @@ uint8_t disk::_get(Memory::address a) {
 		b = _f.read();
 		DBG(printf("ADR? %04x %02x\r\n", pos, b));
 		pos++;
+		// has disk completed one revolution?
+		if ((pos - track * TRACK_SECTORS * SECTOR_BYTES) > TRACK_SECTORS * SECTOR_BYTES) {
+			pos = track * TRACK_SECTORS * SECTOR_BYTES;
+			_f.seek(pos);
+
+			if (track == 0)
+				dra &= ~(INDEX_HOLE | TRACK0);
+			else
+				dra &= ~INDEX_HOLE;
+			DBG(printf("rev: %d\r\n", track));
+		}
 		return b;
 
 	default:
