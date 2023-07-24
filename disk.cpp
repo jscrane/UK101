@@ -128,6 +128,17 @@ void disk::_set(Memory::address a, uint8_t b) {
 uint8_t disk::_get(Memory::address a) {
 	uint8_t b;
 
+	static uint8_t ind = 0;
+	if ((a & 0xff) == DRA) {
+		ind++;
+		if (ind == 100) {
+			seek_start(track);
+			set_index(track);
+			ind = 0;
+		}
+	} else
+		ind = 0;
+
 	switch (a & 0xff) {
 	case DRA:
 		b = dra;
