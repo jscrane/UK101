@@ -69,16 +69,13 @@ acia acia(tape);
 ukkbd kbd;
 screen disp;
 r6502 cpu(memory);
-PWM pwm;
 
 void reset() {
 	bool sd = hardware_reset();
 
 	kbd.reset();
 	disp.begin();
-#if defined(PWM_SOUND)
-	pwm.begin(PWM_SOUND);
-#endif
+
 	if (!sd)
 		disp.status("No SD Card");
 	else if (!files.start())
