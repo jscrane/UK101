@@ -1,15 +1,15 @@
 #include <Arduino.h>
 #include <memory.h>
-#include <tftdisplay.h>
+#include <display.h>
 #include <hardware.h>
 
 #include "config.h"
-#include "display.h"
+#include "screen.h"
 #include "uk101/charset.h"
 
-void display::begin()
+void screen::begin()
 {
-	TFTDisplay::begin(TFT_BG, TFT_FG, TFT_ORIENT);
+	Display::begin(TFT_BG, TFT_FG, TFT_ORIENT);
 	clear();
 }
 
@@ -30,7 +30,7 @@ static struct resolution {
 #endif
 };
 
-const char *display::changeResolution()
+const char *screen::changeResolution()
 {
 	_resolution++;
 	if (_resolution == sizeof(resolutions) / sizeof(struct resolution))
@@ -38,7 +38,7 @@ const char *display::changeResolution()
 	return resolutions[_resolution].name;
 }
 
-void display::_draw(Memory::address a, uint8_t c)
+void screen::_draw(Memory::address a, uint8_t c)
 {
 	struct resolution &r = resolutions[_resolution];
 	int x = r.cw * (a % CHARS_PER_LINE - X_OFF);	// hack to view left edge of screen
@@ -68,13 +68,13 @@ void display::_draw(Memory::address a, uint8_t c)
 	}
 }
 
-void display::checkpoint(Stream &s)
+void screen::checkpoint(Stream &s)
 {
 	s.write(_resolution); 
 	s.write(_mem, sizeof(_mem));
 }
 
-void display::restore(Stream &s)
+void screen::restore(Stream &s)
 {
 	int r = _resolution;
 	_resolution = s.read();

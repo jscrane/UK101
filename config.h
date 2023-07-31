@@ -14,6 +14,8 @@
 #define TFT_ORIENT      landscape
 #elif defined(USE_ESPI)
 #define TFT_ORIENT      reverse_landscape
+#elif defined(USE_VGA)
+#define TFT_ORIENT      landscape
 #endif
 
 // X-offset (in characters)

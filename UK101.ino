@@ -6,7 +6,7 @@
 #include <r6502.h>
 
 #include "config.h"
-#include "display.h"
+#include "screen.h"
 #include "ukkbd.h"
 #include "acia.h"
 #include "tape.h"
@@ -70,18 +70,15 @@ acia acia(tape);
 disk disk(files);
 
 ukkbd kbd;
-display disp;
+screen disp;
 r6502 cpu(memory);
-PWM pwm;
 
 void reset() {
 	bool sd = hardware_reset();
 
-	kbd.reset();	
+	kbd.reset();
 	disp.begin();
-#if defined(PWM_SOUND)
-	pwm.begin(PWM_SOUND);
-#endif
+
 	if (!sd)
 		disp.status("No SD Card");
 	else if (!files.start())
