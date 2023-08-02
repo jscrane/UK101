@@ -1,5 +1,8 @@
 t ?= esp32
 s ?= uk101
+p ?= programs/$s
+
+FS_DIR := $p
 
 ifeq ($t, esp32)
 CPPFLAGS = -DDEBUGGING -DTERMINAL_SPEED=$(TERMINAL_SPEED)
@@ -25,6 +28,7 @@ endif
 ifeq ($t, esp8266)
 BOARD := d1_mini
 BAUD := 921600
+TERMINAL_SPEED := 115200
 TERMINAL_EXTRA_FLAGS := -C serialout.txt
 EESZ := 4M2M
 XTAL := 80
@@ -44,12 +48,10 @@ endif
 
 ifeq ($s, uk101)
 CPPFLAGS += -DUK101
-FS_DIR := uk101/programs
 endif
 
 ifeq ($s, ohio)
 CPPFLAGS += -DOHIO
-FS_DIR := ohio/programs
 endif
 
 include $t.mk

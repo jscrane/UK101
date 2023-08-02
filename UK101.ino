@@ -14,17 +14,17 @@
 #include "disk.h"
 
 #if defined(UK101)
-#include "uk101/cegmon_jsc.h"
-#include "uk101/cegmon_101.h"
-#include "uk101/mon02.h"
-#include "uk101/bambleweeny.h"
-#include "uk101/encoder.h"
-#include "uk101/toolkit2.h"
-#include "uk101/exmon.h"
+#include "roms/uk101/cegmon_jsc.h"
+#include "roms/uk101/cegmon_101.h"
+#include "roms/uk101/mon02.h"
+#include "roms/uk101/bambleweeny.h"
+#include "roms/uk101/encoder.h"
+#include "roms/uk101/toolkit2.h"
+#include "roms/uk101/exmon.h"
 #if defined(ORIGINAL_BASIC)
-#include "uk101/basic.h"
+#include "roms/uk101/basic.h"
 #else
-#include "uk101/nbasic.h"
+#include "roms/uk101/nbasic.h"
 #endif
 
 prom tk2(toolkit2, 2048);
@@ -39,11 +39,11 @@ static sprom sproms[] = {
 promswitch monitors(sproms, 4, 0xf800);
 
 #else
-#include "ohio/synmon.h"
-#include "ohio/syn600.h"
-#include "ohio/ohiomon.h"
-#include "ohio/cegmon_c2.h"
-#include "ohio/osibasic.h"
+#include "roms/ohio/synmon.h"
+#include "roms/ohio/syn600.h"
+#include "roms/ohio/ohiomon.h"
+#include "roms/ohio/cegmon_c2.h"
+#include "roms/ohio/osibasic.h"
 
 static sprom sproms[] = {
 	sprom(syn600, 2048),
@@ -68,21 +68,22 @@ tape tape(files);
 acia acia(tape);
 
 disk disk(files);
+disk_timer disk_timer;
 
 ukkbd kbd;
-screen disp;
+screen screen;
 r6502 cpu(memory);
 
 void reset() {
 	bool sd = hardware_reset();
 
 	kbd.reset();
-	disp.begin();
+	screen.begin();
 
 	if (!sd)
-		disp.status("No SD Card");
+		screen.status("No SD Card");
 	else if (!files.start())
-		disp.status("Failed to open " PROGRAMS);
+		screen.status("Failed to open " PROGRAMS);
 }
 
 void setup() {
@@ -106,8 +107,10 @@ void setup() {
 
 	memory.put(disk, 0xc000);
 
-	memory.put(disp, 0xd000);
+	memory.put(screen, 0xd000);
+	memory.put(disk_timer, 0xde00);
 	memory.put(kbd, 0xdf00);
+
 	memory.put(acia, 0xf000);
 	monitors.set(0);
 
@@ -131,23 +134,23 @@ void loop() {
 				break;
 			case PS2_F2:
 				filename = files.advance();
-				disp.status(filename? filename: "No file");
+				screen.status(filename? filename: "No file");
 				break;
 			case PS2_F3:
 				filename = files.rewind();
-				disp.status(filename? filename: "No file");
+				screen.status(filename? filename: "No file");
 				break;
 			case PS2_F4:
 				monitors.next();
 				cpu.reset();
 				break; 
 			case PS2_F5:
-				disp.clear();
-				disp.status(disp.changeResolution());
+				screen.clear();
+				screen.status(screen.changeResolution());
 				cpu.reset();
 				break; 
 			case PS2_F6:
-				disp.status(files.checkpoint());
+				screen.status(files.checkpoint());
 				break;
 			case PS2_F7:
 				if (filename)

@@ -1,14 +1,12 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#if !defined(UK101) && !defined(OHIO)
+#if !defined(UK101) || !defined(OHIO)
 #define UK101
 #endif
 
 #define TFT_BG		BLACK
 #define TFT_FG		WHITE
-//#define TFT_BG	WHITE
-//#define TFT_FG	BLACK
 
 #if defined(USE_UTFT)
 #define TFT_ORIENT      landscape
@@ -65,5 +63,9 @@
 #elif defined(OHIO)
 #define OSI_BASIC
 #endif
+
+// floppy disk
+#define USE_DISK525
+//#define USE_DISK8
 
 #endif

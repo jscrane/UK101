@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include <memory.h>
 #include <hardware.h>
-#include <config.h>
 #include <serialio.h>
 #include <filer.h>
 #include <flash_filer.h>
 
+#include "config.h"
 #include "disk.h"
 
 // See https://github.com/jefftranter/6502/blob/master/asm/OSI/diskboot.s for commented disassembly
@@ -22,7 +22,12 @@
 // "knows" where it is. This is flagged by bit #7 low on read of DRA.
 // A high->low transition on bit #3 of DRB indicates that the head should step in the direction
 // given by bit #2: 0xb -> 0x3 means "step out" (increase track number) and 0xb -> 0x7 "step in".
+//
+// Current status:
+// - writing to disk doesn't work (yet)
+// - 8" disks not tested
 
+// 6821 PIA
 #define DDRA	0x00
 #define DRA	0x00
 #define CRA	0x01
@@ -31,6 +36,7 @@
 #define CRB	0x03
 #define DR_MASK	0x04
 
+// 6850 ACIA
 #define ACR	0x10
 #define ASR	0x10
 #define ADR	0x11
@@ -49,13 +55,20 @@
 #define ACIA_RDRF	0x01
 
 // 5.25" floppy disk
+#if defined(USE_DISK525)
 #define DISK_TRACKS	40
 #define TRACK_SECTORS	9
 #define SECTOR_BYTES	256
-// 8" disk
-// #define DISK_TRACKS	77
-// #define TRACK_SECTORS	12
-// #define SECTOR_BYTES	256
+#define RPM		300
+#define T_REV_MS	60000 / RPM	// 200 ms
+
+#elif defined(USE_DISK8)
+#define DISK_TRACKS	77
+#define TRACK_SECTORS	12
+#define SECTOR_BYTES	256
+#define RPM		360
+#define T_REV_MS	60000 / RPM	// 166 ms
+#endif
 
 static uint8_t cra = 0;
 static uint8_t dra = 0;
@@ -119,6 +132,11 @@ void disk::_set(Memory::address a, uint8_t b) {
 		DBG(printf("ACR! %02x\r\n", b));
 		break;
 
+	case ADR:
+		// FIXME: writing data to disk
+		DBG(printf("ADR! %02x\r\n", b));
+		break;
+
 	default:
 		DBG(printf("???! %04x %02x\r\n", a, b));
 		break;
@@ -128,8 +146,9 @@ void disk::_set(Memory::address a, uint8_t b) {
 uint8_t disk::_get(Memory::address a) {
 	uint8_t b;
 
+	// hack to handle index hole when data not read
 	static uint8_t ind = 0;
-	if ((a & 0xff) == DRA) {
+	if ((a & 0xff) == DRA || (a & 0xff) == ASR) {
 		ind++;
 		if (ind == 100) {
 			seek_start(track);
@@ -153,7 +172,10 @@ uint8_t disk::_get(Memory::address a) {
 
 	case ASR:
 		b = (dra & INDEX_HOLE) && _f.more();
+		b |= 0x0e;
 		DBG(printf("ASR? %02x\r\n", b));
+		if (!(dra & INDEX_HOLE))
+			dra |= INDEX_HOLE;
 		return b;
 
 	case ADR:
@@ -186,4 +208,13 @@ void disk::set_index(uint8_t track) {
 		dra &= ~(INDEX_HOLE | TRACK0);
 	else
 		dra &= ~INDEX_HOLE;
+}
+
+uint8_t disk_timer::_get(Memory::address a) {
+	if (a == 0) {
+		uint8_t s = _state;
+		_state ^= 0x80;
+		return s;
+	}
+	return 0;
 }
