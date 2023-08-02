@@ -39,7 +39,6 @@ static sprom sproms[] = {
 promswitch monitors(sproms, 4, 0xf800);
 
 #else
-#include "roms/ohio/synmon.h"
 #include "roms/ohio/syn600.h"
 #include "roms/ohio/ohiomon.h"
 #include "roms/ohio/cegmon_c2.h"

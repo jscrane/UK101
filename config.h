@@ -1,7 +1,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#if !defined(UK101) || !defined(OHIO)
+#if !defined(UK101) && !defined(OHIO)
 #define UK101
 #endif
 
