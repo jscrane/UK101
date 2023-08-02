@@ -7,8 +7,6 @@
 
 #define TFT_BG		BLACK
 #define TFT_FG		WHITE
-//#define TFT_BG	WHITE
-//#define TFT_FG	BLACK
 
 #if defined(USE_UTFT)
 #define TFT_ORIENT      landscape
@@ -47,13 +45,8 @@
 // number of CPU instructions to run per loop
 #define CPU_INSTRUCTIONS  1000
 
-#if !defined(USE_SD)
+// flash_filer directory containing programs
 #define PROGRAMS	"/"
-#elif defined(UK101)
-#define PROGRAMS	"/uk101/"
-#else
-#define PROGRAMS	"/ohio/"
-#endif
 
 // for socket_filer
 #if defined(UK101)
@@ -70,5 +63,9 @@
 #elif defined(OHIO)
 #define OSI_BASIC
 #endif
+
+// floppy disk
+#define USE_DISK525
+//#define USE_DISK8
 
 #endif
