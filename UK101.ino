@@ -12,6 +12,7 @@
 #include "tape.h"
 #include "sprom.h"
 #include "disk.h"
+#include "audio_filer.h"
 
 #if defined(UK101)
 #include "roms/uk101/cegmon_jsc.h"
@@ -60,11 +61,10 @@ ram pages[RAM_PAGES];
 //socket_filer files(HOSTNAME);
 //serial_filer files(Serial);
 flash_filer files(PROGRAMS);
-//acia acia(files);
 
 // novelty wrapper to send saved files to audio device
-tape tape(files);
-acia acia(tape);
+audio_filer audio(files);
+tape tape(audio);
 
 disk disk(files);
 disk_timer disk_timer;
@@ -110,7 +110,7 @@ void setup() {
 	memory.put(disk_timer, 0xde00);
 	memory.put(kbd, 0xdf00);
 
-	memory.put(acia, 0xf000);
+	memory.put(tape, 0xf000);
 	monitors.set(0);
 
 	reset();
