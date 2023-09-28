@@ -31,7 +31,7 @@
 // - 8" disks not tested
 
 // PB commands
-#define STEP_IN		0x04
+#define STEP_DIR	0x04
 #define STEP_HEAD	0x08
 #define LOAD_HEAD	0x80
 
@@ -63,6 +63,14 @@
 #define DBG(x)
 #endif
 
+static inline bool is_step_head(uint8_t b) { return !(b & STEP_HEAD); }
+
+static inline bool is_step_in(uint8_t b) { return !(b & STEP_DIR); }
+
+static inline bool is_load_head(uint8_t b) { return !(b & LOAD_HEAD); }
+
+static inline bool is_index_hole(uint8_t b) { return !(b & INDEX_HOLE); }
+
 static diskio *d;
 
 static void IRAM_ATTR timer_handler() { d->tick(); }
@@ -81,11 +89,8 @@ void diskio::reset() {
 
 void IRAM_ATTR diskio::tick() {
 	ticks++;
-	if (ticks == T_REV_MS) {
+	if (ticks == T_REV_MS)
 		ticks = 0;
-		if (track == 0)
-			PIA::write_porta_in_bit(TRACK0, false);
-	}
 	PIA::write_porta_in_bit(INDEX_HOLE, ticks > 0);
 }
 
@@ -100,39 +105,40 @@ void diskio::write_portb(uint8_t b) {
 	DBG(printf("DRB! %02x\r\n", b));
 
 	uint8_t drb = PIA::read_portb();
-	if ((drb & STEP_HEAD) && (!(b & STEP_HEAD))) {
+	if (!is_step_head(drb) && is_step_head(b)) {
 		// track numbers increase inwards
-		if (!(b & STEP_IN))
+		if (is_step_in(b))
 			track++;
 		else
 			track--;
 
 		DBG(printf("track: %d\r\n", track));
-		seek_start(track);
+		seek_start();
+		PIA::write_porta_in_bit(TRACK0, track > 0);
 	}
 
-	if (!(b & LOAD_HEAD))
-		seek_start(track);
+	if (is_load_head(b))
+		seek_start();
 
 	PIA::write_portb(b);
 }
 
 diskio::operator uint8_t() {
 	if (_acc < 4)
-		return PIA::read(_acc);
+		return PIA::read(_acc & 3);
 
-	return ACIA::read(_acc & 0x03);
+	return ACIA::read(_acc & 1);
 }
 
 uint8_t diskio::read_porta() {
-	uint8_t b = PIA::read_porta();
-	DBG(printf("DRA? %02x\r\n", b));
-	return b;
+	uint8_t dra = PIA::read_porta();
+	DBG(printf("DRA? %02x\r\n", dra));
+	return dra;
 }
 
 uint8_t diskio::read_status() {
 	uint8_t dra = PIA::read_porta();
-	uint8_t b = (dra & INDEX_HOLE) && ACIA::read_status();
+	uint8_t b = !is_index_hole(dra) && ACIA::read_status();
 	b |= ACIA::dcd | ACIA::cts;
 	DBG(printf("ASR? %02x\r\n", b));
 	return b;
@@ -148,11 +154,11 @@ uint8_t diskio::read_data() {
 void diskio::write_control(uint8_t b) {
 	// hack to seek to start of track on reset
 	if (b == ACIA::reset)
-		seek_start(track);
+		seek_start();
 	ACIA::write_control(b);
 }
 
-void diskio::seek_start(uint8_t track) {
+void diskio::seek_start() {
 	pos = track * TRACK_SECTORS * SECTOR_BYTES;
 	_f.seek(pos);
 }

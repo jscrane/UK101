@@ -19,7 +19,7 @@ protected:
 	virtual void write_control(uint8_t);
 
 private:
-	void seek_start(uint8_t track);
+	void seek_start();
 
 	flash_filer &_f;
 	uint32_t pos;
