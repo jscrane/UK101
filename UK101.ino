@@ -4,11 +4,12 @@
 #include <SpiRAM.h>
 #include <r65emu.h>
 #include <r6502.h>
+#include <acia.h>
+#include <pia.h>
 
 #include "config.h"
 #include "screen.h"
 #include "ukkbd.h"
-#include "acia.h"
 #include "tape.h"
 #include "sprom.h"
 #include "disk.h"
@@ -78,6 +79,7 @@ void reset() {
 
 	kbd.reset();
 	screen.begin();
+	disk.reset();
 
 	if (!sd)
 		screen.status("No SD Card");
