@@ -4,6 +4,9 @@
 #include <serialio.h>
 #include <filer.h>
 #include <flash_filer.h>
+#include <acia.h>
+#include <pia.h>
+#include <timed.h>
 
 #include "config.h"
 #include "disk.h"
@@ -27,32 +30,16 @@
 // - writing to disk doesn't work (yet)
 // - 8" disks not tested
 
-// 6821 PIA
-#define DDRA	0x00
-#define DRA	0x00
-#define CRA	0x01
-#define DDRB	0x02
-#define DRB	0x02
-#define CRB	0x03
-#define DR_MASK	0x04
-
-// 6850 ACIA
-#define ACR	0x10
-#define ASR	0x10
-#define ADR	0x11
-
 // PB commands
-#define STEP_IN		0x04
+#define STEP_DIR	0x04
 #define STEP_HEAD	0x08
 #define LOAD_HEAD	0x80
 
 // PA indicators
 #define TRACK0		0x02
-#define FAULT		0x04
 #define INDEX_HOLE	0x80
 
-#define ACIA_RESET	0x03
-#define ACIA_RDRF	0x01
+#define TICK_FREQ	1000	// 1ms
 
 // 5.25" floppy disk
 #if defined(USE_DISK525)
@@ -70,147 +57,106 @@
 #define T_REV_MS	60000 / RPM	// 166 ms
 #endif
 
-static uint8_t cra = 0;
-static uint8_t dra = 0;
-static uint8_t crb = 0;
-static uint8_t drb = 0;
-static uint32_t pos = 0;
-static int track = -1;
+static inline bool is_step_head(uint8_t b) { return !(b & STEP_HEAD); }
 
-#if defined(DEBUGGING)
-#define DBG(x) Serial.x
-#else
-#define DBG(x)
-#endif
+static inline bool is_step_in(uint8_t b) { return !(b & STEP_DIR); }
 
-void disk::_set(Memory::address a, uint8_t b) {
-	switch (a & 0xff) {
-	case CRA:
-		DBG(printf("CRA! %02x\r\n", b));
-		cra = b;
-		break;
+static inline bool is_load_head(uint8_t b) { return !(b & LOAD_HEAD); }
 
-	case CRB:
-		DBG(printf("CRB! %02x\r\n", b));
-		crb = b;
-		break;
+static inline bool is_index_hole(uint8_t b) { return !(b & INDEX_HOLE); }
 
-	case DRA:
-		if (!(cra & DR_MASK)) {
-			// data-direction register A
-			DBG(printf("DDA! %02x\r\n", b));
-			return;
-		}
-		DBG(printf("DRA! %02x\r\n", b));
-		break;
+static disk *d;
 
-	case DRB:
-		if (!(crb & DR_MASK)) {
-			// data-direction register B
-			DBG(printf("DDB! %02x\r\n", b));
-			return;
-		}
-		DBG(printf("DRB! %02x\r\n", b));
-		if ((drb & STEP_HEAD) && (!(b & STEP_HEAD))) {
-			// track numbers increase inwards
-			if (!(b & STEP_IN))
-				track++;
-			else
-				track--;
+static void IRAM_ATTR timer_handler() { d->tick(); }
 
-			DBG(printf("track: %d\r\n", track));
-			seek_start(track);
-		}
-		if (!(b & LOAD_HEAD)) {
-			seek_start(track);
-			set_index(track);
-		}
-		drb = b;
-		break;
+void disk::reset() {
+	static bool firsttime = true;
 
-	case ACR:
-		DBG(printf("ACR! %02x\r\n", b));
-		break;
-
-	case ADR:
-		// FIXME: writing data to disk
-		DBG(printf("ADR! %02x\r\n", b));
-		break;
-
-	default:
-		DBG(printf("???! %04x %02x\r\n", a, b));
-		break;
-	};
-}
-
-uint8_t disk::_get(Memory::address a) {
-	uint8_t b;
-
-	// hack to handle index hole when data not read
-	static uint8_t ind = 0;
-	if ((a & 0xff) == DRA || (a & 0xff) == ASR) {
-		ind++;
-		if (ind == 100) {
-			seek_start(track);
-			set_index(track);
-			ind = 0;
-		}
-	} else
-		ind = 0;
-
-	switch (a & 0xff) {
-	case DRA:
-		b = dra;
-		DBG(printf("DRA? %02x\r\n", b));
-		if (!(dra & INDEX_HOLE))
-			dra |= INDEX_HOLE;
-		return b;
-
-	case DRB:
-		DBG(printf("DRB? %02x\r\n", drb));
-		return drb;
-
-	case ASR:
-		b = (dra & INDEX_HOLE) && _f.more();
-		b |= 0x0e;
-		DBG(printf("ASR? %02x\r\n", b));
-		if (!(dra & INDEX_HOLE))
-			dra |= INDEX_HOLE;
-		return b;
-
-	case ADR:
-		b = _f.read();
-		DBG(printf("ADR? %04x %02x\r\n", pos, b));
-		pos++;
-		// has disk completed one revolution?
-		if ((pos - track * TRACK_SECTORS * SECTOR_BYTES) > TRACK_SECTORS * SECTOR_BYTES) {
-			seek_start(track);
-			set_index(track);
-			DBG(printf("rev: %d\r\n", track));
-		}
-		return b;
-
-	default:
-		DBG(printf("???? %04x\r\n", a));
-		break;
+	if (firsttime) {
+		d = this;
+		timer_create(TICK_FREQ, timer_handler);
+		firsttime = false;
 	}
-	return 0x00;
+	track = 0xff;
+	pos = 0;
 }
 
-void disk::seek_start(uint8_t track) {
-	::pos = track * TRACK_SECTORS * SECTOR_BYTES;
-	_f.seek(pos);
-
+void IRAM_ATTR disk::tick() {
+	ticks++;
+	if (ticks == T_REV_MS)
+		ticks = 0;
+	PIA::write_porta_in_bit(INDEX_HOLE, ticks > 0);
 }
 
-void disk::set_index(uint8_t track) {
-	if (track == 0)
-		dra &= ~(INDEX_HOLE | TRACK0);
+void disk::operator=(uint8_t b) {
+	if (_acc < 4)
+		PIA::write(_acc, b);
 	else
-		dra &= ~INDEX_HOLE;
+		ACIA::write(_acc & 0x03, b);
 }
 
-/*
+void disk::write_portb(uint8_t b) {
+	DBG(printf("DRB! %02x\r\n", b));
+
+	uint8_t drb = PIA::read_portb();
+	if (!is_step_head(drb) && is_step_head(b)) {
+		// track numbers increase inwards
+		if (is_step_in(b))
+			track++;
+		else
+			track--;
+
+		DBG(printf("track: %d\r\n", track));
+		seek_start();
+		PIA::write_porta_in_bit(TRACK0, track > 0);
+	}
+
+	if (is_load_head(b))
+		seek_start();
+
+	PIA::write_portb(b);
+}
+
+disk::operator uint8_t() {
+	if (_acc < 4)
+		return PIA::read(_acc & 3);
+
+	return ACIA::read(_acc & 1);
+}
+
+uint8_t disk::read_porta() {
+	uint8_t dra = PIA::read_porta();
+	DBG(printf("DRA? %02x\r\n", dra));
+	return dra;
+}
+
+uint8_t disk::read_status() {
+	uint8_t dra = PIA::read_porta();
+	uint8_t b = !is_index_hole(dra) && ACIA::read_status();
+	b |= ACIA::dcd | ACIA::cts;
+	DBG(printf("ASR? %02x\r\n", b));
+	return b;
+}
+
+uint8_t disk::read_data() {
+	uint8_t b = ACIA::read_data();
+	DBG(printf("ADR? %04x %02x\r\n", pos, b));
+	pos++;
+	return b;
+}
+
+void disk::write_control(uint8_t b) {
+	// hack to seek to start of track on reset
+	if (b == ACIA::reset)
+		seek_start();
+	ACIA::write_control(b);
+}
+
+void disk::seek_start() {
+	pos = track * TRACK_SECTORS * SECTOR_BYTES;
+	_f.seek(pos);
+}
+
 uint8_t disk_timer::_get(Memory::address a) {
 	if (a == 0) {
 		uint8_t s = _state;
@@ -219,4 +165,3 @@ uint8_t disk_timer::_get(Memory::address a) {
 	}
 	return 0;
 }
-*/

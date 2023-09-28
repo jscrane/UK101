@@ -1,23 +1,31 @@
 #ifndef _DISK_H
 #define _DISK_H
 
-class filer;
-
-class disk: public Memory::Device {
+class disk: public Memory::Device, public PIA, public ACIA {
 public:
-	disk(flash_filer &f): Memory::Device(Memory::page_size), _f(f) {}
+	disk(flash_filer &f): Memory::Device(Memory::page_size), ACIA(f), _f(f), pos(0), track(0xff), ticks(0) {}
 
-	virtual void operator= (uint8_t c) { _set(_acc, c); }
-	virtual operator uint8_t () { return _get(_acc); }
+	void reset();
+	void tick();
+
+	virtual void operator=(uint8_t);
+	virtual operator uint8_t();
+
+protected:
+	virtual void write_portb(uint8_t);
+	virtual uint8_t read_porta();
+	virtual uint8_t read_status();
+	virtual uint8_t read_data();
+	virtual void write_control(uint8_t);
 
 private:
-	void set_index(uint8_t track);
-	void seek_start(uint8_t track);
-
-	void _set(Memory::address a, uint8_t c);
-	uint8_t _get(Memory::address a);
+	void seek_start();
 
 	flash_filer &_f;
+	uint32_t pos;
+	uint8_t track;
+
+	volatile int ticks;
 };
 
 // kludge to workaround "timing routine hang":

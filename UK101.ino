@@ -12,7 +12,7 @@
 #include "ukkbd.h"
 #include "tape.h"
 #include "sprom.h"
-#include "diskio.h"
+#include "disk.h"
 #include "audio_filer.h"
 
 #if defined(UK101)
@@ -67,7 +67,7 @@ flash_filer files(PROGRAMS);
 audio_filer audio(files);
 tape tape(audio);
 
-diskio disk(files);
+disk disk(files);
 disk_timer disk_timer;
 
 ukkbd kbd;
