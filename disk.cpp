@@ -210,6 +210,7 @@ void disk::set_index(uint8_t track) {
 		dra &= ~INDEX_HOLE;
 }
 
+/*
 uint8_t disk_timer::_get(Memory::address a) {
 	if (a == 0) {
 		uint8_t s = _state;
@@ -218,3 +219,4 @@ uint8_t disk_timer::_get(Memory::address a) {
 	}
 	return 0;
 }
+*/

@@ -4,14 +4,15 @@
 #include <SpiRAM.h>
 #include <r65emu.h>
 #include <r6502.h>
+#include <acia.h>
+#include <pia.h>
 
 #include "config.h"
 #include "screen.h"
 #include "ukkbd.h"
-#include "acia.h"
 #include "tape.h"
 #include "sprom.h"
-#include "disk.h"
+#include "diskio.h"
 #include "audio_filer.h"
 
 #if defined(UK101)
@@ -66,7 +67,7 @@ flash_filer files(PROGRAMS);
 audio_filer audio(files);
 tape tape(audio);
 
-disk disk(files);
+diskio disk(files);
 disk_timer disk_timer;
 
 ukkbd kbd;
@@ -78,6 +79,7 @@ void reset() {
 
 	kbd.reset();
 	screen.begin();
+	disk.reset();
 
 	if (!sd)
 		screen.status("No SD Card");
