@@ -17,6 +17,7 @@ protected:
 	virtual uint8_t read_status();
 	virtual uint8_t read_data();
 	virtual void write_control(uint8_t);
+	virtual void write_data(uint8_t);
 
 private:
 	void seek_start();
@@ -25,7 +26,7 @@ private:
 	uint32_t pos;
 	uint8_t track;
 
-	volatile int ticks;
+	volatile unsigned ticks;
 };
 
 // kludge to workaround "timing routine hang":

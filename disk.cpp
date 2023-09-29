@@ -31,6 +31,7 @@
 // - 8" disks not tested
 
 // PB commands
+#define WRITE_ENABLE	0x01
 #define STEP_DIR	0x04
 #define STEP_HEAD	0x08
 #define LOAD_HEAD	0x80
@@ -65,6 +66,8 @@ static inline bool is_load_head(uint8_t b) { return !(b & LOAD_HEAD); }
 
 static inline bool is_index_hole(uint8_t b) { return !(b & INDEX_HOLE); }
 
+static inline bool is_write_enabled(uint8_t b) { return !(b & WRITE_ENABLE); }
+
 static disk *d;
 
 static void IRAM_ATTR timer_handler() { d->tick(); }
@@ -89,10 +92,10 @@ void IRAM_ATTR disk::tick() {
 }
 
 void disk::operator=(uint8_t b) {
-	if (_acc < 4)
+	if (_acc < 0x10)
 		PIA::write(_acc, b);
 	else
-		ACIA::write(_acc & 0x03, b);
+		ACIA::write(_acc, b);
 }
 
 void disk::write_portb(uint8_t b) {
@@ -118,10 +121,10 @@ void disk::write_portb(uint8_t b) {
 }
 
 disk::operator uint8_t() {
-	if (_acc < 4)
-		return PIA::read(_acc & 3);
+	if (_acc < 0x10)
+		return PIA::read(_acc);
 
-	return ACIA::read(_acc & 1);
+	return ACIA::read(_acc);
 }
 
 uint8_t disk::read_porta() {
@@ -145,7 +148,17 @@ uint8_t disk::read_data() {
 	return b;
 }
 
+void disk::write_data(uint8_t b) {
+	DBG(printf("ADR! %04x %02x\r\n", pos, b));
+	uint8_t dra = PIA::read_porta();
+	if (is_write_enabled(dra)) {
+		ACIA::write_data(b);
+		pos++;
+	}
+}
+
 void disk::write_control(uint8_t b) {
+	DBG(printf("ACR! %02x\r\n", b));
 	// hack to seek to start of track on reset
 	if (b == ACIA::reset)
 		seek_start();
