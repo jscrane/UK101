@@ -38,6 +38,7 @@
 
 // PA indicators
 #define TRACK0		0x02
+#define WRITE_PROT	0x20
 #define INDEX_HOLE	0x80
 
 #define TICK_FREQ	1000	// 1ms
@@ -129,14 +130,17 @@ disk::operator uint8_t() {
 
 uint8_t disk::read_porta() {
 	uint8_t dra = PIA::read_porta();
+	dra |= WRITE_PROT;
 	DBG(printf("DRA? %02x\r\n", dra));
 	return dra;
 }
 
 uint8_t disk::read_status() {
 	uint8_t dra = PIA::read_porta();
-	uint8_t b = !is_index_hole(dra) && ACIA::read_status();
-	b |= ACIA::dcd | ACIA::cts;
+	if (is_index_hole(dra))
+		return 0;
+	uint8_t b = ACIA::read_status();
+	b |= dcd | cts;
 	DBG(printf("ASR? %02x\r\n", b));
 	return b;
 }
