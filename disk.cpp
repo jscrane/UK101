@@ -69,6 +69,8 @@ static inline bool is_index_hole(uint8_t b) { return !(b & INDEX_HOLE); }
 
 static inline bool is_write_enabled(uint8_t b) { return !(b & WRITE_ENABLE); }
 
+static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * SECTOR_BYTES; }
+
 static disk *d;
 
 static void IRAM_ATTR timer_handler() { d->tick(); }
@@ -152,13 +154,24 @@ uint8_t disk::read_data() {
 	return b;
 }
 
+void disk::write(uint8_t b) {
+	ACIA::write_data(b);
+	pos++;
+}
+
 void disk::write_data(uint8_t b) {
-	DBG(printf("ADR! %04x %02x\r\n", pos, b));
 	uint8_t dra = PIA::read_porta();
 	if (is_write_enabled(dra)) {
-		ACIA::write_data(b);
-		pos++;
+		// write header
+		if (pos == start_offset(track)) {
+			write(0x43);
+			write(0x57);
+			write(16*(track / 10) + (track % 10));
+			write(0x58);
+		}
+		write(b);
 	}
+	DBG(printf("ADR! %04x %02x\r\n", pos, b));
 }
 
 void disk::write_control(uint8_t b) {
@@ -170,7 +183,7 @@ void disk::write_control(uint8_t b) {
 }
 
 void disk::seek_start() {
-	pos = track * TRACK_SECTORS * SECTOR_BYTES;
+	pos = start_offset(track);
 	_f.seek(pos);
 }
 

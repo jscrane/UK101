@@ -21,6 +21,7 @@ protected:
 
 private:
 	void seek_start();
+	void write(uint8_t);
 
 	flash_filer &_f;
 	uint32_t pos;
