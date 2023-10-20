@@ -3,7 +3,10 @@
 
 class disk: public Memory::Device, public PIA, public ACIA {
 public:
-	disk(flash_file &f): Memory::Device(Memory::page_size), ACIA(f), _f(f), pos(0), track(0xff), ticks(0) {}
+	disk(flash_file &a, flash_file &b, flash_file &c, flash_file &d):
+		Memory::Device(Memory::page_size), ACIA(a),
+		driveA(a), driveB(b), driveC(c), driveD(d), drive(&a),
+		pos(0), track(0xff), ticks(0) {}
 
 	void reset();
 	void tick();
@@ -23,7 +26,7 @@ private:
 	void seek_start();
 	void write(uint8_t);
 
-	flash_file &_f;
+	flash_file &driveA, &driveB, &driveC, &driveD, *drive;
 	uint32_t pos;
 	uint8_t track;
 

@@ -27,18 +27,25 @@
 // given by bit #2: 0xb -> 0x3 means "step out" (increase track number) and 0xb -> 0x7 "step in".
 //
 // Current status:
-// - writing to disk doesn't work (yet)
+// - writing to disk only works on esp8266 (LittleFS with "r+" file mode)
 // - 8" disks not tested
 
 // PB commands
 #define WRITE_ENABLE	0x01
 #define STEP_DIR	0x04
 #define STEP_HEAD	0x08
+#define FAULT_RESET	0x10
+#define SIDE_SELECT	0x20	// 1 = A/B, 0 = C/D
+#define LOW_CURRENT	0x40
 #define LOAD_HEAD	0x80
 
-// PA indicators
+// PA indicators (except DRIVE_SELECT)
+#define DRIVE1_READY	0x01
 #define TRACK0		0x02
+#define FAULT		0x04
+#define DRIVE2_READY	0x10
 #define WRITE_PROT	0x20
+#define DRIVE_SELECT	0x40	// 1 = A/C, 0 = B/D
 #define INDEX_HOLE	0x80
 
 #define TICK_FREQ	1000	// 1ms
@@ -69,6 +76,10 @@ static inline bool is_index_hole(uint8_t b) { return !(b & INDEX_HOLE); }
 
 static inline bool is_write_enabled(uint8_t b) { return !(b & WRITE_ENABLE); }
 
+static inline bool is_side_ab(uint8_t b) { return b & SIDE_SELECT; }
+
+static inline bool is_drive_ac(uint8_t b) { return b & DRIVE_SELECT; }
+
 static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * SECTOR_BYTES; }
 
 static disk *d;
@@ -76,13 +87,12 @@ static disk *d;
 static void IRAM_ATTR timer_handler() { d->tick(); }
 
 void disk::reset() {
-	static bool firsttime = true;
-
-	if (firsttime) {
+	if (!d) {
 		d = this;
 		timer_create(TICK_FREQ, timer_handler);
-		firsttime = false;
 	}
+	PIA::write_porta_in_bit(DRIVE_SELECT, 1);	// ensure drive-1 is selected
+	drive = &driveA;
 	track = 0xff;
 	pos = 0;
 }
@@ -91,7 +101,7 @@ void IRAM_ATTR disk::tick() {
 	ticks++;
 	if (ticks == T_REV_MS)
 		ticks = 0;
-	PIA::write_porta_in_bit(INDEX_HOLE, ticks > 0);
+	PIA::write_porta_in_bit(INDEX_HOLE, *drive && ticks > 0);
 }
 
 void disk::operator=(uint8_t b) {
@@ -104,7 +114,21 @@ void disk::operator=(uint8_t b) {
 void disk::write_portb(uint8_t b) {
 	DBG(printf("DRB! %02x\r\n", b));
 
-	uint8_t drb = PIA::read_portb();
+	uint8_t dra = PIA::read_porta(), drb = PIA::read_portb();
+
+	bool last = (drive == &driveA || drive == &driveC);
+	if (is_drive_ac(dra))
+		drive = is_side_ab(b)? &driveA: &driveC;
+	else
+		drive = is_side_ab(b)? &driveB: &driveD;
+
+	bool curr = (drive == &driveA || drive == &driveC);
+	if (last != curr) {
+		track = 0;
+		seek_start();
+	}
+	ACIA::set_device(drive);
+
 	if (!is_step_head(drb) && is_step_head(b)) {
 		// track numbers increase inwards
 		if (is_step_in(b))
@@ -131,18 +155,35 @@ disk::operator uint8_t() {
 }
 
 uint8_t disk::read_porta() {
+
 	uint8_t dra = PIA::read_porta();
+
 	dra |= WRITE_PROT;
+
+	if (driveA || driveC)
+		dra &= ~DRIVE1_READY;
+	else
+		dra |= DRIVE1_READY;
+
+	if (driveB || driveD)
+		dra &= ~DRIVE2_READY;
+	else
+		dra |= DRIVE2_READY;
+
 	DBG(printf("DRA? %02x\r\n", dra));
 	return dra;
 }
 
 uint8_t disk::read_status() {
+
 	uint8_t dra = PIA::read_porta();
+	uint8_t r = dcd | cts;
 	if (is_index_hole(dra))
-		return 0;
+		return r;
+
 	uint8_t b = ACIA::read_status();
-	b |= dcd | cts;
+	b |= r;
+
 	DBG(printf("ASR? %02x\r\n", b));
 	return b;
 }
@@ -184,7 +225,7 @@ void disk::write_control(uint8_t b) {
 
 void disk::seek_start() {
 	pos = start_offset(track);
-	_f.seek(pos);
+	drive->seek(pos);
 }
 
 uint8_t disk_timer::_get(Memory::address a) {
