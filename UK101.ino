@@ -67,8 +67,8 @@ flash_filer files(PROGRAMS);
 audio_filer audio(files);
 tape tape(audio);
 
-flash_file drive_a(1);
-disk disk(drive_a);
+flash_file drive_a(1), drive_c(2);
+disk disk(drive_a, drive_c);
 disk_timer disk_timer;
 
 ukkbd kbd;
@@ -80,6 +80,8 @@ void reset() {
 
 	kbd.reset();
 	screen.begin();
+	files.stop();
+	files.start();
 	disk.reset();
 
 	if (!sd)
@@ -124,8 +126,8 @@ void loop() {
 	static bool cpu_debug;
 #endif
 	static const char *filename;
-	static uint8_t device;
-	static const char *device_names[] = { "Tape", "A:", "B:" };
+	static uint8_t fd;
+	static const char *device_names[] = { "Tape", "A:", "C:", 0 };
 
 	if (ps2.available()) {
 		unsigned scan = ps2.read2();
@@ -162,9 +164,11 @@ void loop() {
 					files.restore(filename);
 				break; 
 			case PS2_F8:
-				device = (device + 1) % MAX_FILES;
-				files.select(device);
-				screen.status(device_names[device]);
+				fd++;
+				if (!device_names[fd])
+					fd = 0;
+				files.select(fd);
+				screen.status(device_names[fd]);
 				break;
 #if defined(CPU_DEBUG)
 			case PS2_F10:
