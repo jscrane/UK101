@@ -67,8 +67,8 @@ flash_filer files(PROGRAMS);
 audio_filer audio(files);
 tape tape(audio);
 
-flash_file drive_a(1), drive_c(2);
-disk disk(drive_a, drive_c);
+flash_file drive_a(1), drive_b(2), drive_c(3), drive_d(4);
+disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
 
 ukkbd kbd;
@@ -127,7 +127,7 @@ void loop() {
 #endif
 	static const char *filename;
 	static uint8_t fd;
-	static const char *device_names[] = { "Tape", "A:", "C:", 0 };
+	static const char *device_names[] = { "Tape", "A:", "B:", "C:", "D:", 0 };
 
 	if (ps2.available()) {
 		unsigned scan = ps2.read2();

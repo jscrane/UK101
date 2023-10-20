@@ -79,6 +79,8 @@ static inline bool is_write_enabled(uint8_t b) { return !(b & WRITE_ENABLE); }
 
 static inline bool is_side_ab(uint8_t b) { return b & SIDE_SELECT; }
 
+static inline bool is_drive_ac(uint8_t b) { return b & DRIVE_SELECT; }
+
 static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * SECTOR_BYTES; }
 
 static disk *d;
@@ -113,7 +115,7 @@ void disk::write_portb(uint8_t b) {
 	DBG(printf("DRB! %02x\r\n", b));
 
 	drive = is_side_ab(b)? &driveA: &driveC;
-	ACIA::set_serial(drive);
+	ACIA::set_device(drive);
 
 	uint8_t drb = PIA::read_portb();
 	if (!is_step_head(drb) && is_step_head(b)) {
@@ -146,8 +148,16 @@ uint8_t disk::read_porta() {
 	uint8_t dra = PIA::read_porta();
 
 	dra |= WRITE_PROT;
-	dra |= DRIVE2_READY;
-	dra &= ~DRIVE1_READY;
+
+	if (driveA || driveC)
+		dra &= ~DRIVE1_READY;
+	else
+		dra |= DRIVE1_READY;
+
+	if (driveB || driveD)
+		dra &= ~DRIVE2_READY;
+	else
+		dra |= DRIVE2_READY;
 
 	DBG(printf("DRA? %02x\r\n", dra));
 	return dra;
