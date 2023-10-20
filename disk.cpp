@@ -28,7 +28,6 @@
 //
 // Current status:
 // - writing to disk only works on esp8266 (LittleFS with "r+" file mode)
-// - only supports one double-sided drive
 // - 8" disks not tested
 
 // PB commands
@@ -88,11 +87,12 @@ static disk *d;
 static void IRAM_ATTR timer_handler() { d->tick(); }
 
 void disk::reset() {
-
 	if (!d) {
 		d = this;
 		timer_create(TICK_FREQ, timer_handler);
 	}
+	PIA::write_porta_in_bit(DRIVE_SELECT, 1);	// ensure drive-1 is selected
+	drive = &driveA;
 	track = 0xff;
 	pos = 0;
 }
@@ -101,7 +101,7 @@ void IRAM_ATTR disk::tick() {
 	ticks++;
 	if (ticks == T_REV_MS)
 		ticks = 0;
-	PIA::write_porta_in_bit(INDEX_HOLE, ticks > 0);
+	PIA::write_porta_in_bit(INDEX_HOLE, *drive && ticks > 0);
 }
 
 void disk::operator=(uint8_t b) {
@@ -114,10 +114,21 @@ void disk::operator=(uint8_t b) {
 void disk::write_portb(uint8_t b) {
 	DBG(printf("DRB! %02x\r\n", b));
 
-	drive = is_side_ab(b)? &driveA: &driveC;
+	uint8_t dra = PIA::read_porta(), drb = PIA::read_portb();
+
+	bool last = (drive == &driveA || drive == &driveC);
+	if (is_drive_ac(dra))
+		drive = is_side_ab(b)? &driveA: &driveC;
+	else
+		drive = is_side_ab(b)? &driveB: &driveD;
+
+	bool curr = (drive == &driveA || drive == &driveC);
+	if (last != curr) {
+		track = 0;
+		seek_start();
+	}
 	ACIA::set_device(drive);
 
-	uint8_t drb = PIA::read_portb();
 	if (!is_step_head(drb) && is_step_head(b)) {
 		// track numbers increase inwards
 		if (is_step_in(b))
@@ -166,11 +177,12 @@ uint8_t disk::read_porta() {
 uint8_t disk::read_status() {
 
 	uint8_t dra = PIA::read_porta();
+	uint8_t r = dcd | cts;
 	if (is_index_hole(dra))
-		return 0;
+		return r;
 
 	uint8_t b = ACIA::read_status();
-	b |= dcd | cts;
+	b |= r;
 
 	DBG(printf("ASR? %02x\r\n", b));
 	return b;
