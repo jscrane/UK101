@@ -127,7 +127,7 @@ void loop() {
 #endif
 	static const char *filename;
 	static uint8_t fd;
-	static const char *device_names[] = { "Tape", "A:", "B:", "C:", "D:", 0 };
+	static const char *device_names[] = { "Tape:", "A:", "B:", "C:", "D:", 0 };
 
 	if (ps2.available()) {
 		unsigned scan = ps2.read2();
@@ -141,11 +141,11 @@ void loop() {
 				break;
 			case PS2_F2:
 				filename = files.advance();
-				screen.status(filename? filename: "No file");
+				screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
 				break;
 			case PS2_F3:
 				filename = files.rewind();
-				screen.status(filename? filename: "No file");
+				screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
 				break;
 			case PS2_F4:
 				monitors.next();
@@ -168,7 +168,7 @@ void loop() {
 				if (!device_names[fd])
 					fd = 0;
 				files.select(fd);
-				screen.status(device_names[fd]);
+				screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
 				break;
 #if defined(CPU_DEBUG)
 			case PS2_F10:
