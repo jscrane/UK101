@@ -22,7 +22,7 @@
 #define CHARS_PER_LINE	64
 #define DISPLAY_RAM_SIZE 2048
 #elif defined(OHIO)
-#define X_OFF		0
+#define X_OFF		8
 #define CHARS_PER_LINE	32
 #define DISPLAY_RAM_SIZE 1024
 #endif
@@ -67,5 +67,6 @@
 // floppy disk
 #define USE_DISK525
 //#define USE_DISK8
+#define USE_DISK defined(USE_DISK525) | defined(USE_DISK8)
 
 #endif

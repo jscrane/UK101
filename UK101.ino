@@ -67,9 +67,11 @@ flash_filer files(PROGRAMS);
 audio_filer audio(files);
 tape tape(audio);
 
+#if defined(USE_DISK)
 flash_file drive_a(1), drive_b(2), drive_c(3), drive_d(4);
 disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
+#endif
 
 ukkbd kbd;
 screen screen;
@@ -82,7 +84,9 @@ void reset() {
 	screen.begin();
 	files.stop();
 	files.start();
+#if defined(USE_DISK)
 	disk.reset();
+#endif
 
 	if (!sd)
 		screen.status("No SD Card");
@@ -109,10 +113,12 @@ void setup() {
 #endif
 	memory.put(msbasic, 0xa000);
 
+#if defined(USE_DISK)
 	memory.put(disk, 0xc000);
+	memory.put(disk_timer, 0xde00);
+#endif
 
 	memory.put(screen, 0xd000);
-	memory.put(disk_timer, 0xde00);
 	memory.put(kbd, 0xdf00);
 
 	memory.put(tape, 0xf000);

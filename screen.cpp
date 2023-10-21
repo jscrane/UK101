@@ -41,7 +41,7 @@ const char *screen::changeResolution()
 void screen::_draw(Memory::address a, uint8_t c)
 {
 	struct resolution &r = resolutions[_resolution];
-	int x = r.cw * (a % CHARS_PER_LINE - X_OFF);	// hack to view left edge of screen
+	int x = r.cw * (a % CHARS_PER_LINE + X_OFF);	// hack to view left edge of screen
 	if (x < 0 || x >= _dx)
 		return;
 
