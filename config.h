@@ -18,7 +18,7 @@
 
 // X-offset (in characters)
 #if defined(UK101)
-#define X_OFF		12
+#define X_OFF		0
 #define CHARS_PER_LINE	64
 #define DISPLAY_RAM_SIZE 2048
 #elif defined(OHIO)
@@ -67,6 +67,5 @@
 // floppy disk
 #define USE_DISK525
 //#define USE_DISK8
-#define USE_DISK defined(USE_DISK525) | defined(USE_DISK8)
 
 #endif
