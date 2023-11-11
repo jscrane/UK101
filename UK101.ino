@@ -129,7 +129,7 @@ void setup() {
 
 void loop() {
 #if defined(CPU_DEBUG)
-	static bool cpu_debug;
+	static bool cpu_debug = CPU_DEBUG;
 #endif
 	static const char *filename;
 	static uint8_t fd;

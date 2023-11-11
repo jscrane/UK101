@@ -65,7 +65,7 @@
 #endif
 
 // floppy disk
-#define USE_DISK525
-//#define USE_DISK8
+#define USE_DISK	DISK525
+//#define USE_DISK	DISK8
 
 #endif

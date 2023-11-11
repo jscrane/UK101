@@ -51,14 +51,14 @@
 #define TICK_FREQ	1000	// 1ms
 
 // 5.25" floppy disk
-#if defined(USE_DISK525)
+#if USE_DISK == DISK525
 #define DISK_TRACKS	40
 #define TRACK_SECTORS	9
 #define SECTOR_BYTES	256
 #define RPM		300
 #define T_REV_MS	60000 / RPM	// 200 ms
 
-#elif defined(USE_DISK8)
+#elif USE_DISK == DISK8
 #define DISK_TRACKS	77
 #define TRACK_SECTORS	12
 #define SECTOR_BYTES	256
@@ -66,7 +66,7 @@
 #define T_REV_MS	60000 / RPM	// 166 ms
 #endif
 
-#if defined(USE_DISK525) || defined(USE_DISK8)
+#if defined(USE_DISK)
 static inline bool is_step_head(uint8_t b) { return !(b & STEP_HEAD); }
 
 static inline bool is_step_in(uint8_t b) { return !(b & STEP_DIR); }
