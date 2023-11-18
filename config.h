@@ -40,7 +40,7 @@
 #endif
 #endif
 
-#define RAM_PAGES	(RAM_SIZE / ram::page_size)
+#define RAM_PAGES	(RAM_SIZE / ram<>::page_size)
 
 // number of CPU instructions to run per loop
 #define CPU_INSTRUCTIONS  1000
