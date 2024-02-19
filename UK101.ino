@@ -23,14 +23,18 @@
 #include "roms/uk101/encoder.h"
 #include "roms/uk101/toolkit2.h"
 #include "roms/uk101/exmon.h"
-#if defined(ORIGINAL_BASIC)
+#if BASIC == ORIGINAL
 #include "roms/uk101/basic.h"
-#else
+#elif BASIC == BUGFIX
 #include "roms/uk101/nbasic.h"
 #endif
+#include "roms/uk101/premier_basic5.h"
+#include "roms/uk101/premier_basic6.h"
 
 prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
+prom b5(basic5, 2048);
+prom b6(basic6, 2048);
 
 static sprom sproms[] = {
 	sprom(cegmon_jsc, 2048),
@@ -110,6 +114,8 @@ void setup() {
 #if defined(UK101)
 	memory.put(tk2, 0x8000);
 	memory.put(enc, 0x8800);
+	memory.put(b5, 0x9000);
+	memory.put(b6, 0x9800);
 #endif
 	memory.put(msbasic, 0xa000);
 

@@ -59,9 +59,10 @@
 // if not defined, get the string garbage-collection fix
 // from: http://neoncluster.com
 #if defined(UK101)
-//#define ORIGINAL_BASIC
+//#define BASIC	ORIGINAL
+//#define BASIC	BUGFIX
 #elif defined(OHIO)
-#define OSI_BASIC
+#define BASIC	OSI
 #endif
 
 // floppy disk
