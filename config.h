@@ -55,12 +55,10 @@
 #define HOSTNAME	"ohio"
 #endif
 
-// for the original (to me) Compukit basic
-// if not defined, get the string garbage-collection fix
-// from: http://neoncluster.com
 #if defined(UK101)
 //#define BASIC	ORIGINAL
 //#define BASIC	BUGFIX
+#define BASIC PREMIER
 #elif defined(OHIO)
 #define BASIC	OSI
 #endif

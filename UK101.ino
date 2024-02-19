@@ -26,7 +26,7 @@
 #if BASIC == ORIGINAL
 #include "roms/uk101/basic.h"
 #elif BASIC == BUGFIX
-#include "roms/uk101/nbasic.h"
+#include "roms/uk101/basic_bugfix.h"
 #endif
 #include "roms/uk101/premier_basic5.h"
 #include "roms/uk101/premier_basic6.h"
@@ -37,9 +37,9 @@ prom b5(basic5, 2048);
 prom b6(basic6, 2048);
 
 static sprom sproms[] = {
+	sprom(cegmon_101, 2048),
 	sprom(cegmon_jsc, 2048),
 	sprom(monuk02, 2048),
-	sprom(cegmon_101, 2048),
 	sprom(bambleweeny, 2048),
 };
 promswitch monitors(sproms, 4, 0xf800);
