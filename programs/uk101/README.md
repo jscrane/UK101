@@ -12,10 +12,8 @@ interpreter (even if it contains machine code) while _Machine code_ programs
 should be loaded from the monitor.
 
 - **adventure** Basic game, http://forum.6502.org/viewtopic.php?t=1819
-- **asm** Basic 6502 assembler (corrupted)
 - **aastroids** Basic game, Arcadia 1979
 - **asteroids** Machine code game 
-- **asteroids+** As above but for double-height display
 - **blackbox** Basic game, C. McGregor and J. Ralston 1979
 - **bloobers** Basic, PCW September 1980
 - **butterfingers** Basic game
@@ -54,6 +52,5 @@ should be loaded from the monitor.
 - **Star_Trek_4k** Basic game
 - **Real_Time_Star_Trek** Basic game
 - **spacewar** Basic game, Computing Today March 1980
-- **superinvaders** Basic game, Craig Clapp (doesn't load)
-- **temple** Basic game (corrupt)
+- **superinvaders** Basic game, Craig Clapp
 - **tower** Basic game
