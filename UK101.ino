@@ -16,31 +16,39 @@
 #include "audio_filer.h"
 
 #if defined(UK101)
-#include "roms/uk101/cegmon_jsc.h"
-#include "roms/uk101/cegmon_101.h"
-#include "roms/uk101/mon02.h"
-#include "roms/uk101/bambleweeny.h"
+#include "roms/uk101/cegmonuk_32.h"
+#include "roms/uk101/cegmonuk_16.h"
+#include "roms/uk101/monuk02_32.h"
+#include "roms/uk101/monuk02_16.h"
 #include "roms/uk101/encoder.h"
 #include "roms/uk101/toolkit2.h"
 #include "roms/uk101/exmon.h"
-#if BASIC == ORIGINAL
-#include "roms/uk101/basic.h"
-#elif BASIC == BUGFIX
-#include "roms/uk101/basic_bugfix.h"
+#include "roms/uk101/basuk01.h"
+#include "roms/uk101/basuk02.h"
+#include "roms/uk101/basuk03.h"
+#if defined(ORIGINAL_BASIC)
+#include "roms/uk101/basuk04.h"
+#elif defined(PREMIER_BASIC4)
+#include "roms/uk101/premier_basic4.h"
+#define basuk04 premier_basic4
 #endif
 #include "roms/uk101/premier_basic5.h"
 #include "roms/uk101/premier_basic6.h"
 
 prom tk2(toolkit2, 2048);
 prom enc(encoder, 2048);
-prom b5(basic5, 2048);
-prom b6(basic6, 2048);
+prom basic1(basuk01, 2048);
+prom basic2(basuk02, 2048);
+prom basic3(basuk03, 2048);
+prom basic4(basuk04, 2048);
+prom basic5(premier_basic5, 2048);
+prom basic6(premier_basic6, 2048);
 
 static sprom sproms[] = {
-	sprom(cegmon_101, 2048),
-	sprom(cegmon_jsc, 2048),
-	sprom(monuk02, 2048),
-	sprom(bambleweeny, 2048),
+	sprom(cegmonuk_32, 2048),
+	sprom(monuk02_32, 2048),
+	sprom(cegmonuk_16, 2048),
+	sprom(monuk02_16, 2048),
 };
 promswitch monitors(sproms, 4, 0xf800);
 
@@ -48,7 +56,20 @@ promswitch monitors(sproms, 4, 0xf800);
 #include "roms/ohio/syn600.h"
 #include "roms/ohio/ohiomon.h"
 #include "roms/ohio/cegmon_c2.h"
-#include "roms/ohio/osibasic.h"
+#include "roms/ohio/basohio01.h"
+#include "roms/ohio/basohio02.h"
+#if defined(OSI_BASIC)
+#include "roms/ohio/basohio03.h"
+#elif defined(OSI_BASIC_BUGFIX)
+#include "roms/ohio/basohio03_bugfix.h"
+#define basohio03 basohio03_bugfix
+#endif
+#include "roms/ohio/basohio04.h"
+
+prom basic1(basohio01, 2048);
+prom basic2(basohio02, 2048);
+prom basic3(basohio03, 2048);
+prom basic4(basohio04, 2048);
 
 static sprom sproms[] = {
 	sprom(syn600, 2048),
@@ -60,7 +81,6 @@ promswitch monitors(sproms, 3, 0xf800);
 
 static bool halted = false;
 
-prom msbasic(basic, 8192);
 ram<> pages[RAM_PAGES];
 
 //socket_filer files(HOSTNAME);
@@ -114,10 +134,13 @@ void setup() {
 #if defined(UK101)
 	memory.put(tk2, 0x8000);
 	memory.put(enc, 0x8800);
-	memory.put(b5, 0x9000);
-	memory.put(b6, 0x9800);
+	memory.put(basic5, 0x9000);
+	memory.put(basic6, 0x9800);
 #endif
-	memory.put(msbasic, 0xa000);
+	memory.put(basic1, 0xa000);
+	memory.put(basic2, 0xa800);
+	memory.put(basic3, 0xb000);
+	memory.put(basic4, 0xb800);
 
 #if defined(USE_DISK)
 	memory.put(disk, 0xc000);

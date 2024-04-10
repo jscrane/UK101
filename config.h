@@ -56,11 +56,11 @@
 #endif
 
 #if defined(UK101)
-//#define BASIC	ORIGINAL
-//#define BASIC	BUGFIX
-#define BASIC PREMIER
+#define ORIGINAL_BASIC
+//#define PREMIER_BASIC4
 #elif defined(OHIO)
-#define BASIC	OSI
+//#define OSI_BASIC
+#define OSI_BASIC_BUGFIX
 #endif
 
 // floppy disk
