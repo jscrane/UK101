@@ -5,7 +5,7 @@
 
 #include "config.h"
 #include "screen.h"
-#include "roms/uk101/charset.h"
+#include "roms/uk101/chguk101.h"
 
 void screen::begin()
 {
@@ -49,9 +49,10 @@ void screen::_draw(Memory::address a, uint8_t c)
 	if (y >= _dy)
 		return;
 
+	uint16_t cg = 8*c, cm = 8*_mem[a];
 	for (unsigned j = 0; j < r.ch; j++) {
-		uint8_t b = pgm_read_byte(&charset[c][j]);
-		uint8_t m = pgm_read_byte(&charset[_mem[a]][j]);
+		uint8_t b = pgm_read_byte(&chguk101[cg + j]);
+		uint8_t m = pgm_read_byte(&chguk101[cm + j]);
 		if (b != m) {
 			uint8_t d = (b ^ m);
 			for (unsigned i=1, bit=1; i <= r.cw; i++, bit<<=1)
