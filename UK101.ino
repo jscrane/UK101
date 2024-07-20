@@ -158,7 +158,6 @@ void setup() {
 
 const char *open(const char *filename) {
 	if (filename) {
-		files.open(filename);
 		screen.status(filename);
 		return filename;
 	}

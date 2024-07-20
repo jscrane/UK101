@@ -152,7 +152,7 @@ disk::operator uint8_t() {
 	if (_acc < 0x10)
 		return PIA::read(_acc);
 
-	return ACIA::read(_acc);
+	return ACIA::read(_acc - 0x10);
 }
 
 uint8_t disk::read_porta() {
@@ -218,9 +218,6 @@ void disk::write_data(uint8_t b) {
 
 void disk::write_control(uint8_t b) {
 	DBG(printf("ACR! %02x\r\n", b));
-	// hack to seek to start of track on reset
-	if (b == ACIA::reset)
-		seek_start();
 	ACIA::write_control(b);
 }
 

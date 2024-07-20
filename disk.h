@@ -22,7 +22,7 @@ protected:
 	virtual void write_control(uint8_t);
 	virtual void write_data(uint8_t);
 	virtual bool acia_more() { return drive->more(); }
-	virtual void acia_reset() { drive->reset(); }
+	virtual void acia_reset() { drive->reset(); seek_start(); }
 	virtual void acia_framing(uint32_t config) { drive->framing(config); }
 
 private:
