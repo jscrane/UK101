@@ -4,7 +4,7 @@
 class disk: public Memory::Device, public PIA, public ACIA {
 public:
 	disk(flash_file &a, flash_file &b, flash_file &c, flash_file &d):
-		Memory::Device(Memory::page_size), ACIA(a),
+		Memory::Device(Memory::page_size),
 		driveA(a), driveB(b), driveC(c), driveD(d), drive(&a),
 		pos(0), track(0xff), ticks(0) {}
 
@@ -21,6 +21,9 @@ protected:
 	virtual uint8_t read_data();
 	virtual void write_control(uint8_t);
 	virtual void write_data(uint8_t);
+	virtual bool acia_more() { return drive->more(); }
+	virtual void acia_reset() { drive->reset(); }
+	virtual void acia_framing(uint32_t config) { drive->framing(config); }
 
 private:
 	void seek_start();

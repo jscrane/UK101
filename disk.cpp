@@ -88,6 +88,7 @@ static disk *d;
 static void IRAM_ATTR timer_handler() { d->tick(); }
 
 void disk::reset() {
+	DBG(printf("reset\r\n"));
 	if (!d) {
 		d = this;
 		timer_create(TICK_FREQ, timer_handler);
@@ -128,7 +129,6 @@ void disk::write_portb(uint8_t b) {
 		track = 0;
 		seek_start();
 	}
-	ACIA::set_device(drive);
 
 	if (!is_step_head(drb) && is_step_head(b)) {
 		// track numbers increase inwards
@@ -190,14 +190,14 @@ uint8_t disk::read_status() {
 }
 
 uint8_t disk::read_data() {
-	uint8_t b = ACIA::read_data();
+	uint8_t b = drive->read();
 	DBG(printf("ADR? %04x %02x\r\n", pos, b));
 	pos++;
 	return b;
 }
 
 void disk::write(uint8_t b) {
-	ACIA::write_data(b);
+	drive->write(b);
 	pos++;
 }
 
