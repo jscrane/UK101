@@ -156,6 +156,16 @@ void setup() {
 	reset();
 }
 
+const char *open(const char *filename) {
+	if (filename) {
+		files.open(filename);
+		screen.status(filename);
+		return filename;
+	}
+	screen.status("No file");
+	return 0;
+}
+
 void loop() {
 #if defined(CPU_DEBUG)
 	static bool cpu_debug = CPU_DEBUG;
@@ -175,12 +185,10 @@ void loop() {
 				reset();
 				break;
 			case PS2_F2:
-				filename = files.advance();
-				screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
+				filename = open(files.advance());
 				break;
 			case PS2_F3:
-				filename = files.rewind();
-				screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
+				filename = open(files.rewind());
 				break;
 			case PS2_F4:
 				monitors.next();
