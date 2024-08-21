@@ -79,8 +79,6 @@ static sprom sproms[] = {
 promswitch monitors(sproms, 3, 0xf800);
 #endif
 
-static bool halted = false;
-
 ram<> pages[RAM_PAGES];
 
 //socket_filer files(HOSTNAME);
@@ -97,13 +95,15 @@ disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
 #endif
 
+ps2_kbd keyboard;
 ukkbd kbd;
 screen screen;
 r6502 cpu(memory);
 
-void reset() {
+static void reset() {
 	bool sd = hardware_reset();
 
+	keyboard.reset();
 	kbd.reset();
 	screen.begin();
 	files.stop();
@@ -118,11 +118,60 @@ void reset() {
 		screen.status("Failed to open " PROGRAMS);
 }
 
-void setup() {
-#if defined(DEBUGGING) || defined(CPU_DEBUG)
-	Serial.begin(TERMINAL_SPEED);
-#endif
+static const char *open(const char *filename) {
+	if (filename) {
+		screen.status(filename);
+		return filename;
+	}
+	screen.status("No file");
+	return 0;
+}
 
+static void function_keys(uint8_t key) {
+	static const char *filename;
+	static uint8_t fd;
+	static const char *device_names[] = { "Tape:", "A:", "B:", "C:", "D:", 0 };
+
+	switch (key) {
+	case 1:
+		reset();
+		break;
+	case 2:
+		filename = open(files.advance());
+		break;
+	case 3:
+		filename = open(files.rewind());
+		break;
+	case 4:
+		monitors.next();
+		cpu.reset();
+		break;
+	case 5:
+		screen.clear();
+		screen.status(screen.changeResolution());
+		cpu.reset();
+		break;
+	case 6:
+		screen.status(files.checkpoint());
+		break;
+	case 7:
+		if (filename)
+			files.restore(filename);
+		break;
+	case 8:
+		fd++;
+		if (!device_names[fd])
+			fd = 0;
+		files.select(fd);
+		screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
+		break;
+	case 10:
+		hardware_debug_cpu();
+		break;
+	}
+}
+
+void setup() {
 	hardware_init(cpu);
 
 	for (unsigned i = 0; i < RAM_PAGES; i++)
@@ -153,84 +202,12 @@ void setup() {
 	memory.put(tape, 0xf000);
 	monitors.set(0);
 
+	keyboard.register_fnkey_handler(function_keys);
+
 	reset();
 }
 
-const char *open(const char *filename) {
-	if (filename) {
-		screen.status(filename);
-		return filename;
-	}
-	screen.status("No file");
-	return 0;
-}
-
 void loop() {
-#if defined(CPU_DEBUG)
-	static bool cpu_debug = CPU_DEBUG;
-#endif
-	static const char *filename;
-	static uint8_t fd;
-	static const char *device_names[] = { "Tape:", "A:", "B:", "C:", "D:", 0 };
-
-	if (ps2.available()) {
-		unsigned scan = ps2.read2();
-		byte key = scan & 0xff;
-		if (is_down(scan))
-			kbd.down(key);
-		else
-			switch (key) {
-			case PS2_F1:
-				reset();
-				break;
-			case PS2_F2:
-				filename = open(files.advance());
-				break;
-			case PS2_F3:
-				filename = open(files.rewind());
-				break;
-			case PS2_F4:
-				monitors.next();
-				cpu.reset();
-				break; 
-			case PS2_F5:
-				screen.clear();
-				screen.status(screen.changeResolution());
-				cpu.reset();
-				break; 
-			case PS2_F6:
-				screen.status(files.checkpoint());
-				break;
-			case PS2_F7:
-				if (filename)
-					files.restore(filename);
-				break; 
-			case PS2_F8:
-				fd++;
-				if (!device_names[fd])
-					fd = 0;
-				files.select(fd);
-				screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
-				break;
-#if defined(CPU_DEBUG)
-			case PS2_F10:
-				cpu_debug = !cpu_debug;
-				break;
-#endif
-			default:
-				kbd.up(key);
-				break;
-			}
-	} else if (!cpu.halted()) {
-#if defined(CPU_DEBUG)
-		if (cpu_debug) {
-			char buf[256];
-			Serial.println(cpu.status(buf, sizeof(buf)));
-			cpu.run(1);
-		} else
-			cpu.run(CPU_INSTRUCTIONS);
-#else
-		cpu.run(CPU_INSTRUCTIONS);
-#endif
-	}
+	keyboard.poll(kbd);
+	hardware_run();
 }

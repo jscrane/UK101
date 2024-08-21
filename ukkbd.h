@@ -1,7 +1,7 @@
 #ifndef __UKKBD_H
 #define __UKKBD_H
 
-class ukkbd: public Memory::Device, public Keyboard {
+class ukkbd: public Memory::Device, public matrix_keyboard {
 public:
 	void operator= (uint8_t);
 	operator uint8_t() { return pattern(); }
