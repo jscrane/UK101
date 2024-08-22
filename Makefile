@@ -14,7 +14,7 @@ TERMINAL_SPEED := 115200
 TERMINAL_EXTRA_FLAGS := -C serialout.txt
 SERIAL_PORT := /dev/ttyACM0
 CPPFLAGS = -DHARDWARE_H=\"hw/ttgo-t7-v14-mini32.h\"
-LIBRARIES += FabGL WiFi
+LIBRARIES += FabGL WiFi PS2KeyRaw
 
 else
 BOARD := node32s
