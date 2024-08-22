@@ -95,8 +95,8 @@ disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
 #endif
 
-ps2_kbd keyboard;
 ukkbd kbd;
+ps2_raw_kbd keyboard(kbd);
 screen screen;
 r6502 cpu(memory);
 
@@ -104,7 +104,6 @@ static void reset() {
 	bool sd = hardware_reset();
 
 	keyboard.reset();
-	kbd.reset();
 	screen.begin();
 	files.stop();
 	files.start();
@@ -208,6 +207,6 @@ void setup() {
 }
 
 void loop() {
-	keyboard.poll(kbd);
+	keyboard.poll();
 	hardware_run();
 }
