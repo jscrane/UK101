@@ -42,9 +42,6 @@
 
 #define RAM_PAGES	(RAM_SIZE / ram<>::page_size)
 
-// number of CPU instructions to run per loop
-#define CPU_INSTRUCTIONS  1000
-
 // flash_filer directory containing programs
 #define PROGRAMS	"/"
 

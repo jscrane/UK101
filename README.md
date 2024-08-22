@@ -11,6 +11,7 @@ Software
 --------
 - [6502 Emulation](https://github.com/jscrane/r65emu) library
 - [uC-Makefile](https://github.com/jscrane/uC-Makefile)
+- [PS2KeyRaw](https://github.com/techpaul/PS2KeyRaw)
 
 Hardware
 --------
