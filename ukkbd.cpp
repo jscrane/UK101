@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <memory.h>
-#include <keyboard.h>
+#include <ps2_raw_kbd.h>
 #include "ukkbd.h"
 
 // maps scan codes to uk101 rows/cols + left-shift (where applicable)
@@ -85,7 +85,7 @@ void ukkbd::up(uint8_t scan) {
 		reset();
 		return;
 	}
-	if (isshift(scan))
+	if (is_ps2_shift(scan))
 		_shifted = false;
 	uint16_t k = _map(scan);
 	if (k != 0xffff) {
@@ -105,7 +105,7 @@ void ukkbd::down(uint8_t scan) {
 		reset();
 		return;
 	}
-	if (isshift(scan)) {
+	if (is_ps2_shift(scan)) {
 		// reset any depressed keys so they don't get stuck
 		reset();
 		_shifted = true;
