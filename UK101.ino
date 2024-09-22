@@ -98,6 +98,7 @@ disk_timer disk_timer;
 ukkbd kbd;
 ps2_raw_kbd keyboard(kbd);
 screen screen;
+Memory memory;
 r6502 cpu(memory);
 
 static void reset() {

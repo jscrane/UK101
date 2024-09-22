@@ -14,6 +14,8 @@ private:
 	Checkpointable *_chk;
 };
 
+extern Memory memory;
+
 // manages a set of proms
 class promswitch: public Checkpointable {
 public:
