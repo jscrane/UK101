@@ -1,3 +1,6 @@
+#if defined(ARDUINO)
+#include <Arduino.h>
+#endif
 #include <stdint.h>
 #include <memory.h>
 #include <ps2_raw_kbd.h>
