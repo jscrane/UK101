@@ -10,6 +10,7 @@
 void screen::begin()
 {
 	Display::begin(TFT_BG, TFT_FG, TFT_ORIENT);
+	setResolution();
 	clear();
 }
 
@@ -30,23 +31,28 @@ static struct resolution {
 #endif
 };
 
-const char *screen::changeResolution()
-{
+const char *screen::setResolution() {
+	struct resolution &r = resolutions[_resolution];
+	Display::setScreen(r.cw * CHARS_PER_LINE, r.ch * DISPLAY_LINES);
+	return r.name;
+}
+
+const char *screen::changeResolution() {
 	_resolution++;
 	if (_resolution == sizeof(resolutions) / sizeof(struct resolution))
 		_resolution = 0;
-	return resolutions[_resolution].name;
+	return setResolution();
 }
 
 void screen::_draw(Memory::address a, uint8_t c)
 {
 	struct resolution &r = resolutions[_resolution];
-	int x = r.cw * (a % CHARS_PER_LINE + X_OFF);	// hack to view left edge of screen
-	if (x < 0 || x >= _dx)
+	int x = r.cw * (a % CHARS_PER_LINE);
+	if (x < 0 || x >= screenWidth())
 		return;
 
 	unsigned y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);
-	if (y >= _dy)
+	if (y >= screenHeight())
 		return;
 
 	uint16_t cg = 8*c, cm = 8*_mem[a];

@@ -20,14 +20,13 @@
 
 // X-offset (in characters)
 #if defined(UK101)
-#define X_OFF		0
 #define CHARS_PER_LINE	64
 #define DISPLAY_RAM_SIZE 2048
 #elif defined(OHIO)
-#define X_OFF		8
 #define CHARS_PER_LINE	32
 #define DISPLAY_RAM_SIZE 1024
 #endif
+#define DISPLAY_LINES	(DISPLAY_RAM_SIZE / CHARS_PER_LINE)
 
 // default baud rate for tape
 #define BAUD_RATE	300

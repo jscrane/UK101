@@ -22,5 +22,6 @@ private:
 	}
 	uint8_t _mem[DISPLAY_RAM_SIZE];
 	int _resolution;
+	const char *setResolution();
 };
 #endif
