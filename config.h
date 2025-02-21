@@ -12,7 +12,7 @@
 #define TFT_ORIENT      landscape
 #elif defined(USE_ESPI)
 #define TFT_ORIENT      reverse_landscape
-#elif defined(USE_VGA)
+#elif defined(USE_VGA_FABGL) || defined(USE_VGA_BITLUNI)
 #define TFT_ORIENT      landscape
 #elif defined(USE_DVI)
 #define TFT_ORIENT      landscape
