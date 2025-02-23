@@ -1,5 +1,4 @@
-#ifndef _DISK_H
-#define _DISK_H
+#pragma once
 
 class disk: public Memory::Device, public PIA, public ACIA {
 public:
@@ -9,14 +8,16 @@ public:
 		pos(0), track(0xff), ticks(0) {}
 
 	void reset();
-	void tick();
 
 	virtual void operator=(uint8_t);
 	virtual operator uint8_t();
 
 protected:
+	// PIA
 	virtual void write_portb(uint8_t);
 	virtual uint8_t read_porta();
+
+	// ACIA
 	virtual uint8_t read_status();
 	virtual uint8_t read_data();
 	virtual void write_control(uint8_t);
@@ -33,7 +34,8 @@ private:
 	uint32_t pos;
 	uint8_t track;
 
-	volatile unsigned ticks;
+	void tick();
+	unsigned ticks;
 };
 
 // kludge to workaround "timing routine hang":
@@ -51,5 +53,3 @@ private:
 
 	uint8_t _state;
 };
-
-#endif
