@@ -6,7 +6,6 @@
 #include <flash_filer.h>
 #include <acia.h>
 #include <pia.h>
-#include <timed.h>
 
 #include "config.h"
 #include "disk.h"
@@ -83,23 +82,23 @@ static inline bool is_drive_ac(uint8_t b) { return b & DRIVE_SELECT; }
 
 static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * SECTOR_BYTES; }
 
-static disk *d;
-
-static void IRAM_ATTR timer_handler() { d->tick(); }
-
 void disk::reset() {
-	DBG(printf("reset\r\n"));
-	if (!d) {
-		d = this;
-		timer_create(TICK_FREQ, timer_handler);
+
+	DBG_EMU(printf("disk reset\r\n"));
+
+	static bool first_time = true;
+	if (first_time) {
+		hardware_interval_timer(TICK_FREQ, [this]() { tick(); });
+		first_time = false;
 	}
+
 	PIA::write_porta_in_bit(DRIVE_SELECT, 1);	// ensure drive-1 is selected
 	drive = &driveA;
 	track = 0xff;
 	pos = 0;
 }
 
-void IRAM_ATTR disk::tick() {
+void disk::tick() {
 	ticks++;
 	if (ticks == T_REV_MS)
 		ticks = 0;
@@ -114,7 +113,7 @@ void disk::operator=(uint8_t b) {
 }
 
 void disk::write_portb(uint8_t b) {
-	DBG(printf("DRB! %02x\r\n", b));
+	DBG_EMU(printf("DRB! %02x\r\n", b));
 
 	uint8_t dra = PIA::read_porta(), drb = PIA::read_portb();
 
@@ -137,7 +136,7 @@ void disk::write_portb(uint8_t b) {
 		else
 			track--;
 
-		DBG(printf("track: %d\r\n", track));
+		DBG_EMU(printf("track: %d\r\n", track));
 		seek_start();
 		PIA::write_porta_in_bit(TRACK0, track > 0);
 	}
@@ -171,7 +170,7 @@ uint8_t disk::read_porta() {
 	else
 		dra |= DRIVE2_READY;
 
-	DBG(printf("DRA? %02x\r\n", dra));
+	DBG_EMU(printf("DRA? %02x\r\n", dra));
 	return dra;
 }
 
@@ -185,13 +184,13 @@ uint8_t disk::read_status() {
 	uint8_t b = ACIA::read_status();
 	b |= r;
 
-	DBG(printf("ASR? %02x\r\n", b));
+	DBG_EMU(printf("ASR? %02x\r\n", b));
 	return b;
 }
 
 uint8_t disk::read_data() {
 	uint8_t b = drive->read();
-	DBG(printf("ADR? %04x %02x\r\n", pos, b));
+	DBG_EMU(printf("ADR? %04x %02x\r\n", pos, b));
 	pos++;
 	return b;
 }
@@ -213,11 +212,11 @@ void disk::write_data(uint8_t b) {
 		}
 		write(b);
 	}
-	DBG(printf("ADR! %04x %02x\r\n", pos, b));
+	DBG_EMU(printf("ADR! %04x %02x\r\n", pos, b));
 }
 
 void disk::write_control(uint8_t b) {
-	DBG(printf("ACR! %02x\r\n", b));
+	DBG_EMU(printf("ACR! %02x\r\n", b));
 	ACIA::write_control(b);
 }
 

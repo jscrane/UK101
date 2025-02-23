@@ -101,6 +101,52 @@ screen screen;
 Memory memory;
 r6502 cpu(memory);
 
+static void reset();
+
+static void function_keys(uint8_t key) {
+	static const char *filename;
+	static uint8_t dev;
+	static const char *device_names[] = { "Tape:", "A:", "B:", "C:", "D:", 0 };
+
+	switch (key) {
+	case 1:
+		reset();
+		return;
+	case 2:
+		filename = files.advance();
+		break;
+	case 3:
+		filename = files.rewind();
+		break;
+	case 4:
+		monitors.next();
+		cpu.reset();
+		return;
+	case 5:
+		screen.clear();
+		screen.status(screen.changeResolution());
+		cpu.reset();
+		return;
+	case 6:
+		filename = files.checkpoint();
+		break;
+	case 7:
+		if (filename)
+			files.restore(filename);
+		return;
+	case 8:
+		dev++;
+		if (!device_names[dev])
+			dev = 0;
+		files.select(dev);
+		break;
+	case 10:
+		hardware_debug_cpu();
+		return;
+	}
+	screen.statusf("%s%s", device_names[dev], filename? filename: "No file");
+}
+
 static void reset() {
 	bool sd = hardware_reset();
 
@@ -116,59 +162,8 @@ static void reset() {
 		screen.status("No SD Card");
 	else if (!files.start())
 		screen.status("Failed to open " PROGRAMS);
-}
-
-static const char *open(const char *filename) {
-	if (filename) {
-		screen.status(filename);
-		return filename;
-	}
-	screen.status("No file");
-	return 0;
-}
-
-static void function_keys(uint8_t key) {
-	static const char *filename;
-	static uint8_t fd;
-	static const char *device_names[] = { "Tape:", "A:", "B:", "C:", "D:", 0 };
-
-	switch (key) {
-	case 1:
-		reset();
-		break;
-	case 2:
-		filename = open(files.advance());
-		break;
-	case 3:
-		filename = open(files.rewind());
-		break;
-	case 4:
-		monitors.next();
-		cpu.reset();
-		break;
-	case 5:
-		screen.clear();
-		screen.status(screen.changeResolution());
-		cpu.reset();
-		break;
-	case 6:
-		screen.status(files.checkpoint());
-		break;
-	case 7:
-		if (filename)
-			files.restore(filename);
-		break;
-	case 8:
-		fd++;
-		if (!device_names[fd])
-			fd = 0;
-		files.select(fd);
-		screen.statusf("%s%s", device_names[fd], filename? filename: "No file");
-		break;
-	case 10:
-		hardware_debug_cpu();
-		break;
-	}
+	else
+		function_keys(0);
 }
 
 void setup() {
