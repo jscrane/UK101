@@ -15,7 +15,6 @@ public:
 protected:
 	// PIA
 	virtual void write_portb(uint8_t);
-	virtual uint8_t read_porta();
 
 	// ACIA
 	virtual uint8_t read_status();
@@ -27,6 +26,7 @@ protected:
 	virtual void acia_framing(uint32_t config) { drive->framing(config); }
 
 private:
+	uint8_t porta_read_handler();
 	void seek_start();
 	void write(uint8_t);
 

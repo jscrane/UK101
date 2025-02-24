@@ -92,17 +92,17 @@ void disk::reset() {
 		first_time = false;
 	}
 
-	PIA::write_porta_in_bit(DRIVE_SELECT, 1);	// ensure drive-1 is selected
 	drive = &driveA;
 	track = 0xff;
 	pos = 0;
+
+	PIA::register_porta_read_handler([this]() { return porta_read_handler(); });
 }
 
 void disk::tick() {
 	ticks++;
 	if (ticks == T_REV_MS)
 		ticks = 0;
-	PIA::write_porta_in_bit(INDEX_HOLE, *drive && ticks > 0);
 }
 
 void disk::operator=(uint8_t b) {
@@ -138,7 +138,6 @@ void disk::write_portb(uint8_t b) {
 
 		DBG_EMU(printf("track: %d\r\n", track));
 		seek_start();
-		PIA::write_porta_in_bit(TRACK0, track > 0);
 	}
 
 	if (is_load_head(b))
@@ -154,20 +153,23 @@ disk::operator uint8_t() {
 	return ACIA::read(_acc - 0x10);
 }
 
-uint8_t disk::read_porta() {
+uint8_t disk::porta_read_handler() {
 
-	uint8_t dra = PIA::read_porta();
+	uint8_t dra = WRITE_PROT;
 
-	dra |= WRITE_PROT;
+	if (drive == &driveA || drive == &driveC)
+		dra |= DRIVE_SELECT;
 
-	if (driveA || driveC)
-		dra &= ~DRIVE1_READY;
-	else
+	if (*drive && ticks > 0)
+		dra |= INDEX_HOLE;
+
+	if (track > 0)
+		dra |= TRACK0;
+
+	if (!driveA && !driveC)
 		dra |= DRIVE1_READY;
 
-	if (driveB || driveD)
-		dra &= ~DRIVE2_READY;
-	else
+	if (!driveB && !driveD)
 		dra |= DRIVE2_READY;
 
 	DBG_EMU(printf("DRA? %02x\r\n", dra));
