@@ -1,6 +1,6 @@
 #pragma once
 
-class disk: public Memory::Device, public PIA, public ACIA {
+class disk: public Memory::Device, public ACIA {
 public:
 	disk(flash_file &a, flash_file &b, flash_file &c, flash_file &d):
 		Memory::Device(Memory::page_size),
@@ -13,9 +13,6 @@ public:
 	virtual operator uint8_t();
 
 protected:
-	// PIA
-	virtual void write_portb(uint8_t);
-
 	// ACIA
 	virtual uint8_t read_status();
 	virtual uint8_t read_data();
@@ -26,7 +23,9 @@ protected:
 	virtual void acia_framing(uint32_t config) { drive->framing(config); }
 
 private:
-	uint8_t porta_read_handler();
+	uint8_t on_read_pia_porta();
+	void on_write_pia_portb(uint8_t);
+
 	void seek_start();
 	void write(uint8_t);
 
@@ -36,6 +35,8 @@ private:
 
 	void tick();
 	unsigned ticks;
+
+	PIA pia;
 };
 
 // kludge to workaround "timing routine hang":
