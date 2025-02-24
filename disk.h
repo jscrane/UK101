@@ -18,8 +18,6 @@ private:
 
 	uint8_t on_read_acia_data();
 	void on_write_acia_data(uint8_t);
-	void on_acia_reset() { drive->reset(); seek_start(); }
-	void on_acia_framing(uint32_t config) { drive->framing(config); }
 	uint8_t on_acia_rw();
 
 	void seek_start();

@@ -101,8 +101,8 @@ void disk::reset() {
 
 	acia.register_read_data_handler([this]() { return on_read_acia_data(); });
 	acia.register_write_data_handler([this](uint8_t b) { on_write_acia_data(b); });
-	acia.register_reset_handler([this](void) { on_acia_reset(); });
-	acia.register_framing_handler([this](uint32_t c) { on_acia_framing(c); });
+	acia.register_reset_handler([this](void) { drive->reset(); seek_start(); });
+	acia.register_framing_handler([this](uint32_t c) { drive->framing(c); });
 	acia.register_can_rw_handler([this](void) { return on_acia_rw(); });
 }
 
