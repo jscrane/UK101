@@ -98,6 +98,12 @@ void disk::reset() {
 
 	pia.register_porta_read_handler([this]() { return on_read_pia_porta(); });
 	pia.register_portb_write_handler([this](uint8_t b) { on_write_pia_portb(b); });
+
+	acia.register_read_data_handler([this]() { return on_read_acia_data(); });
+	acia.register_write_data_handler([this](uint8_t b) { on_write_acia_data(b); });
+	acia.register_reset_handler([this](void) { on_acia_reset(); });
+	acia.register_framing_handler([this](uint32_t c) { on_acia_framing(c); });
+	acia.register_can_rw_handler([this](void) { return on_acia_rw(); });
 }
 
 void disk::tick() {
@@ -110,7 +116,7 @@ void disk::operator=(uint8_t b) {
 	if (_acc < 0x10)
 		pia.write(_acc, b);
 	else
-		ACIA::write(_acc, b);
+		acia.write(_acc, b);
 }
 
 void disk::on_write_pia_portb(uint8_t b) {
@@ -149,7 +155,7 @@ disk::operator uint8_t() {
 	if (_acc < 0x10)
 		return pia.read(_acc);
 
-	return ACIA::read(_acc - 0x10);
+	return acia.read(_acc - 0x10);
 }
 
 uint8_t disk::on_read_pia_porta() {
@@ -175,21 +181,7 @@ uint8_t disk::on_read_pia_porta() {
 	return dra;
 }
 
-uint8_t disk::read_status() {
-
-	uint8_t dra = pia.read_porta();
-	uint8_t r = dcd | cts;
-	if (is_index_hole(dra))
-		return r;
-
-	uint8_t b = ACIA::read_status();
-	b |= r;
-
-	DBG_EMU(printf("ASR? %02x\r\n", b));
-	return b;
-}
-
-uint8_t disk::read_data() {
+uint8_t disk::on_read_acia_data() {
 	uint8_t b = drive->read();
 	DBG_EMU(printf("ADR? %04x %02x\r\n", pos, b));
 	pos++;
@@ -201,7 +193,7 @@ void disk::write(uint8_t b) {
 	pos++;
 }
 
-void disk::write_data(uint8_t b) {
+void disk::on_write_acia_data(uint8_t b) {
 	uint8_t dra = pia.read_porta();
 	if (is_write_enabled(dra)) {
 		// write header
@@ -216,9 +208,11 @@ void disk::write_data(uint8_t b) {
 	DBG_EMU(printf("ADR! %04x %02x\r\n", pos, b));
 }
 
-void disk::write_control(uint8_t b) {
-	DBG_EMU(printf("ACR! %02x\r\n", b));
-	ACIA::write_control(b);
+uint8_t disk::on_acia_rw() {
+	uint8_t dra = pia.read_porta();
+	if (is_index_hole(dra))
+		return 0;
+	return drive->more()? 3: 2;
 }
 
 void disk::seek_start() {

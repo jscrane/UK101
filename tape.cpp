@@ -6,10 +6,9 @@
 
 #include "tape.h"
 
-void tape::operator=(uint8_t b) {
-	ACIA::write(_acc, b);
-}
+tape::tape(filer &filer): Memory::Device(256), _filer(filer) {
 
-tape::operator uint8_t() {
-	return ACIA::read(_acc);
+	acia.register_read_data_handler([this]() { return on_read_data(); });
+	acia.register_write_data_handler([this](uint8_t b) { on_write_data(b); });
+	acia.register_can_rw_handler([this](void) { return can_rw(); });
 }
