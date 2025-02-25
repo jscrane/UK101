@@ -103,20 +103,24 @@ r6502 cpu(memory);
 
 static void reset();
 
+static void file_status() {
+	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
+	const char *filename = files.filename();
+	screen.statusf("%s%s", device_names[files.device()], filename? filename: "No file");
+}
+
 static void function_keys(uint8_t key) {
-	static const char *filename;
-	static uint8_t dev;
-	static const char *device_names[] = { "Tape:", "A:", "B:", "C:", "D:", 0 };
+	const char *filename = files.filename();
 
 	switch (key) {
 	case 1:
 		reset();
 		return;
 	case 2:
-		filename = files.advance();
+		files.next_file();
 		break;
 	case 3:
-		filename = files.rewind();
+		files.rewind();
 		break;
 	case 4:
 		monitors.next();
@@ -135,16 +139,13 @@ static void function_keys(uint8_t key) {
 			files.restore(filename);
 		return;
 	case 8:
-		dev++;
-		if (!device_names[dev])
-			dev = 0;
-		files.select(dev);
+		files.next_device();
 		break;
 	case 10:
 		hardware_debug_cpu();
 		return;
 	}
-	screen.statusf("%s%s", device_names[dev], filename? filename: "No file");
+	file_status();
 }
 
 static void reset() {
@@ -152,8 +153,7 @@ static void reset() {
 
 	keyboard.reset();
 	screen.begin();
-	files.stop();
-	files.start();
+	files.reset();
 #if defined(USE_DISK)
 	disk.reset();
 #endif
@@ -163,7 +163,7 @@ static void reset() {
 	else if (!files.start())
 		screen.status("Failed to open " PROGRAMS);
 	else
-		function_keys(0);
+		file_status();
 }
 
 void setup() {
