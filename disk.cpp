@@ -6,6 +6,7 @@
 #include <flash_filer.h>
 #include <acia.h>
 #include <pia.h>
+#include <debugging.h>
 
 #include "config.h"
 #include "disk.h"
