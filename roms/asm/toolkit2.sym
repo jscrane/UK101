@@ -42,6 +42,8 @@ SLINEINV = $02F2
 CHRINH = $80D8    ; handlers
 CHROUTH = $807C
 LINEINH = $81E3
+SCHROUT = $8093
+SCHRIN = $80D5
 
 ; chat-gpt
 

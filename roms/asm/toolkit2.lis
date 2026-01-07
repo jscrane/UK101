@@ -123,7 +123,7 @@
 8090   AA                   TAX
 8091   68                   PLA
 8092   28         L8092     PLP
-8093   6C F0 02   L8093     JMP (SCHROUTV)
+8093   6C F0 02   SCHROUT   JMP (SCHROUTV)
 8096   68         L8096     PLA
 8097   AA                   TAX
 8098   68                   PLA
@@ -153,8 +153,8 @@
 80CD   85 12                STA $12
 80CF   20 32 A4             JSR CHRGET
 80D2   4C D4 A4             JMP PRNREADY
-80D5   6C EE 02   L80D5     JMP (SCHRINV)
-80D8   20 D5 80   CHRINH    JSR L80D5
+80D5   6C EE 02   SCHRIN    JMP (SCHRINV)
+80D8   20 D5 80   CHRINH    JSR SCHRIN
 80DB   08                   PHP
 80DC   48                   PHA
 80DD   C9 0D                CMP #$0D
@@ -305,11 +305,11 @@
 81A0   2C A2 02             BIT $02A2
 81A3   2C A2 00             BIT $00A2
 81A6   A9 3F                LDA #$3F
-81A8   20 93 80             JSR L8093
+81A8   20 93 80             JSR SCHROUT
 81AB   BD C1 81             LDA $81C1,X
-81AE   20 93 80             JSR L8093
+81AE   20 93 80             JSR SCHROUT
 81B1   BD C2 81             LDA $81C2,X
-81B4   20 93 80             JSR L8093
+81B4   20 93 80             JSR SCHROUT
 81B7   A9 C7                LDA #$C7
 81B9   A0 81                LDY #$81
 81BB   20 C3 A8             JSR PRINT
@@ -432,7 +432,7 @@
 8287   F0 05                BEQ L828E
 8289   C6 FE                DEC LOFROM
 828B   6C F2 02             JMP (SLINEINV)
-828E   20 D5 80   L828E     JSR L80D5
+828E   20 D5 80   L828E     JSR SCHRIN
 8291   C9 14                CMP #$14
 8293   D0 03                BNE L8298
 8295   4C 19 80             JMP INITROM
@@ -565,7 +565,7 @@
 839F   4A                   LSR A
 83A0   90 E9                BCC L838B
 83A2   AD 01 F0             LDA $F001
-83A5   20 93 80             JSR L8093
+83A5   20 93 80             JSR SCHROUT
 83A8   4C 8B 83             JMP L838B
 83AB   A9 FD      L83AB     LDA #$FD
 83AD   8D 00 DF             STA $DF00
@@ -637,19 +637,19 @@
 843C   20 32 A4             JSR CHRGET
 843F   90 05                BCC L8446
 8441   A9 2A                LDA #$2A
-8443   20 93 80             JSR L8093
+8443   20 93 80             JSR SCHROUT
 8446   A2 00      L8446     LDX #$00
 8448   BD 00 01   L8448     LDA $0100,X
 844B   F0 08                BEQ L8455
 844D   95 13                STA $13,X
-844F   20 93 80             JSR L8093
+844F   20 93 80             JSR SCHROUT
 8452   E8                   INX
 8453   D0 F3                BNE L8448
 8455   A9 5F      L8455     LDA #$5F
 8457   8D 18 02             STA CHRINV
 845A   A9 84                LDA #$84
 845C   8D 19 02             STA CHRINV+1
-845F   20 D5 80             JSR L80D5
+845F   20 D5 80             JSR SCHRIN
 8462   C9 0D                CMP #$0D
 8464   F0 08                BEQ L846E
 8466   C9 14                CMP #$14
@@ -814,9 +814,9 @@
 85B8   C8                   INY
 85B9   60                   RTS
 85BA   A9 42      L85BA     LDA #$42
-85BC   20 93 80             JSR L8093
+85BC   20 93 80             JSR SCHROUT
 85BF   A9 46                LDA #$46
-85C1   20 93 80             JSR L8093
+85C1   20 93 80             JSR SCHROUT
 85C4   A9 C7                LDA #$C7
 85C6   A0 81                LDY #$81
 85C8   20 C3 A8             JSR PRINT
@@ -1042,11 +1042,11 @@
 872F   20 6C A8             JSR STMTDISP
 8732   A4 F4                LDY $F4
 8734   A9 2D                LDA #$2D
-8736   20 93 80   L8736     JSR L8093
+8736   20 93 80   L8736     JSR SCHROUT
 8739   88                   DEY
 873A   10 FA                BPL L8736
 873C   A9 5E                LDA #$5E
-873E   20 93 80             JSR L8093
+873E   20 93 80             JSR SCHROUT
 8741   AD F5 02             LDA $02F5
 8744   D0 14                BNE L875A
 8746   20 BE 87             JSR L87BE
@@ -1110,7 +1110,7 @@
 87B7   A5 FF                LDA HIFROM
 87B9   85 05                STA $05
 87BB   4C 19 80             JMP INITROM
-87BE   20 D5 80   L87BE     JSR L80D5
+87BE   20 D5 80   L87BE     JSR SCHRIN
 87C1   C9 14                CMP #$14
 87C3   D0 03                BNE L87C8
 87C5   4C B3 87             JMP L87B3
@@ -1148,7 +1148,6 @@
 ;auto-generated symbols and labels
  L8052      $8052
  L8092      $8092
- L8093      $8093
  L8096      $8096
  L8116      $8116
  L8122      $8122
@@ -1196,7 +1195,6 @@
  L8796      $8796
  L8798      $8798
  L808F      $808F
- L80D5      $80D5
  L80E4      $80E4
  L80F5      $80F5
  L80FA      $80FA
@@ -1279,7 +1277,9 @@
 
 ;defined symbols used as labels
  INITROM    $8019
+ SCHROUT    $8093
  VECINST    $804E
+ SCHRIN     $80D5
  PREPWMST   $A274
  NEXTSTMT   $A27D
  ERROR      $A280
