@@ -10,7 +10,19 @@
 ## ROMs
 
 ### Toolkit II
-A collection of utilities.
+A collection of utilities commands run from ```BASIC```:
+
+- LIST
+- AUTO
+- DELETE
+- RENUM
+- FIND
+- REPL
+- TRON
+- TROFF
+- MC
+- VIEW
+- DUPL
 
 ### Encoder
 An Assembler / Disassembler.
