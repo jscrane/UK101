@@ -16,9 +16,9 @@
  HIFROM   = $FF
  EDFLAG   = $0204
  CCFLAG   = $0212
- CHOVEC   = $0218
- SCOVEC   = $02EE
- SCIVEC   = $02F0
+ CHIVEC   = $0218
+ SCIVEC   = $02EE
+ SCOVEC   = $02F0
  SLIVEC   = $02F2
 
                             * = $8000
@@ -82,9 +82,9 @@
 804F   48                   PHA
 8050   A2 05                LDX #$05
 8052   BD 6E 80   L8052     LDA $806E,X
-8055   9D 18 02             STA CHOVEC,X
+8055   9D 18 02             STA CHIVEC,X
 8058   BD 76 80             LDA $8076,X
-805B   9D EE 02             STA SCOVEC,X
+805B   9D EE 02             STA SCIVEC,X
 805E   CA                   DEX
 805F   10 F1                BPL L8052
 8061   AD 74 80             LDA $8074
@@ -123,7 +123,7 @@
 8090   AA                   TAX
 8091   68                   PLA
 8092   28         L8092     PLP
-8093   6C F0 02   L8093     JMP (SCIVEC)
+8093   6C F0 02   L8093     JMP (SCOVEC)
 8096   68         L8096     PLA
 8097   AA                   TAX
 8098   68                   PLA
@@ -153,7 +153,7 @@
 80CD   85 12                STA $12
 80CF   20 32 A4             JSR CHRGET
 80D2   4C D4 A4             JMP PRNREADY
-80D5   6C EE 02   L80D5     JMP (SCOVEC)
+80D5   6C EE 02   L80D5     JMP (SCIVEC)
 80D8   20 D5 80             JSR L80D5
 80DB   08                   PHP
 80DC   48                   PHA
@@ -422,9 +422,9 @@
 826D   A9 82                LDA #$82
 826F   8D 1D 02             STA $021D
 8272   A9 19                LDA #$19
-8274   8D 18 02             STA CHOVEC
+8274   8D 18 02             STA CHIVEC
 8277   A9 80                LDA #$80
-8279   8D 19 02             STA CHOVEC+1
+8279   8D 19 02             STA CHIVEC+1
 827C   20 A1 82   L827C     JSR L82A1
 827F   20 4E 80   L827F     JSR L804E
 8282   4C 0C AC             JMP EVAL
@@ -575,9 +575,9 @@
 83B7   4C 19 80   L83B7     JMP L8019
 83BA   20 B7 82             JSR L82B7
 83BD   A9 DA                LDA #$DA
-83BF   8D 18 02             STA CHOVEC
+83BF   8D 18 02             STA CHIVEC
 83C2   A9 83                LDA #$83
-83C4   8D 19 02             STA CHOVEC+1
+83C4   8D 19 02             STA CHIVEC+1
 83C7   A5 F0                LDA $F0
 83C9   85 11                STA $11
 83CB   A5 F1                LDA $F1
@@ -620,9 +620,9 @@
 8415   A5 F7                LDA $F7
 8417   85 EF                STA $EF
 8419   A9 26                LDA #$26
-841B   8D 18 02             STA CHOVEC
+841B   8D 18 02             STA CHIVEC
 841E   A9 84                LDA #$84
-8420   8D 19 02             STA CHOVEC+1
+8420   8D 19 02             STA CHIVEC+1
 8423   4C 7D A2             JMP NEXTSTMT
 8426   A4 EF                LDY $EF
 8428   C0 FA                CPY #$FA
@@ -646,9 +646,9 @@
 8452   E8                   INX
 8453   D0 F3                BNE L8448
 8455   A9 5F      L8455     LDA #$5F
-8457   8D 18 02             STA CHOVEC
+8457   8D 18 02             STA CHIVEC
 845A   A9 84                LDA #$84
-845C   8D 19 02             STA CHOVEC+1
+845C   8D 19 02             STA CHIVEC+1
 845F   20 D5 80             JSR L80D5
 8462   C9 0D                CMP #$0D
 8464   F0 08                BEQ L846E
@@ -657,9 +657,9 @@
 846A   4C 19 80             JMP L8019
 846D   60         L846D     RTS
 846E   A9 26      L846E     LDA #$26
-8470   8D 18 02             STA CHOVEC
+8470   8D 18 02             STA CHIVEC
 8473   A9 84                LDA #$84
-8475   8D 19 02             STA CHOVEC+1
+8475   8D 19 02             STA CHIVEC+1
 8478   18                   CLC
 8479   A5 EE                LDA $EE
 847B   65 F4                ADC $F4
@@ -679,9 +679,9 @@
 8497   20 E9 85             JSR L85E9
 849A   20 9C 85             JSR L859C
 849D   A9 D9                LDA #$D9
-849F   8D 18 02             STA CHOVEC
+849F   8D 18 02             STA CHIVEC
 84A2   A9 84                LDA #$84
-84A4   8D 19 02             STA CHOVEC+1
+84A4   8D 19 02             STA CHIVEC+1
 84A7   20 CE 85   L84A7     JSR L85CE
 84AA   A5 FA                LDA $FA
 84AC   D0 06                BNE L84B4
@@ -1020,7 +1020,7 @@
 8707   AA                   TAX
 8708   A5 EE                LDA $EE
 870A   28                   PLP
-870B   6C F0 02             JMP (SCIVEC)
+870B   6C F0 02             JMP (SCOVEC)
 870E   A5 EE      L870E     LDA $EE
 8710   95 13                STA $13,X
 8712   4C FF 86             JMP L86FF
@@ -1298,8 +1298,8 @@
  HIFROM       $FF
  EDFLAG     $0204
  CCFLAG     $0212
- CHOVEC     $0218
- SCOVEC     $02EE
- SCIVEC     $02F0
+ CHIVEC     $0218
+ SCIVEC     $02EE
+ SCOVEC     $02F0
  SLIVEC     $02F2
 
