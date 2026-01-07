@@ -3,12 +3,18 @@
  HIFROM   = $FF
  EDFLAG   = $0204
  CCFLAG   = $0212
- WARMSTRT = $A491
+ PREPWMST = $A274
+ NEXTSTMT = $A27D
+ ERROR    = $A280
+ NEXTLINE = $A29D
  CHRGET   = $A432
+ WARMSTRT = $A491
+ PRNREADY = $A4D4
  COLDSTRT = $A77F
  STMTDISP = $A86C
  PRINT    = $A8C3
  PRNTCRLF = $A8E5
+ EVAL     = $AC0C
  CLEAR    = $B7E8
  INPUT    = $B96E
 
@@ -24,12 +30,12 @@
 8011   48                   PHA
 8012   48                   PHA
 8013   20 91 A4             JSR WARMSTRT
-8016   4C 74 A2             JMP $A274
+8016   4C 74 A2             JMP PREPWMST
 8019   20 4E 80   L8019     JSR L804E
 801C   A9 2A                LDA #$2A
 801E   20 E5 A8             JSR PRNTCRLF
 8021   20 6C A8             JSR STMTDISP
-8024   4C 7D A2             JMP $A27D
+8024   4C 7D A2             JMP NEXTSTMT
 8027   1A                   .BYTE $1A          ;%00011010
 8028   0A                   .BYTE $0A          ;%00001010
 8029   54                   .BYTE $54          ;%01010100 'T'
@@ -143,7 +149,7 @@
 80CB   A5 88                LDA $88
 80CD   85 12                STA $12
 80CF   20 32 A4             JSR CHRGET
-80D2   4C D4 A4             JMP $A4D4
+80D2   4C D4 A4             JMP PRNREADY
 80D5   6C EE 02   L80D5     JMP ($02EE)
 80D8   20 D5 80             JSR L80D5
 80DB   08                   PHP
@@ -406,7 +412,7 @@
 8279   8D 19 02             STA $0219
 827C   20 A1 82   L827C     JSR L82A1
 827F   20 4E 80   L827F     JSR L804E
-8282   4C 0C AC             JMP $AC0C
+8282   4C 0C AC             JMP EVAL
 8285   A5 FE                LDA LOFROM
 8287   F0 05                BEQ L828E
 8289   C6 FE                DEC LOFROM
@@ -428,7 +434,7 @@
 82AE   85 11                STA $11
 82B0   A5 F3                LDA $F3
 82B2   85 12                STA $12
-82B4   4C D4 A4             JMP $A4D4
+82B4   4C D4 A4             JMP PRNREADY
 82B7   20 C2 00   L82B7     JSR $00C2
 82BA   F0 0D                BEQ L82C9
 82BC   90 18                BCC L82D6
@@ -585,7 +591,7 @@
 83F9   88                   DEY
 83FA   B1 FE                LDA (LOFROM),Y
 83FC   85 11                STA $11
-83FE   4C 9D A2   L83FE     JMP $A29D
+83FE   4C 9D A2   L83FE     JMP NEXTLINE
 8401   88         L8401     DEY
 8402   B1 FE                LDA (LOFROM),Y
 8404   85 11                STA $11
@@ -602,7 +608,7 @@
 841B   8D 18 02             STA $0218
 841E   A9 84                LDA #$84
 8420   8D 19 02             STA $0219
-8423   4C 7D A2             JMP $A27D
+8423   4C 7D A2             JMP NEXTSTMT
 8426   A4 EF                LDY $EF
 8428   C0 FA                CPY #$FA
 842A   90 03                BCC L842F
@@ -682,7 +688,7 @@
 84D1   C8                   INY
 84D2   B1 EA                LDA ($EA),Y
 84D4   85 12                STA $12
-84D6   4C 9D A2             JMP $A29D
+84D6   4C 9D A2             JMP NEXTLINE
 84D9   20 91 A4             JSR WARMSTRT
 84DC   20 E9 85             JSR L85E9
 84DF   4C B7 84             JMP L84B7
@@ -1046,7 +1052,7 @@
 87A1   90 F5                BCC L8798
 87A3   A0 00                LDY #$00
 87A5   A2 12                LDX #$12
-87A7   4C 80 A2             JMP $A280
+87A7   4C 80 A2             JMP ERROR
 87AA   20 91 A4             JSR WARMSTRT
 87AD   20 A9 82             JSR L82A9
 87B0   20 1B 87             JSR L871B
@@ -1083,7 +1089,7 @@
 87F3   85 11                STA $11
 87F5   A5 F5                LDA $F5
 87F7   85 12                STA $12
-87F9   4C 9D A2             JMP $A29D
+87F9   4C 9D A2             JMP NEXTLINE
 87FC   34                   .BYTE $34          ;%00110100 '4'
 87FD   38                   .BYTE $38          ;%00111000 '8'
 87FE   39                   .BYTE $39          ;%00111001 '9'
@@ -1230,12 +1236,18 @@
  HIFROM       $FF
  EDFLAG     $0204
  CCFLAG     $0212
- WARMSTRT   $A491
+ PREPWMST   $A274
+ NEXTSTMT   $A27D
+ ERROR      $A280
+ NEXTLINE   $A29D
  CHRGET     $A432
+ WARMSTRT   $A491
+ PRNREADY   $A4D4
  COLDSTRT   $A77F
  STMTDISP   $A86C
  PRINT      $A8C3
  PRNTCRLF   $A8E5
+ EVAL       $AC0C
  CLEAR      $B7E8
  INPUT      $B96E
 
