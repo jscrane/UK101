@@ -33,9 +33,18 @@ LOFROM = $FE
 HIFROM = $FF
 EDFLAG = $0204
 CCFLAG = $0212
-CHIVEC = $0218
-CHOVEC = $0220
-LIVEC = $0222
-SCIVEC = $02EE
-SCOVEC = $02F0
-SLIVEC = $02F2
+CHRINV = $0218    ; vectors
+CHROUTV = $0220
+LINEINV = $0222
+SCHRINV = $02EE   ; stored vectors
+SCHROUTV = $02F0
+SLINEINV = $02F2
+CHRINH = $80D8    ; handlers
+CHROUTH = $807C
+LINEINH = $81E3
+
+; chat-gpt
+
+; --- ROM initialization ---
+INITROM  = $8019   ; ROM initialization entry
+VECINST  = $804E   ; install BASIC I/O vectors
