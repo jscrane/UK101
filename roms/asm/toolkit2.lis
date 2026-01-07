@@ -349,7 +349,7 @@
 81E1   19                   .BYTE $19          ;%00011001
 81E2   80                   .BYTE $80          ;%10000000
 81E3   AD F4 02   LINEINH   LDA $02F4
-81E6   F0 52                BEQ L823A
+81E6   F0 52                BEQ SLINEIN
 81E8   8A                   TXA
 81E9   48                   PHA
 81EA   98                   TYA
@@ -395,7 +395,7 @@
 8237   A8                   TAY
 8238   68                   PLA
 8239   AA                   TAX
-823A   6C F2 02   L823A     JMP (SLINEINV)
+823A   6C F2 02   SLINEIN   JMP (SLINEINV)
 823D   A0 00      L823D     LDY #$00
 823F   A2 00      L823F     LDX #$00
 8241   CA         L8241     DEX
@@ -1202,7 +1202,6 @@
  L810D      $810D
  L811C      $811C
  L800C      $800C
- L823A      $823A
  L837D      $837D
  L822A      $822A
  L822D      $822D
@@ -1280,6 +1279,7 @@
  SCHROUT    $8093
  VECINST    $804E
  SCHRIN     $80D5
+ SLINEIN    $823A
  PREPWMST   $A274
  NEXTSTMT   $A27D
  ERROR      $A280
