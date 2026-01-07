@@ -1,8 +1,3 @@
- NEWMON   = $FE00
- LOFROM   = $FE
- HIFROM   = $FF
- EDFLAG   = $0204
- CCFLAG   = $0212
  PREPWMST = $A274
  NEXTSTMT = $A27D
  ERROR    = $A280
@@ -17,6 +12,14 @@
  EVAL     = $AC0C
  CLEAR    = $B7E8
  INPUT    = $B96E
+ LOFROM   = $FE
+ HIFROM   = $FF
+ EDFLAG   = $0204
+ CCFLAG   = $0212
+ CHOVEC   = $0218
+ SCOVEC   = $02EE
+ SCIVEC   = $02F0
+ SLIVEC   = $02F2
 
                             * = $8000
 8000   A9 00                LDA #$00
@@ -79,9 +82,9 @@
 804F   48                   PHA
 8050   A2 05                LDX #$05
 8052   BD 6E 80   L8052     LDA $806E,X
-8055   9D 18 02             STA $0218,X
+8055   9D 18 02             STA CHOVEC,X
 8058   BD 76 80             LDA $8076,X
-805B   9D EE 02             STA $02EE,X
+805B   9D EE 02             STA SCOVEC,X
 805E   CA                   DEX
 805F   10 F1                BPL L8052
 8061   AD 74 80             LDA $8074
@@ -120,7 +123,7 @@
 8090   AA                   TAX
 8091   68                   PLA
 8092   28         L8092     PLP
-8093   6C F0 02   L8093     JMP ($02F0)
+8093   6C F0 02   L8093     JMP (SCIVEC)
 8096   68         L8096     PLA
 8097   AA                   TAX
 8098   68                   PLA
@@ -150,7 +153,7 @@
 80CD   85 12                STA $12
 80CF   20 32 A4             JSR CHRGET
 80D2   4C D4 A4             JMP PRNREADY
-80D5   6C EE 02   L80D5     JMP ($02EE)
+80D5   6C EE 02   L80D5     JMP (SCOVEC)
 80D8   20 D5 80             JSR L80D5
 80DB   08                   PHP
 80DC   48                   PHA
@@ -326,13 +329,25 @@
 81CD   0D                   .BYTE $0D          ;%00001101
 81CE   0A                   .BYTE $0A          ;%00001010
 81CF   00                   .BYTE $00          ;%00000000
-81D0   4C 00 FE             JMP NEWMON
-81D3   A9 FF                LDA #$FF
-81D5   8D F4 02             STA $02F4
-81D8   4C 19 80             JMP L8019
-81DB   A9 00                LDA #$00
-81DD   8D F4 02             STA $02F4
-81E0   4C 19 80             JMP L8019
+81D0   4C                   .BYTE $4C          ;%01001100 'L'
+81D1   00                   .BYTE $00          ;%00000000
+81D2   FE                   .BYTE $FE          ;%11111110
+81D3   A9                   .BYTE $A9          ;%10101001
+81D4   FF                   .BYTE $FF          ;%11111111
+81D5   8D                   .BYTE $8D          ;%10001101
+81D6   F4                   .BYTE $F4          ;%11110100
+81D7   02                   .BYTE $02          ;%00000010
+81D8   4C                   .BYTE $4C          ;%01001100 'L'
+81D9   19                   .BYTE $19          ;%00011001
+81DA   80                   .BYTE $80          ;%10000000
+81DB   A9                   .BYTE $A9          ;%10101001
+81DC   00                   .BYTE $00          ;%00000000
+81DD   8D                   .BYTE $8D          ;%10001101
+81DE   F4                   .BYTE $F4          ;%11110100
+81DF   02                   .BYTE $02          ;%00000010
+81E0   4C                   .BYTE $4C          ;%01001100 'L'
+81E1   19                   .BYTE $19          ;%00011001
+81E2   80                   .BYTE $80          ;%10000000
 81E3   AD F4 02             LDA $02F4
 81E6   F0 52                BEQ L823A
 81E8   8A                   TXA
@@ -380,7 +395,7 @@
 8237   A8                   TAY
 8238   68                   PLA
 8239   AA                   TAX
-823A   6C F2 02   L823A     JMP ($02F2)
+823A   6C F2 02   L823A     JMP (SLIVEC)
 823D   A0 00      L823D     LDY #$00
 823F   A2 00      L823F     LDX #$00
 8241   CA         L8241     DEX
@@ -407,16 +422,16 @@
 826D   A9 82                LDA #$82
 826F   8D 1D 02             STA $021D
 8272   A9 19                LDA #$19
-8274   8D 18 02             STA $0218
+8274   8D 18 02             STA CHOVEC
 8277   A9 80                LDA #$80
-8279   8D 19 02             STA $0219
+8279   8D 19 02             STA CHOVEC+1
 827C   20 A1 82   L827C     JSR L82A1
 827F   20 4E 80   L827F     JSR L804E
 8282   4C 0C AC             JMP EVAL
 8285   A5 FE                LDA LOFROM
 8287   F0 05                BEQ L828E
 8289   C6 FE                DEC LOFROM
-828B   6C F2 02             JMP ($02F2)
+828B   6C F2 02             JMP (SLIVEC)
 828E   20 D5 80   L828E     JSR L80D5
 8291   C9 14                CMP #$14
 8293   D0 03                BNE L8298
@@ -424,7 +439,7 @@
 8298   A5 F4      L8298     LDA $F4
 829A   85 FE                STA LOFROM
 829C   C6 FE                DEC LOFROM
-829E   6C F2 02             JMP ($02F2)
+829E   6C F2 02             JMP (SLIVEC)
 82A1   A5 F0      L82A1     LDA $F0
 82A3   85 11                STA $11
 82A5   A5 F1                LDA $F1
@@ -560,9 +575,9 @@
 83B7   4C 19 80   L83B7     JMP L8019
 83BA   20 B7 82             JSR L82B7
 83BD   A9 DA                LDA #$DA
-83BF   8D 18 02             STA $0218
+83BF   8D 18 02             STA CHOVEC
 83C2   A9 83                LDA #$83
-83C4   8D 19 02             STA $0219
+83C4   8D 19 02             STA CHOVEC+1
 83C7   A5 F0                LDA $F0
 83C9   85 11                STA $11
 83CB   A5 F1                LDA $F1
@@ -605,9 +620,9 @@
 8415   A5 F7                LDA $F7
 8417   85 EF                STA $EF
 8419   A9 26                LDA #$26
-841B   8D 18 02             STA $0218
+841B   8D 18 02             STA CHOVEC
 841E   A9 84                LDA #$84
-8420   8D 19 02             STA $0219
+8420   8D 19 02             STA CHOVEC+1
 8423   4C 7D A2             JMP NEXTSTMT
 8426   A4 EF                LDY $EF
 8428   C0 FA                CPY #$FA
@@ -631,9 +646,9 @@
 8452   E8                   INX
 8453   D0 F3                BNE L8448
 8455   A9 5F      L8455     LDA #$5F
-8457   8D 18 02             STA $0218
+8457   8D 18 02             STA CHOVEC
 845A   A9 84                LDA #$84
-845C   8D 19 02             STA $0219
+845C   8D 19 02             STA CHOVEC+1
 845F   20 D5 80             JSR L80D5
 8462   C9 0D                CMP #$0D
 8464   F0 08                BEQ L846E
@@ -642,9 +657,9 @@
 846A   4C 19 80             JMP L8019
 846D   60         L846D     RTS
 846E   A9 26      L846E     LDA #$26
-8470   8D 18 02             STA $0218
+8470   8D 18 02             STA CHOVEC
 8473   A9 84                LDA #$84
-8475   8D 19 02             STA $0219
+8475   8D 19 02             STA CHOVEC+1
 8478   18                   CLC
 8479   A5 EE                LDA $EE
 847B   65 F4                ADC $F4
@@ -664,9 +679,9 @@
 8497   20 E9 85             JSR L85E9
 849A   20 9C 85             JSR L859C
 849D   A9 D9                LDA #$D9
-849F   8D 18 02             STA $0218
+849F   8D 18 02             STA CHOVEC
 84A2   A9 84                LDA #$84
-84A4   8D 19 02             STA $0219
+84A4   8D 19 02             STA CHOVEC+1
 84A7   20 CE 85   L84A7     JSR L85CE
 84AA   A5 FA                LDA $FA
 84AC   D0 06                BNE L84B4
@@ -882,7 +897,7 @@
 865D   20 8C 86             JSR L868C
 8660   A2 05                LDX #$05
 8662   BD 86 86   L8662     LDA $8686,X
-8665   9D 18 02             STA $0218,X
+8665   9D 18 02             STA CHOVEC,X
 8668   CA                   DEX
 8669   10 F7                BPL L8662
 866B   A5 04                LDA $04
@@ -971,7 +986,7 @@
 8707   AA                   TAX
 8708   A5 EE                LDA $EE
 870A   28                   PLP
-870B   6C F0 02             JMP ($02F0)
+870B   6C F0 02             JMP (SCIVEC)
 870E   A5 EE      L870E     LDA $EE
 8710   95 13                STA $13,X
 8712   4C FF 86             JMP L86FF
@@ -1007,7 +1022,7 @@
 874E   A8                   TAY
 874F   68                   PLA
 8750   AA                   TAX
-8751   6C F2 02             JMP ($02F2)
+8751   6C F2 02             JMP (SLIVEC)
 8754   52                   .BYTE $52          ;%01010010 'R'
 8755   45                   .BYTE $45          ;%01000101 'E'
 8756   50                   .BYTE $50          ;%01010000 'P'
@@ -1231,11 +1246,6 @@
  L87E0      $87E0
 
 ;defined symbols used as labels
- NEWMON     $FE00
- LOFROM       $FE
- HIFROM       $FF
- EDFLAG     $0204
- CCFLAG     $0212
  PREPWMST   $A274
  NEXTSTMT   $A27D
  ERROR      $A280
@@ -1250,4 +1260,12 @@
  EVAL       $AC0C
  CLEAR      $B7E8
  INPUT      $B96E
+ LOFROM       $FE
+ HIFROM       $FF
+ EDFLAG     $0204
+ CCFLAG     $0212
+ CHOVEC     $0218
+ SCOVEC     $02EE
+ SCIVEC     $02F0
+ SLIVEC     $02F2
 
