@@ -1,3 +1,4 @@
+ CMDEXEC  = $00BC
  PREPWMST = $A274
  NEXTSTMT = $A27D
  ERROR    = $A280
@@ -192,7 +193,7 @@
 8112   D1 C3                CMP ($C3),Y
 8114   F0 F7                BEQ L810D
 8116   E8         L8116     INX
-8117   BD 6E 81             LDA $816E,X
+8117   BD 6E 81             LDA CMDNAMES,X
 811A   10 FA                BPL L8116
 811C   E6 FE      L811C     INC LOFROM
 811E   A0 00                LDY #$00
@@ -211,13 +212,13 @@
 8136   AA                   TAX
 8137   BD 5A 81             LDA $815A,X
 813A   48                   PHA
-813B   BD 59 81             LDA $8159,X
+813B   BD 59 81             LDA CMDRETNS,X
 813E   48                   PHA
-813F   4C BC 00             JMP $00BC
+813F   4C BC 00             JMP CMDEXEC
 8142   18         L8142     CLC
 8143   C8                   INY
 8144   E8                   INX
-8145   BD 6E 81             LDA $816E,X
+8145   BD 6E 81             LDA CMDNAMES,X
 8148   30 0B                BMI L8155
 814A   D0 0C                BNE L8158
 814C   68                   PLA
@@ -232,7 +233,7 @@
 8155   38         L8155     SEC
 8156   29 7F                AND #$7F
 8158   60         L8158     RTS
-8159   47                   .BYTE $47          ;%01000111 'G'
+8159   47         CMDRETNS  .BYTE $47          ;%01000111 'G'
 815A   82                   .BYTE $82          ;%10000010
 815B   0D                   .BYTE $0D          ;%00001101
 815C   84                   .BYTE $84          ;%10000100
@@ -253,7 +254,7 @@
 816B   8A                   .BYTE $8A          ;%10001010
 816C   83                   .BYTE $83          ;%10000011
 816D   C8                   .BYTE $C8          ;%11001000
-816E   87                   .BYTE $87          ;%10000111
+816E   87         CMDNAMES  .BYTE $87          ;%10000111
 816F   4C                   .BYTE $4C          ;%01001100 'L'
 8170   49                   .BYTE $49          ;%01001001 'I'
 8171   53                   .BYTE $53          ;%01010011 'S'
@@ -407,7 +408,7 @@
 824B   20 C2 00             JSR $00C2
 824E   C9 2F                CMP #$2F
 8250   D0 2A                BNE L827C
-8252   20 BC 00             JSR $00BC
+8252   20 BC 00             JSR CMDEXEC
 8255   20 24 83             JSR L8324
 8258   A5 F7                LDA $F7
 825A   D0 6A                BNE L82C6
@@ -474,7 +475,7 @@
 82E4   F0 1B                BEQ L8301
 82E6   C9 2D                CMP #$2D
 82E8   D0 DC                BNE L82C6
-82EA   20 BC 00             JSR $00BC
+82EA   20 BC 00             JSR CMDEXEC
 82ED   B0 26                BCS L8315
 82EF   20 7F A7             JSR COLDSTRT
 82F2   A5 12                LDA $12
@@ -517,7 +518,7 @@
 833B   C9 2F                CMP #$2F
 833D   F0 03                BEQ L8342
 833F   4C 7F 82   L833F     JMP L827F
-8342   20 BC 00   L8342     JSR $00BC
+8342   20 BC 00   L8342     JSR CMDEXEC
 8345   B0 F8                BCS L833F
 8347   20 7F A7             JSR COLDSTRT
 834A   A5 11                LDA $11
@@ -1277,9 +1278,11 @@
 ;defined symbols used as labels
  INITROM    $8019
  SCHROUT    $8093
+ CMDRETNS   $8159
  VECINST    $804E
  SCHRIN     $80D5
  SLINEIN    $823A
+ CMDEXEC    $00BC
  PREPWMST   $A274
  NEXTSTMT   $A27D
  ERROR      $A280
@@ -1305,4 +1308,5 @@
  CHRINH     $80D8
  CHROUTH    $807C
  LINEINH    $81E3
+ CMDNAMES   $816E
 

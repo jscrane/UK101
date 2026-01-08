@@ -12,7 +12,8 @@
 NEWMON = 0xFE00
 ;OUTPUT = 0xFF9B
 
-; basic
+; BASIC entry-points
+CMDEXEC = $00BC  ; statement executor (RTS trampoline)
 PREPWMST = $A274
 NEXTSTMT = $A27D
 ERROR = $A280
@@ -39,15 +40,18 @@ LINEINV = $0222
 SCHRINV = $02EE   ; stored vectors
 SCHROUTV = $02F0
 SLINEINV = $02F2
+
+; toolkit ii
+INITROM  = $8019   ; ROM initialization entry
+VECINST  = $804E   ; install BASIC I/O vectors
+
 CHRINH = $80D8    ; handlers
 CHROUTH = $807C
 LINEINH = $81E3
-SCHROUT = $8093
+SCHROUT = $8093   ; saved handlers
 SCHRIN = $80D5
 SLINEIN = $823A
 
-; chat-gpt
+CMDRETNS = $8159   ; table of RTS return addresses (continuation points)
+CMDNAMES = $816E   ; command name table (11 entries)
 
-; --- ROM initialization ---
-INITROM  = $8019   ; ROM initialization entry
-VECINST  = $804E   ; install BASIC I/O vectors
