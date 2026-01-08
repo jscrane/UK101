@@ -2,39 +2,35 @@
 .DATA $806E ... $807B
 .DATA $8159 ... $819D
 .DATA $81C1 ... $81E2
-.DATA $864B ... $868B
 .DATA $8754 ... $8759
 .DATA $87FC ... $87FF
 
 ; cegmon
-;INPUT = 0xFB46
-;CTRLC = 0xFB94
-NEWMON = 0xFE00
-;OUTPUT = 0xFF9B
+NEWMON = 0xFE00 ; reset entry to m/c monitor
 
 ; BASIC entry-points
 CMDEXEC = $00BC  ; statement executor (RTS trampoline)
-PREPWMST = $A274
-NEXTSTMT = $A27D
-ERROR = $A280
-NEXTLINE = $A29D
-CHRGET = $A432
-WARMSTRT = $A491
-PRNREADY = $A4D4
-COLDSTRT = $A77F
-STMTDISP = $A86C
-PRINT = $A8C3
-PRNTCRLF = $A8E5
-EVAL = $AC0C
-CLEAR = $B7E8
-INPUT = $B96E
+PREPWMST = $A274 ; abort execution, return to READY
+NEXTSTMT = $A27D ; statement finished, maybe more on this line
+ERROR = $A280    ; general error
+NEXTLINE = $A29D ; line finished, go to next line
+CHRGET = $A432   ; character fetch
+WARMSTRT = $A491 ; warm start
+PRNREADY = $A4D4 ; READY prompt
+COLDSTRT = $A77F ; cold start
+STMTDISP = $A86C ; statement dispatcher
+PRINT = $A8C3    ; PRINT statement handler
+PRNTCRLF = $A8E5 ; end-of-PRINT, newline handler
+EVAL = $AC0C     ; expression evaluation
+CLEAR = $B7E8    ; CLEAR statement handler
+INPUT = $B96E    ; INPUT statement handler
 
 ; ram addresses
-LOFROM = $FE
-HIFROM = $FF
-EDFLAG = $0204
-CCFLAG = $0212
-CHRINV = $0218    ; vectors
+LOFROM = $FE      ; store 'current address' for most routines; 'from'
+HIFROM = $FF      ; ... address in save, move and tabular display
+EDFLAG = $0204    ; EDITOR flag: 00 disable cursor, FF enable it
+CCFLAG = $0212    ; BASIC CTRL-C flag: 00 enables CTRL-C break, 01 disables
+CHRINV = $0218    ; BASIC I/O vectors
 CHROUTV = $0220
 LINEINV = $0222
 SCHRINV = $02EE   ; stored vectors
@@ -42,18 +38,18 @@ SCHROUTV = $02F0
 SLINEINV = $02F2
 
 ; toolkit ii
-INITROM  = $8019   ; ROM initialization entry
-VECINST  = $804E   ; install BASIC I/O vectors
+INITROM  = $8019  ; ROM initialization entry
+VECINST  = $804E  ; install BASIC I/O vectors
 
-CHRINH = $80D8    ; handlers
+CHRINH = $80D8    ; BASIC I/O handlers
 CHROUTH = $807C
 LINEINH = $81E3
 SCHROUT = $8093   ; saved handlers
 SCHRIN = $80D5
 SLINEIN = $823A
 
-CMDRETNS = $8159   ; table of RTS return addresses (continuation points)
-CMDNAMES = $816F   ; command name table (11 entries)
+CMDRETNS = $8159  ; table of RTS return addresses (continuation points)
+CMDNAMES = $816F  ; command name table (11 entries)
 
 LISTCMD = $8248   ; toolkit LIST implementation
 AUTOCMD = $840E
