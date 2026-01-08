@@ -56,6 +56,10 @@ CMDRETNS = $8159  ; table of RTS return addresses (continuation points)
 CMDNAMES = $816F  ; command name table (11 entries)
 ARGINIT  = $8324  ; initialize argument parsing
 
+BFERROR = $819E
+OFERROR = $81A1
+LNERROR = $81A4
+
 LISTCMD = $8248   ; toolkit LIST implementation
 AUTOCMD = $840E
 DELETCMD = $83BA
