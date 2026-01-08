@@ -1,7 +1,13 @@
+ CURLINL  = $11
+ CURLINH  = $12
+ INBUFFL  = $13
  CMDEXEC  = $00BC
  CHRGOT   = $00C2
  TXTPTR   = $C3
  TXTPTRH  = $C4
+ LINNUML  = $F6
+ LINNUMH  = $F7
+ KEYBUF   = $0100
  PREPWMST = $A274
  NEXTSTMT = $A27D
  ERROR    = $A280
@@ -24,8 +30,17 @@
  SCHRINV  = $02EE
  SCHROUTV = $02F0
  SLINEINV = $02F2
+ WORKLINL = $EE
+ WORKLINH = $EF
  OFERROR  = $81A1
  LNERROR  = $81A4
+ FROMLINL = $F0
+ FROMLINH = $F1
+ TOLINL   = $F2
+ TOLINH   = $F3
+ LINLIM   = $F4
+ SCANSTAT = $FA
+ SCANHIT  = $FB
 
                             * = $8000
 8000   A9 00                LDA #$00
@@ -154,9 +169,9 @@
 80C1   8D 04 02             STA EDFLAG
 80C4   20 4E 80             JSR VECINST
 80C7   A5 87                LDA $87
-80C9   85 11                STA $11
+80C9   85 11                STA CURLINL
 80CB   A5 88                LDA $88
-80CD   85 12                STA $12
+80CD   85 12                STA CURLINH
 80CF   20 32 A4             JSR CHRGET
 80D2   4C D4 A4             JMP PRNREADY
 80D5   6C EE 02   SCHRIN    JMP (SCHRINV)
@@ -186,7 +201,7 @@
 80FD   98                   TYA
 80FE   48                   PHA
 80FF   A0 00                LDY #$00
-8101   94 13                STY $13,X
+8101   94 13                STY INBUFFL,X
 8103   84 C4                STY TXTPTRH
 8105   84 FE                STY LOFROM
 8107   A2 12                LDX #$12
@@ -415,13 +430,13 @@
 8250   D0 2A                BNE L827C
 8252   20 BC 00             JSR CMDEXEC
 8255   20 24 83             JSR ARGINIT
-8258   A5 F7                LDA $F7
+8258   A5 F7                LDA LINNUMH
 825A   D0 6A                BNE L82C6
-825C   A5 F6                LDA $F6
+825C   A5 F6                LDA LINNUML
 825E   F0 66                BEQ L82C6
 8260   C9 21                CMP #$21
 8262   B0 1B                BCS L827F
-8264   85 F4                STA $F4
+8264   85 F4                STA LINLIM
 8266   85 FE                STA LOFROM
 8268   A9 85                LDA #$85
 826A   8D 1C 02             STA $021C
@@ -430,7 +445,7 @@
 8272   A9 19                LDA #$19
 8274   8D 18 02             STA CHRINV
 8277   A9 80                LDA #$80
-8279   8D 19 02             STA CHRINV+1
+8279   8D 19 02             STA $0219
 827C   20 A1 82   L827C     JSR L82A1
 827F   20 4E 80   L827F     JSR VECINST
 8282   4C 0C AC             JMP EVAL
@@ -442,19 +457,19 @@
 8291   C9 14                CMP #$14
 8293   D0 03                BNE L8298
 8295   4C 19 80             JMP INITROM
-8298   A5 F4      L8298     LDA $F4
+8298   A5 F4      L8298     LDA LINLIM
 829A   85 FE                STA LOFROM
 829C   C6 FE                DEC LOFROM
 829E   6C F2 02             JMP (SLINEINV)
-82A1   A5 F0      L82A1     LDA $F0
-82A3   85 11                STA $11
-82A5   A5 F1                LDA $F1
-82A7   85 12                STA $12
+82A1   A5 F0      L82A1     LDA FROMLINL
+82A3   85 11                STA CURLINL
+82A5   A5 F1                LDA FROMLINH
+82A7   85 12                STA CURLINH
 82A9   20 32 A4   L82A9     JSR CHRGET
-82AC   A5 F2                LDA $F2
-82AE   85 11                STA $11
-82B0   A5 F3                LDA $F3
-82B2   85 12                STA $12
+82AC   A5 F2                LDA TOLINL
+82AE   85 11                STA CURLINL
+82B0   A5 F3                LDA TOLINH
+82B2   85 12                STA CURLINH
 82B4   4C D4 A4             JMP PRNREADY
 82B7   20 C2 00   L82B7     JSR CHRGOT
 82BA   F0 0D                BEQ L82C9
@@ -465,17 +480,17 @@
 82C4   F0 03                BEQ L82C9
 82C6   4C 7F 82   L82C6     JMP L827F
 82C9   A9 00      L82C9     LDA #$00
-82CB   85 F0                STA $F0
-82CD   85 F1                STA $F1
+82CB   85 F0                STA FROMLINL
+82CD   85 F1                STA FROMLINH
 82CF   A9 FF                LDA #$FF
-82D1   85 F2                STA $F2
-82D3   85 F3                STA $F3
+82D1   85 F2                STA TOLINL
+82D3   85 F3                STA TOLINH
 82D5   60                   RTS
 82D6   20 7F A7   L82D6     JSR COLDSTRT
-82D9   A5 11                LDA $11
-82DB   85 F0                STA $F0
-82DD   A5 12                LDA $12
-82DF   85 F1                STA $F1
+82D9   A5 11                LDA CURLINL
+82DB   85 F0                STA FROMLINL
+82DD   A5 12                LDA CURLINH
+82DF   85 F1                STA FROMLINH
 82E1   20 C2 00   L82E1     JSR CHRGOT
 82E4   F0 1B                BEQ L8301
 82E6   C9 2D                CMP #$2D
@@ -483,41 +498,41 @@
 82EA   20 BC 00             JSR CMDEXEC
 82ED   B0 26                BCS L8315
 82EF   20 7F A7             JSR COLDSTRT
-82F2   A5 12                LDA $12
-82F4   C5 F1                CMP $F1
+82F2   A5 12                LDA CURLINH
+82F4   C5 F1                CMP FROMLINH
 82F6   90 CE                BCC L82C6
 82F8   F0 10                BEQ L830A
-82FA   85 F3                STA $F3
-82FC   A5 11                LDA $11
-82FE   85 F2                STA $F2
+82FA   85 F3                STA TOLINH
+82FC   A5 11                LDA CURLINL
+82FE   85 F2                STA TOLINL
 8300   60                   RTS
-8301   A5 F0      L8301     LDA $F0
-8303   85 F2                STA $F2
-8305   A5 F1                LDA $F1
-8307   85 F3                STA $F3
+8301   A5 F0      L8301     LDA FROMLINL
+8303   85 F2                STA TOLINL
+8305   A5 F1                LDA FROMLINH
+8307   85 F3                STA TOLINH
 8309   60                   RTS
-830A   85 F3      L830A     STA $F3
-830C   A5 11                LDA $11
-830E   C5 F0                CMP $F0
+830A   85 F3      L830A     STA TOLINH
+830C   A5 11                LDA CURLINL
+830E   C5 F0                CMP FROMLINL
 8310   90 B4                BCC L82C6
-8312   85 F2                STA $F2
+8312   85 F2                STA TOLINL
 8314   60                   RTS
 8315   A9 FF      L8315     LDA #$FF
-8317   85 F2                STA $F2
-8319   85 F3                STA $F3
+8317   85 F2                STA TOLINL
+8319   85 F3                STA TOLINH
 831B   60                   RTS
 831C   A9 00      L831C     LDA #$00
-831E   85 F0                STA $F0
-8320   85 F1                STA $F1
+831E   85 F0                STA FROMLINL
+8320   85 F1                STA FROMLINH
 8322   F0 BD                BEQ L82E1
 8324   20 C2 00   ARGINIT   JSR CHRGOT
 8327   F0 47                BEQ L8370
 8329   B0 2E                BCS L8359
 832B   20 7F A7             JSR COLDSTRT
-832E   A5 11                LDA $11
-8330   85 F6                STA $F6
-8332   A5 12                LDA $12
-8334   85 F7                STA $F7
+832E   A5 11                LDA CURLINL
+8330   85 F6                STA LINNUML
+8332   A5 12                LDA CURLINH
+8334   85 F7                STA LINNUMH
 8336   20 C2 00             JSR CHRGOT
 8339   F0 2C                BEQ L8367
 833B   C9 2F                CMP #$2F
@@ -526,32 +541,32 @@
 8342   20 BC 00   L8342     JSR CMDEXEC
 8345   B0 F8                BCS L833F
 8347   20 7F A7             JSR COLDSTRT
-834A   A5 11                LDA $11
-834C   85 F4                STA $F4
-834E   A5 12                LDA $12
+834A   A5 11                LDA CURLINL
+834C   85 F4                STA LINLIM
+834E   A5 12                LDA CURLINH
 8350   85 F5                STA $F5
-8352   A5 11                LDA $11
-8354   05 12                ORA $12
+8352   A5 11                LDA CURLINL
+8354   05 12                ORA CURLINH
 8356   F0 E7                BEQ L833F
 8358   60                   RTS
 8359   C9 2F      L8359     CMP #$2F
 835B   D0 E2                BNE L833F
 835D   A9 00                LDA #$00
-835F   85 F7                STA $F7
+835F   85 F7                STA LINNUMH
 8361   A9 0A                LDA #$0A
-8363   85 F6                STA $F6
+8363   85 F6                STA LINNUML
 8365   D0 DB                BNE L8342
 8367   A9 00      L8367     LDA #$00
 8369   85 F5                STA $F5
 836B   A9 0A                LDA #$0A
-836D   85 F4                STA $F4
+836D   85 F4                STA LINLIM
 836F   60                   RTS
 8370   A9 00      L8370     LDA #$00
-8372   85 F7                STA $F7
+8372   85 F7                STA LINNUMH
 8374   85 F5                STA $F5
 8376   A9 0A                LDA #$0A
-8378   85 F6                STA $F6
-837A   85 F4                STA $F4
+8378   85 F6                STA LINNUML
+837A   85 F4                STA LINLIM
 837C   60                   RTS
 837D   85 AE      L837D     STA $AE
 837F   84 AD                STY $AD
@@ -583,11 +598,11 @@
 83BD   A9 DA                LDA #$DA
 83BF   8D 18 02             STA CHRINV
 83C2   A9 83                LDA #$83
-83C4   8D 19 02             STA CHRINV+1
-83C7   A5 F0                LDA $F0
-83C9   85 11                STA $11
-83CB   A5 F1                LDA $F1
-83CD   85 12                STA $12
+83C4   8D 19 02             STA $0219
+83C7   A5 F0                LDA FROMLINL
+83C9   85 11                STA CURLINL
+83CB   A5 F1                LDA FROMLINH
+83CD   85 12                STA CURLINH
 83CF   20 32 A4             JSR CHRGET
 83D2   A5 AA                LDA $AA
 83D4   85 FE                STA LOFROM
@@ -596,7 +611,7 @@
 83DA   20 91 A4             JSR WARMSTRT
 83DD   A0 00                LDY #$00
 83DF   A2 00                LDX #$00
-83E1   84 13                STY $13
+83E1   84 13                STY INBUFFL
 83E3   86 5D                STX $5D
 83E5   C8                   INY
 83E6   B1 FE                LDA (LOFROM),Y
@@ -605,56 +620,56 @@
 83ED   C8         L83ED     INY
 83EE   C8                   INY
 83EF   B1 FE                LDA (LOFROM),Y
-83F1   85 12                STA $12
-83F3   C5 F3                CMP $F3
+83F1   85 12                STA CURLINH
+83F3   C5 F3                CMP TOLINH
 83F5   F0 0A                BEQ L8401
 83F7   B0 F1                BCS L83EA
 83F9   88                   DEY
 83FA   B1 FE                LDA (LOFROM),Y
-83FC   85 11                STA $11
+83FC   85 11                STA CURLINL
 83FE   4C 9D A2   L83FE     JMP NEXTLINE
 8401   88         L8401     DEY
 8402   B1 FE                LDA (LOFROM),Y
-8404   85 11                STA $11
-8406   C5 F2                CMP $F2
+8404   85 11                STA CURLINL
+8406   C5 F2                CMP TOLINL
 8408   90 F4                BCC L83FE
 840A   F0 F2                BEQ L83FE
 840C   B0 DC                BCS L83EA
 840E   20 24 83   AUTOCMD   JSR ARGINIT
-8411   A5 F6                LDA $F6
-8413   85 EE                STA $EE
-8415   A5 F7                LDA $F7
-8417   85 EF                STA $EF
+8411   A5 F6                LDA LINNUML
+8413   85 EE                STA WORKLINL
+8415   A5 F7                LDA LINNUMH
+8417   85 EF                STA WORKLINH
 8419   A9 26                LDA #$26
 841B   8D 18 02             STA CHRINV
 841E   A9 84                LDA #$84
-8420   8D 19 02             STA CHRINV+1
+8420   8D 19 02             STA $0219
 8423   4C 7D A2             JMP NEXTSTMT
-8426   A4 EF                LDY $EF
+8426   A4 EF                LDY WORKLINH
 8428   C0 FA                CPY #$FA
 842A   90 03                BCC L842F
 842C   4C A1 81             JMP OFERROR
-842F   A5 EE      L842F     LDA $EE
+842F   A5 EE      L842F     LDA WORKLINL
 8431   20 7D 83             JSR L837D
-8434   A5 EE                LDA $EE
-8436   85 11                STA $11
-8438   A5 EF                LDA $EF
-843A   85 12                STA $12
+8434   A5 EE                LDA WORKLINL
+8436   85 11                STA CURLINL
+8438   A5 EF                LDA WORKLINH
+843A   85 12                STA CURLINH
 843C   20 32 A4             JSR CHRGET
 843F   90 05                BCC L8446
 8441   A9 2A                LDA #$2A
 8443   20 93 80             JSR SCHROUT
 8446   A2 00      L8446     LDX #$00
-8448   BD 00 01   L8448     LDA $0100,X
+8448   BD 00 01   L8448     LDA KEYBUF,X
 844B   F0 08                BEQ L8455
-844D   95 13                STA $13,X
+844D   95 13                STA INBUFFL,X
 844F   20 93 80             JSR SCHROUT
 8452   E8                   INX
 8453   D0 F3                BNE L8448
 8455   A9 5F      L8455     LDA #$5F
 8457   8D 18 02             STA CHRINV
 845A   A9 84                LDA #$84
-845C   8D 19 02             STA CHRINV+1
+845C   8D 19 02             STA $0219
 845F   20 D5 80             JSR SCHRIN
 8462   C9 0D                CMP #$0D
 8464   F0 08                BEQ L846E
@@ -665,14 +680,14 @@
 846E   A9 26      L846E     LDA #$26
 8470   8D 18 02             STA CHRINV
 8473   A9 84                LDA #$84
-8475   8D 19 02             STA CHRINV+1
+8475   8D 19 02             STA $0219
 8478   18                   CLC
-8479   A5 EE                LDA $EE
-847B   65 F4                ADC $F4
-847D   85 EE                STA $EE
-847F   A5 EF                LDA $EF
+8479   A5 EE                LDA WORKLINL
+847B   65 F4                ADC LINLIM
+847D   85 EE                STA WORKLINL
+847F   A5 EF                LDA WORKLINH
 8481   65 F5                ADC $F5
-8483   85 EF                STA $EF
+8483   85 EF                STA WORKLINH
 8485   A9 0D                LDA #$0D
 8487   60                   RTS
 8488   01 E8                ORA ($E8,X)
@@ -681,54 +696,54 @@
 848F   B1 79                LDA ($79),Y
 8491   F0 69                BEQ L84FC
 8493   A9 FF                LDA #$FF
-8495   85 12                STA $12
+8495   85 12                STA CURLINH
 8497   20 E9 85             JSR L85E9
 849A   20 9C 85             JSR L859C
 849D   A9 D9                LDA #$D9
 849F   8D 18 02             STA CHRINV
 84A2   A9 84                LDA #$84
-84A4   8D 19 02             STA CHRINV+1
-84A7   20 CE 85   L84A7     JSR L85CE
-84AA   A5 FA                LDA $FA
+84A4   8D 19 02             STA $0219
+84A7   20 CE 85   L84A7     JSR SCANLINE
+84AA   A5 FA                LDA SCANSTAT
 84AC   D0 06                BNE L84B4
 84AE   20 FF 84             JSR L84FF
 84B1   4C A7 84             JMP L84A7
 84B4   20 9C 85   L84B4     JSR L859C
-84B7   20 CE 85   L84B7     JSR L85CE
-84BA   A5 FA                LDA $FA
+84B7   20 CE 85   L84B7     JSR SCANLINE
+84BA   A5 FA                LDA SCANSTAT
 84BC   D0 24                BNE L84E2
 84BE   20 FF 84             JSR L84FF
-84C1   A5 FB                LDA $FB
+84C1   A5 FB                LDA SCANHIT
 84C3   F0 F2                BEQ L84B7
 84C5   A9 00                LDA #$00
 84C7   95 0F                STA $0F,X
 84C9   86 5D                STX $5D
 84CB   A0 02                LDY #$02
 84CD   B1 EA                LDA ($EA),Y
-84CF   85 11                STA $11
+84CF   85 11                STA CURLINL
 84D1   C8                   INY
 84D2   B1 EA                LDA ($EA),Y
-84D4   85 12                STA $12
+84D4   85 12                STA CURLINH
 84D6   4C 9D A2             JMP NEXTLINE
 84D9   20 91 A4             JSR WARMSTRT
 84DC   20 E9 85             JSR L85E9
 84DF   4C B7 84             JMP L84B7
 84E2   20 9C 85   L84E2     JSR L859C
-84E5   20 CE 85   L84E5     JSR L85CE
-84E8   A5 FA                LDA $FA
+84E5   20 CE 85   L84E5     JSR SCANLINE
+84E8   A5 FA                LDA SCANSTAT
 84EA   D0 10                BNE L84FC
 84EC   20 0C 86             JSR L860C
 84EF   C8                   INY
-84F0   A5 EE                LDA $EE
+84F0   A5 EE                LDA WORKLINL
 84F2   91 EA                STA ($EA),Y
 84F4   C8                   INY
-84F5   A5 EF                LDA $EF
+84F5   A5 EF                LDA WORKLINH
 84F7   91 EA                STA ($EA),Y
 84F9   4C E5 84             JMP L84E5
 84FC   4C 19 80   L84FC     JMP INITROM
 84FF   A0 04      L84FF     LDY #$04
 8501   A9 00                LDA #$00
-8503   85 FB                STA $FB
+8503   85 FB                STA SCANHIT
 8505   84 FD                STY $FD
 8507   B1 EA      L8507     LDA ($EA),Y
 8509   20 AD 85             JSR L85AD
@@ -748,7 +763,7 @@
 8525   D0 E0                BNE L8507
 8527   20 38 86   L8527     JSR L8638
 852A   B0 08                BCS L8534
-852C   E6 FB                INC $FB
+852C   E6 FB                INC SCANHIT
 852E   20 3E 85             JSR L853E
 8531   4C 07 85             JMP L8507
 8534   C9 00      L8534     CMP #$00
@@ -781,11 +796,11 @@
 856D   95 EA                STA $EA,X
 856F   CA                   DEX
 8570   10 F8                BPL L856A
-8572   A4 EF                LDY $EF
-8574   A5 EE                LDA $EE
+8572   A4 EF                LDY WORKLINH
+8574   A5 EE                LDA WORKLINL
 8576   20 7D 83             JSR L837D
 8579   A0 01                LDY #$01
-857B   B9 00 01   L857B     LDA $0100,Y
+857B   B9 00 01   L857B     LDA KEYBUF,Y
 857E   F0 05                BEQ L8585
 8580   20 AD 85             JSR L85AD
 8583   D0 F6                BNE L857B
@@ -809,7 +824,7 @@
 85A4   85 EB                STA $EB
 85A6   85 ED                STA $ED
 85A8   A9 00                LDA #$00
-85AA   85 FA                STA $FA
+85AA   85 FA                STA SCANSTAT
 85AC   60                   RTS
 85AD   A6 FD      L85AD     LDX $FD
 85AF   95 0F                STA $0F,X
@@ -827,7 +842,7 @@
 85C6   A0 81                LDY #$81
 85C8   20 C3 A8             JSR PRINT
 85CB   4C B7 84             JMP L84B7
-85CE   A0 00      L85CE     LDY #$00
+85CE   A0 00      SCANLINE  LDY #$00
 85D0   A5 EC                LDA $EC
 85D2   85 EA                STA $EA
 85D4   A5 ED                LDA $ED
@@ -839,22 +854,22 @@
 85DF   85 ED                STA $ED
 85E1   D0 04                BNE L85E7
 85E3   A9 FF                LDA #$FF
-85E5   85 FA                STA $FA
+85E5   85 FA                STA SCANSTAT
 85E7   18         L85E7     CLC
 85E8   60                   RTS
 85E9   20 9C 85   L85E9     JSR L859C
-85EC   20 CE 85   L85EC     JSR L85CE
-85EF   A5 FA                LDA $FA
+85EC   20 CE 85   L85EC     JSR SCANLINE
+85EF   A5 FA                LDA SCANSTAT
 85F1   D0 18                BNE L860B
 85F3   20 0C 86             JSR L860C
 85F6   C8                   INY
 85F7   C8                   INY
-85F8   A5 12                LDA $12
+85F8   A5 12                LDA CURLINH
 85FA   D1 EA                CMP ($EA),Y
 85FC   90 0D                BCC L860B
 85FE   D0 EC                BNE L85EC
 8600   88                   DEY
-8601   A5 11                LDA $11
+8601   A5 11                LDA CURLINL
 8603   D1 EA                CMP ($EA),Y
 8605   90 04                BCC L860B
 8607   F0 02                BEQ L860B
@@ -866,18 +881,18 @@
 8612   A5 79                LDA $79
 8614   C5 EA                CMP $EA
 8616   D0 0B                BNE L8623
-8618   A5 F6                LDA $F6
-861A   85 EE                STA $EE
-861C   A5 F7                LDA $F7
-861E   85 EF                STA $EF
+8618   A5 F6                LDA LINNUML
+861A   85 EE                STA WORKLINL
+861C   A5 F7                LDA LINNUMH
+861E   85 EF                STA WORKLINH
 8620   4C 30 86             JMP L8630
 8623   18         L8623     CLC
-8624   A5 EE                LDA $EE
-8626   65 F4                ADC $F4
-8628   85 EE                STA $EE
-862A   A5 EF                LDA $EF
+8624   A5 EE                LDA WORKLINL
+8626   65 F4                ADC LINLIM
+8628   85 EE                STA WORKLINL
+862A   A5 EF                LDA WORKLINH
 862C   65 F5                ADC $F5
-862E   85 EF                STA $EF
+862E   85 EF                STA WORKLINH
 8630   C9 FA      L8630     CMP #$FA
 8632   90 03                BCC L8637
 8634   4C A1 81             JMP OFERROR
@@ -929,7 +944,7 @@
 8692   4C 7F 82             JMP L827F
 8695   99 D4 02   L8695     STA $02D4,Y
 8698   C8                   INY
-8699   84 F6                STY $F6
+8699   84 F6                STY LINNUML
 869B   C0 15                CPY #$15
 869D   90 03                BCC L86A2
 869F   4C 9E 81             JMP BFERROR
@@ -945,7 +960,7 @@
 86B3   F0 14                BEQ L86C9
 86B5   99 BF 02   L86B5     STA $02BF,Y
 86B8   C8                   INY
-86B9   84 F7                STY $F7
+86B9   84 F7                STY LINNUMH
 86BB   C0 15                CPY #$15
 86BD   90 03                BCC L86C2
 86BF   4C 9E 81             JMP BFERROR
@@ -953,15 +968,15 @@
 86C4   F0 02                BEQ L86C8
 86C6   D0 ED                BNE L86B5
 86C8   60         L86C8     RTS
-86C9   85 F7      L86C9     STA $F7
+86C9   85 F7      L86C9     STA LINNUMH
 86CB   60                   RTS
 86CC   08                   PHP
-86CD   85 EE                STA $EE
+86CD   85 EE                STA WORKLINL
 86CF   8A                   TXA
 86D0   48                   PHA
 86D1   98                   TYA
 86D2   48                   PHA
-86D3   A5 EE                LDA $EE
+86D3   A5 EE                LDA WORKLINL
 86D5   A6 FD                LDX $FD
 86D7   A4 FC                LDY $FC
 86D9   E0 00                CPX #$00
@@ -972,15 +987,15 @@
 86E3   B0 1B                BCS L8700
 86E5   A5 F5      L86E5     LDA $F5
 86E7   D0 25                BNE L870E
-86E9   A5 EE                LDA $EE
-86EB   95 13                STA $13,X
+86E9   A5 EE                LDA WORKLINL
+86EB   95 13                STA INBUFFL,X
 86ED   D9 D4 02             CMP $02D4,Y
 86F0   D0 23                BNE L8715
 86F2   C0 00                CPY #$00
 86F4   D0 02                BNE L86F8
-86F6   86 F4                STX $F4
+86F6   86 F4                STX LINLIM
 86F8   C8         L86F8     INY
-86F9   C4 F6                CPY $F6
+86F9   C4 F6                CPY LINNUML
 86FB   90 02                BCC L86FF
 86FD   86 F5                STX $F5
 86FF   E8         L86FF     INX
@@ -990,14 +1005,14 @@
 8705   A8                   TAY
 8706   68                   PLA
 8707   AA                   TAX
-8708   A5 EE                LDA $EE
+8708   A5 EE                LDA WORKLINL
 870A   28                   PLP
 870B   6C F0 02             JMP (SCHROUTV)
-870E   A5 EE      L870E     LDA $EE
-8710   95 13                STA $13,X
+870E   A5 EE      L870E     LDA WORKLINL
+8710   95 13                STA INBUFFL,X
 8712   4C FF 86             JMP L86FF
 8715   A0 00      L8715     LDY #$00
-8717   84 F4                STY $F4
+8717   84 F4                STY LINLIM
 8719   F0 E4                BEQ L86FF
 871B   8A         L871B     TXA
 871C   48                   PHA
@@ -1005,14 +1020,14 @@
 871E   48                   PHA
 871F   A6 FD                LDX $FD
 8721   A9 00                LDA #$00
-8723   95 13                STA $13,X
+8723   95 13                STA INBUFFL,X
 8725   85 FD                STA $FD
 8727   85 FC                STA $FC
-8729   86 FB                STX $FB
+8729   86 FB                STX SCANHIT
 872B   A5 F5                LDA $F5
 872D   F0 1A                BEQ L8749
 872F   20 6C A8             JSR STMTDISP
-8732   A4 F4                LDY $F4
+8732   A4 F4                LDY LINLIM
 8734   A9 2D                LDA #$2D
 8736   20 93 80   L8736     JSR SCHROUT
 8739   88                   DEY
@@ -1042,22 +1057,22 @@
 8764   20 BE 87             JSR L87BE
 8767   C9 59                CMP #$59
 8769   D0 DE                BNE L8749
-876B   A6 FB                LDX $FB
+876B   A6 FB                LDX SCANHIT
 876D   A0 47                LDY #$47
-876F   B5 13      L876F     LDA $13,X
-8771   99 13 00             STA $0013,Y
+876F   B5 13      L876F     LDA INBUFFL,X
+8771   99 13 00             STA INBUFFL+$0000,Y
 8774   88                   DEY
 8775   CA                   DEX
 8776   E4 F5                CPX $F5
 8778   D0 F5                BNE L876F
 877A   84 FC                STY $FC
-877C   A6 F4                LDX $F4
+877C   A6 F4                LDX LINLIM
 877E   A0 00                LDY #$00
 8780   84 F5                STY $F5
-8782   C4 F7      L8782     CPY $F7
+8782   C4 F7      L8782     CPY LINNUMH
 8784   B0 10                BCS L8796
 8786   B9 BF 02             LDA $02BF,Y
-8789   95 13                STA $13,X
+8789   95 13                STA INBUFFL,X
 878B   C8                   INY
 878C   E8                   INX
 878D   E4 FC                CPX $FC
@@ -1066,8 +1081,8 @@
 8793   4C 9E 81             JMP BFERROR
 8796   A4 FC      L8796     LDY $FC
 8798   C8         L8798     INY
-8799   B9 13 00             LDA $0013,Y
-879C   95 13                STA $13,X
+8799   B9 13 00             LDA INBUFFL+$0000,Y
+879C   95 13                STA INBUFFL,X
 879E   E8                   INX
 879F   C0 47                CPY #$47
 87A1   90 F5                BCC L8798
@@ -1088,10 +1103,10 @@
 87C5   4C B3 87             JMP L87B3
 87C8   60         L87C8     RTS
 87C9   20 24 83   DUPLCMD   JSR ARGINIT
-87CC   A5 F6                LDA $F6
-87CE   85 11                STA $11
-87D0   A5 F7                LDA $F7
-87D2   85 12                STA $12
+87CC   A5 F6                LDA LINNUML
+87CE   85 11                STA CURLINL
+87D0   A5 F7                LDA LINNUMH
+87D2   85 12                STA CURLINH
 87D4   20 32 A4             JSR CHRGET
 87D7   B0 03                BCS L87DC
 87D9   4C A4 81             JMP LNERROR
@@ -1106,10 +1121,10 @@
 87EA   90 F4                BCC L87E0
 87EC   4C 9E 81             JMP BFERROR
 87EF   86 5D      L87EF     STX $5D
-87F1   A5 F4                LDA $F4
-87F3   85 11                STA $11
+87F1   A5 F4                LDA LINLIM
+87F3   85 11                STA CURLINL
 87F5   A5 F5                LDA $F5
-87F7   85 12                STA $12
+87F7   85 12                STA CURLINH
 87F9   4C 9D A2             JMP NEXTLINE
 87FC   34                   .BYTE $34          ;%00110100 '4'
 87FD   38                   .BYTE $38          ;%00111000 '8'
@@ -1203,7 +1218,6 @@
  L84FC      $84FC
  L85E9      $85E9
  L859C      $859C
- L85CE      $85CE
  L84B4      $84B4
  L84FF      $84FF
  L84A7      $84A7
@@ -1254,12 +1268,19 @@
  SLINEIN    $823A
  VIEWCMD    $838B
  OFERROR    $81A1
+ SCANLINE   $85CE
  LNERROR    $81A4
  BFERROR    $819E
+ CURLINL      $11
+ CURLINH      $12
+ INBUFFL      $13
  CMDEXEC    $00BC
  CHRGOT     $00C2
  TXTPTR       $C3
  TXTPTRH      $C4
+ LINNUML      $F6
+ LINNUMH      $F7
+ KEYBUF     $0100
  PREPWMST   $A274
  NEXTSTMT   $A27D
  ERROR      $A280
@@ -1282,6 +1303,8 @@
  SCHRINV    $02EE
  SCHROUTV   $02F0
  SLINEINV   $02F2
+ WORKLINL     $EE
+ WORKLINH     $EF
  CHRINH     $80D8
  CHROUTH    $807C
  LINEINH    $81E3
@@ -1294,3 +1317,10 @@
  TROFFCMD   $81DB
  MCCMD      $81D0
  DUPLCMD    $87C9
+ FROMLINL     $F0
+ FROMLINH     $F1
+ TOLINL       $F2
+ TOLINH       $F3
+ LINLIM       $F4
+ SCANSTAT     $FA
+ SCANHIT      $FB

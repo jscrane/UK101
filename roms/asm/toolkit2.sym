@@ -9,10 +9,17 @@
 NEWMON = 0xFE00 ; reset entry to m/c monitor
 
 ; BASIC
+CURLINL = $11    ; current BASIC line number (low)
+CURLINH = $12    ; current BASIC line number (high)
+INBUFFL = $13    ; BASIC input line buffer (low)
+INBUFFH = $14    ; BASIC input line buffer (high)
 CMDEXEC = $00BC  ; statement executor (RTS trampoline)
 CHRGOT = $00C2   ; get current character without advancing
 TXTPTR  = $C3    ; BASIC text pointer (low)
 TXTPTRH = $C4    ; BASIC text pointer (high)
+LINNUML = $F6    ; parsed line number (low)
+LINNUMH = $F7    ; parsed line number (high)
+KEYBUF = $0100   ; BASIC raw keyboard input buffer (page 1)
 PREPWMST = $A274 ; abort execution, return to READY
 NEXTSTMT = $A27D ; statement finished, maybe more on this line
 ERROR = $A280    ; general error
@@ -41,26 +48,29 @@ SCHROUTV = $02F0
 SLINEINV = $02F2
 
 ; toolkit ii
-INITROM  = $8019  ; ROM initialization entry
-VECINST  = $804E  ; install BASIC I/O vectors
-IOVECS = $806E    ; BASIC I/O vector table
+WORKLINL = $EE   ; working line number (low)
+WORKLINH = $EF   ; working line number (high)
+INITROM  = $8019 ; ROM initialization entry
+VECINST  = $804E ; install BASIC I/O vectors
+IOVECS = $806E   ; BASIC I/O vector table
 
-CHRINH = $80D8    ; BASIC I/O handlers
+CHRINH = $80D8   ; BASIC I/O handlers
 CHROUTH = $807C
 LINEINH = $81E3
-SCHROUT = $8093   ; saved handlers
+SCHROUT = $8093  ; saved handlers
 SCHRIN = $80D5
 SLINEIN = $823A
 
-CMDRETNS = $8159  ; table of RTS return addresses (continuation points)
-CMDNAMES = $816F  ; command name table (11 entries)
-ARGINIT  = $8324  ; initialize argument parsing
+CMDRETNS = $8159 ; table of RTS return addresses (continuation points)
+CMDNAMES = $816F ; command name table (11 entries)
+ARGINIT  = $8324 ; initialize argument parsing
+SCANLINE = $85CE ; scans tokens in line
 
 BFERROR = $819E
 OFERROR = $81A1
 LNERROR = $81A4
 
-LISTCMD = $8248   ; toolkit LIST implementation
+LISTCMD = $8248  ; toolkit LIST implementation
 AUTOCMD = $840E
 DELETCMD = $83BA
 RENUMCMD = $848A
@@ -71,3 +81,12 @@ TROFFCMD = $81DB
 MCCMD = $81D0
 VIEWCMD = $838B
 DUPLCMD = $87C9
+
+; line range / iteration workspace (toolkit & BASIC extensions)
+FROMLINL = $F0   ; start line (low)
+FROMLINH = $F1   ; start line (high)
+TOLINL   = $F2   ; end line (low)
+TOLINH   = $F3   ; end line (high)
+LINLIM   = $F4   ; line count / iteration limit
+SCANSTAT = $FA   ; scan status / end-of-line / condition flags
+SCANHIT  = $FB   ; secondary result (reference found, etc.)
