@@ -1,4 +1,7 @@
  CMDEXEC  = $00BC
+ CHRGOT   = $00C2
+ TXTPTR   = $C3
+ TXTPTRH  = $C4
  PREPWMST = $A274
  NEXTSTMT = $A27D
  ERROR    = $A280
@@ -82,7 +85,7 @@
 804E   8A         VECINST   TXA
 804F   48                   PHA
 8050   A2 05                LDX #$05
-8052   BD 6E 80   L8052     LDA L806E,X
+8052   BD 6E 80   L8052     LDA IOVECS,X
 8055   9D 18 02             STA CHRINV,X
 8058   BD 76 80             LDA $8076,X
 805B   9D EE 02             STA SCHRINV,X
@@ -95,7 +98,7 @@
 806B   68                   PLA
 806C   AA                   TAX
 806D   60                   RTS
-806E   D8         L806E     .BYTE $D8          ;%11011000
+806E   D8         IOVECS    .BYTE $D8          ;%11011000
 806F   80                   .BYTE $80          ;%10000000
 8070   7C                   .BYTE $7C          ;%01111100 '|'
 8071   80                   .BYTE $80          ;%10000000
@@ -182,15 +185,15 @@
 80FE   48                   PHA
 80FF   A0 00                LDY #$00
 8101   94 13                STY $13,X
-8103   84 C4                STY $C4
+8103   84 C4                STY TXTPTRH
 8105   84 FE                STY LOFROM
 8107   A2 12                LDX #$12
-8109   86 C3                STX $C3
+8109   86 C3                STX TXTPTR
 810B   98                   TYA
 810C   AA                   TAX
 810D   20 42 81   L810D     JSR L8142
 8110   B0 10                BCS L8122
-8112   D1 C3                CMP ($C3),Y
+8112   D1 C3                CMP (TXTPTR),Y
 8114   F0 F7                BEQ L810D
 8116   E8         L8116     INX
 8117   BD 6E 81             LDA $816E,X
@@ -198,12 +201,12 @@
 811C   E6 FE      L811C     INC LOFROM
 811E   A0 00                LDY #$00
 8120   F0 EB                BEQ L810D
-8122   D1 C3      L8122     CMP ($C3),Y
+8122   D1 C3      L8122     CMP (TXTPTR),Y
 8124   D0 F6                BNE L811C
 8126   18                   CLC
 8127   98                   TYA
-8128   65 C3                ADC $C3
-812A   85 C3                STA $C3
+8128   65 C3                ADC TXTPTR
+812A   85 C3                STA TXTPTR
 812C   20 6C A8             JSR STMTDISP
 812F   A9 FF                LDA #$FF
 8131   85 88                STA $88
@@ -405,11 +408,11 @@
 8245   D0 F8                BNE L823F
 8247   60                   RTS
 8248   20 B7 82   LISTCMD   JSR L82B7
-824B   20 C2 00             JSR $00C2
+824B   20 C2 00             JSR CHRGOT
 824E   C9 2F                CMP #$2F
 8250   D0 2A                BNE L827C
 8252   20 BC 00             JSR CMDEXEC
-8255   20 24 83             JSR L8324
+8255   20 24 83             JSR ARGINIT
 8258   A5 F7                LDA $F7
 825A   D0 6A                BNE L82C6
 825C   A5 F6                LDA $F6
@@ -451,7 +454,7 @@
 82B0   A5 F3                LDA $F3
 82B2   85 12                STA $12
 82B4   4C D4 A4             JMP PRNREADY
-82B7   20 C2 00   L82B7     JSR $00C2
+82B7   20 C2 00   L82B7     JSR CHRGOT
 82BA   F0 0D                BEQ L82C9
 82BC   90 18                BCC L82D6
 82BE   C9 2D                CMP #$2D
@@ -471,7 +474,7 @@
 82DB   85 F0                STA $F0
 82DD   A5 12                LDA $12
 82DF   85 F1                STA $F1
-82E1   20 C2 00   L82E1     JSR $00C2
+82E1   20 C2 00   L82E1     JSR CHRGOT
 82E4   F0 1B                BEQ L8301
 82E6   C9 2D                CMP #$2D
 82E8   D0 DC                BNE L82C6
@@ -505,7 +508,7 @@
 831E   85 F0                STA $F0
 8320   85 F1                STA $F1
 8322   F0 BD                BEQ L82E1
-8324   20 C2 00   L8324     JSR $00C2
+8324   20 C2 00   ARGINIT   JSR CHRGOT
 8327   F0 47                BEQ L8370
 8329   B0 2E                BCS L8359
 832B   20 7F A7             JSR COLDSTRT
@@ -513,7 +516,7 @@
 8330   85 F6                STA $F6
 8332   A5 12                LDA $12
 8334   85 F7                STA $F7
-8336   20 C2 00             JSR $00C2
+8336   20 C2 00             JSR CHRGOT
 8339   F0 2C                BEQ L8367
 833B   C9 2F                CMP #$2F
 833D   F0 03                BEQ L8342
@@ -615,7 +618,7 @@
 8408   90 F4                BCC L83FE
 840A   F0 F2                BEQ L83FE
 840C   B0 DC                BCS L83EA
-840E   20 24 83   AUTOCMD   JSR L8324
+840E   20 24 83   AUTOCMD   JSR ARGINIT
 8411   A5 F6                LDA $F6
 8413   85 EE                STA $EE
 8415   A5 F7                LDA $F7
@@ -671,7 +674,7 @@
 8485   A9 0D                LDA #$0D
 8487   60                   RTS
 8488   01 E8                ORA ($E8,X)
-848A   20 24 83   RENUMCMD  JSR L8324
+848A   20 24 83   RENUMCMD  JSR ARGINIT
 848D   A0 01                LDY #$01
 848F   B1 79                LDA ($79),Y
 8491   F0 69                BEQ L84FC
@@ -753,14 +756,14 @@
 853C   F0 E9                BEQ L8527
 853E   98         L853E     TYA
 853F   65 EA                ADC $EA
-8541   85 C3                STA $C3
+8541   85 C3                STA TXTPTR
 8543   A5 EB                LDA $EB
 8545   69 00                ADC #$00
-8547   85 C4                STA $C4
-8549   20 C2 00             JSR $00C2
+8547   85 C4                STA TXTPTRH
+8549   20 C2 00             JSR CHRGOT
 854C   20 7F A7             JSR COLDSTRT
 854F   38                   SEC
-8550   A5 C3                LDA $C3
+8550   A5 C3                LDA TXTPTR
 8552   E5 EA                SBC $EA
 8554   85 FC                STA $FC
 8556   A2 03                LDX #$03
@@ -893,7 +896,7 @@
 8652   A9 00      FINDCMD   LDA #$00
 8654   8D F5 02             STA $02F5
 8657   20 B7 82   L8657     JSR L82B7
-865A   E6 C3                INC $C3
+865A   E6 C3                INC TXTPTR
 865C   EA                   NOP
 865D   20 8C 86             JSR L868C
 8660   A2 05                LDX #$05
@@ -919,7 +922,7 @@
 8689   86 1B                STX $1B
 868B   87 A0                SAX $A0
 868D   00                   BRK
-868E   B1 C3                LDA ($C3),Y
+868E   B1 C3                LDA (TXTPTR),Y
 8690   D0 03                BNE L8695
 8692   4C 7F 82             JMP L827F
 8695   99 D4 02   L8695     STA $02D4,Y
@@ -928,15 +931,15 @@
 869B   C0 15                CPY #$15
 869D   90 03                BCC L86A2
 869F   4C 9E 81             JMP L819E
-86A2   B1 C3      L86A2     LDA ($C3),Y
+86A2   B1 C3      L86A2     LDA (TXTPTR),Y
 86A4   F0 23                BEQ L86C9
 86A6   C9 2F                CMP #$2F
 86A8   D0 EB                BNE L8695
 86AA   98                   TYA
-86AB   65 C3                ADC $C3
-86AD   85 C3                STA $C3
+86AB   65 C3                ADC TXTPTR
+86AD   85 C3                STA TXTPTR
 86AF   A0 00                LDY #$00
-86B1   B1 C3                LDA ($C3),Y
+86B1   B1 C3                LDA (TXTPTR),Y
 86B3   F0 14                BEQ L86C9
 86B5   99 BF 02   L86B5     STA $02BF,Y
 86B8   C8                   INY
@@ -944,7 +947,7 @@
 86BB   C0 15                CPY #$15
 86BD   90 03                BCC L86C2
 86BF   4C 9E 81             JMP L819E
-86C2   B1 C3      L86C2     LDA ($C3),Y
+86C2   B1 C3      L86C2     LDA (TXTPTR),Y
 86C4   F0 02                BEQ L86C8
 86C6   D0 ED                BNE L86B5
 86C8   60         L86C8     RTS
@@ -1082,7 +1085,7 @@
 87C3   D0 03                BNE L87C8
 87C5   4C B3 87             JMP L87B3
 87C8   60         L87C8     RTS
-87C9   20 24 83   DUPLCMD   JSR L8324
+87C9   20 24 83   DUPLCMD   JSR ARGINIT
 87CC   A5 F6                LDA $F6
 87CE   85 11                STA $11
 87D0   A5 F7                LDA $F7
@@ -1127,7 +1130,6 @@
  L8298      $8298
  L8301      $8301
  L8315      $8315
- L8324      $8324
  L8342      $8342
  L8359      $8359
  L8367      $8367
@@ -1161,7 +1163,6 @@
  L8782      $8782
  L8796      $8796
  L8798      $8798
- L806E      $806E
  L808F      $808F
  L80E4      $80E4
  L80F5      $80F5
@@ -1246,12 +1247,17 @@
  SCHROUT    $8093
  CMDRETNS   $8159
  LISTCMD    $8248
+ ARGINIT    $8324
  FINDCMD    $8652
  VECINST    $804E
+ IOVECS     $806E
  SCHRIN     $80D5
  SLINEIN    $823A
  VIEWCMD    $838B
  CMDEXEC    $00BC
+ CHRGOT     $00C2
+ TXTPTR       $C3
+ TXTPTRH      $C4
  PREPWMST   $A274
  NEXTSTMT   $A27D
  ERROR      $A280
@@ -1286,4 +1292,3 @@
  TROFFCMD   $81DB
  MCCMD      $81D0
  DUPLCMD    $87C9
-

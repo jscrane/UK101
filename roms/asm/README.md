@@ -12,8 +12,8 @@
 ### Toolkit II
 A collection of utilities commands run from ```BASIC```:
 
-- LIST
-- AUTO
+- LIST [n | n-m] list ranges
+- AUTO [n] automatic line numbering
 - DELETE
 - RENUM
 - FIND
