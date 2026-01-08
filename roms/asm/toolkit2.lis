@@ -193,7 +193,7 @@
 8112   D1 C3                CMP ($C3),Y
 8114   F0 F7                BEQ L810D
 8116   E8         L8116     INX
-8117   BD 6E 81             LDA CMDNAMES,X
+8117   BD 6E 81             LDA $816E,X
 811A   10 FA                BPL L8116
 811C   E6 FE      L811C     INC LOFROM
 811E   A0 00                LDY #$00
@@ -218,7 +218,7 @@
 8142   18         L8142     CLC
 8143   C8                   INY
 8144   E8                   INX
-8145   BD 6E 81             LDA CMDNAMES,X
+8145   BD 6E 81             LDA $816E,X
 8148   30 0B                BMI L8155
 814A   D0 0C                BNE L8158
 814C   68                   PLA
@@ -254,8 +254,8 @@
 816B   8A                   .BYTE $8A          ;%10001010
 816C   83                   .BYTE $83          ;%10000011
 816D   C8                   .BYTE $C8          ;%11001000
-816E   87         CMDNAMES  .BYTE $87          ;%10000111
-816F   4C                   .BYTE $4C          ;%01001100 'L'
+816E   87                   .BYTE $87          ;%10000111
+816F   4C         CMDNAMES  .BYTE $4C          ;%01001100 'L'
 8170   49                   .BYTE $49          ;%01001001 'I'
 8171   53                   .BYTE $53          ;%01010011 'S'
 8172   D4                   .BYTE $D4          ;%11010100
@@ -330,10 +330,10 @@
 81CD   0D                   .BYTE $0D          ;%00001101
 81CE   0A                   .BYTE $0A          ;%00001010
 81CF   00                   .BYTE $00          ;%00000000
-81D0   4C                   .BYTE $4C          ;%01001100 'L'
+81D0   4C         MCCMD     .BYTE $4C          ;%01001100 'L'
 81D1   00                   .BYTE $00          ;%00000000
 81D2   FE                   .BYTE $FE          ;%11111110
-81D3   A9                   .BYTE $A9          ;%10101001
+81D3   A9         TRONCMD   .BYTE $A9          ;%10101001
 81D4   FF                   .BYTE $FF          ;%11111111
 81D5   8D                   .BYTE $8D          ;%10001101
 81D6   F4                   .BYTE $F4          ;%11110100
@@ -341,7 +341,7 @@
 81D8   4C                   .BYTE $4C          ;%01001100 'L'
 81D9   19                   .BYTE $19          ;%00011001
 81DA   80                   .BYTE $80          ;%10000000
-81DB   A9                   .BYTE $A9          ;%10101001
+81DB   A9         TROFFCMD  .BYTE $A9          ;%10101001
 81DC   00                   .BYTE $00          ;%00000000
 81DD   8D                   .BYTE $8D          ;%10001101
 81DE   F4                   .BYTE $F4          ;%11110100
@@ -404,7 +404,7 @@
 8244   88                   DEY
 8245   D0 F8                BNE L823F
 8247   60                   RTS
-8248   20 B7 82             JSR L82B7
+8248   20 B7 82   LISTCMD   JSR L82B7
 824B   20 C2 00             JSR $00C2
 824E   C9 2F                CMP #$2F
 8250   D0 2A                BNE L827C
@@ -555,7 +555,7 @@
 8384   20 E8 B7             JSR CLEAR
 8387   20 6E B9             JSR INPUT
 838A   60                   RTS
-838B   AD 00 DF   L838B     LDA $DF00
+838B   AD 00 DF   VIEWCMD   LDA $DF00
 838E   30 1B                BMI L83AB
 8390   A9 02                LDA #$02
 8392   8D 00 DF             STA $DF00
@@ -564,17 +564,17 @@
 839A   D0 1B                BNE L83B7
 839C   AD 00 F0   L839C     LDA $F000
 839F   4A                   LSR A
-83A0   90 E9                BCC L838B
+83A0   90 E9                BCC VIEWCMD
 83A2   AD 01 F0             LDA $F001
 83A5   20 93 80             JSR SCHROUT
-83A8   4C 8B 83             JMP L838B
+83A8   4C 8B 83             JMP VIEWCMD
 83AB   A9 FD      L83AB     LDA #$FD
 83AD   8D 00 DF             STA $DF00
 83B0   A9 10                LDA #$10
 83B2   2C 00 DF             BIT $DF00
 83B5   D0 E5                BNE L839C
 83B7   4C 19 80   L83B7     JMP INITROM
-83BA   20 B7 82             JSR L82B7
+83BA   20 B7 82   DELETCMD  JSR L82B7
 83BD   A9 DA                LDA #$DA
 83BF   8D 18 02             STA CHRINV
 83C2   A9 83                LDA #$83
@@ -615,7 +615,7 @@
 8408   90 F4                BCC L83FE
 840A   F0 F2                BEQ L83FE
 840C   B0 DC                BCS L83EA
-840E   20 24 83             JSR L8324
+840E   20 24 83   AUTOCMD   JSR L8324
 8411   A5 F6                LDA $F6
 8413   85 EE                STA $EE
 8415   A5 F7                LDA $F7
@@ -671,7 +671,7 @@
 8485   A9 0D                LDA #$0D
 8487   60                   RTS
 8488   01 E8                ORA ($E8,X)
-848A   20 24 83             JSR L8324
+848A   20 24 83   RENUMCMD  JSR L8324
 848D   A0 01                LDY #$01
 848F   B1 79                LDA ($79),Y
 8491   F0 69                BEQ L84FC
@@ -887,14 +887,14 @@
 8647   F0 EF                BEQ L8638
 8649   38                   SEC
 864A   60         L864A     RTS
-864B   A9                   .BYTE $A9          ;%10101001
+864B   A9         REPLCMD   .BYTE $A9          ;%10101001
 864C   FF                   .BYTE $FF          ;%11111111
 864D   8D                   .BYTE $8D          ;%10001101
 864E   F5                   .BYTE $F5          ;%11110101
 864F   02                   .BYTE $02          ;%00000010
 8650   D0                   .BYTE $D0          ;%11010000
 8651   05                   .BYTE $05          ;%00000101
-8652   A9                   .BYTE $A9          ;%10101001
+8652   A9         FINDCMD   .BYTE $A9          ;%10101001
 8653   00                   .BYTE $00          ;%00000000
 8654   8D                   .BYTE $8D          ;%10001101
 8655   F5                   .BYTE $F5          ;%11110101
@@ -1116,7 +1116,7 @@
 87C3   D0 03                BNE L87C8
 87C5   4C B3 87             JMP L87B3
 87C8   60         L87C8     RTS
-87C9   20 24 83             JSR L8324
+87C9   20 24 83   DUPLCMD   JSR L8324
 87CC   A5 F6                LDA $F6
 87CE   85 11                STA $11
 87D0   A5 F7                LDA $F7
@@ -1223,7 +1223,6 @@
  L833F      $833F
  L83AB      $83AB
  L83B7      $83B7
- L838B      $838B
  L839C      $839C
  L83ED      $83ED
  L83EA      $83EA
@@ -1279,9 +1278,12 @@
  INITROM    $8019
  SCHROUT    $8093
  CMDRETNS   $8159
+ LISTCMD    $8248
+ FINDCMD    $8652
  VECINST    $804E
  SCHRIN     $80D5
  SLINEIN    $823A
+ VIEWCMD    $838B
  CMDEXEC    $00BC
  PREPWMST   $A274
  NEXTSTMT   $A27D
@@ -1308,5 +1310,13 @@
  CHRINH     $80D8
  CHROUTH    $807C
  LINEINH    $81E3
- CMDNAMES   $816E
+ CMDNAMES   $816F
+ AUTOCMD    $840E
+ DELETCMD   $83BA
+ RENUMCMD   $848A
+ REPLCMD    $864B
+ TRONCMD    $81D3
+ TROFFCMD   $81DB
+ MCCMD      $81D0
+ DUPLCMD    $87C9
 

@@ -53,5 +53,16 @@ SCHRIN = $80D5
 SLINEIN = $823A
 
 CMDRETNS = $8159   ; table of RTS return addresses (continuation points)
-CMDNAMES = $816E   ; command name table (11 entries)
+CMDNAMES = $816F   ; command name table (11 entries)
 
+LISTCMD = $8248   ; toolkit LIST implementation
+AUTOCMD = $840E
+DELETCMD = $83BA
+RENUMCMD = $848A
+FINDCMD = $8652
+REPLCMD = $864B
+TRONCMD = $81D3
+TROFFCMD = $81DB
+MCCMD = $81D0
+VIEWCMD = $838B
+DUPLCMD = $87C9
