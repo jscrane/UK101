@@ -1,9 +1,11 @@
  NEWMON   = $FE00
  CURLINL  = $11
  CURLINH  = $12
- INBUFFL  = $13
+ INBUFL   = $13
+ INBUFLEN = $5D
  CMDEXEC  = $00BC
  CHRGOT   = $00C2
+ CURLNPTR = $AA
  TXTPTR   = $C3
  TXTPTRH  = $C4
  LINNUML  = $F6
@@ -203,7 +205,7 @@
 80FD   98                   TYA
 80FE   48                   PHA
 80FF   A0 00                LDY #$00
-8101   94 13                STY INBUFFL,X
+8101   94 13                STY INBUFL,X
 8103   84 C4                STY TXTPTRH
 8105   84 FE                STY LOFROM
 8107   A2 12                LDX #$12
@@ -594,15 +596,15 @@
 83CB   A5 F1                LDA FROMLINH
 83CD   85 12                STA CURLINH
 83CF   20 32 A4             JSR CHRGET
-83D2   A5 AA                LDA $AA
+83D2   A5 AA                LDA CURLNPTR
 83D4   85 FE                STA LOFROM
-83D6   A5 AB                LDA $AB
+83D6   A5 AB                LDA CURLNPTR+1
 83D8   85 FF                STA HIFROM
 83DA   20 91 A4             JSR WARMSTRT
 83DD   A0 00                LDY #$00
 83DF   A2 00                LDX #$00
-83E1   84 13                STY INBUFFL
-83E3   86 5D                STX $5D
+83E1   84 13                STY INBUFL
+83E3   86 5D                STX INBUFLEN
 83E5   C8                   INY
 83E6   B1 FE                LDA (LOFROM),Y
 83E8   D0 03                BNE L83ED
@@ -652,7 +654,7 @@
 8446   A2 00      L8446     LDX #$00
 8448   BD 00 01   L8448     LDA KEYBUF,X
 844B   F0 08                BEQ L8455
-844D   95 13                STA INBUFFL,X
+844D   95 13                STA INBUFL,X
 844F   20 93 80             JSR SCHROUT
 8452   E8                   INX
 8453   D0 F3                BNE L8448
@@ -707,7 +709,7 @@
 84C3   F0 F2                BEQ L84B7
 84C5   A9 00                LDA #$00
 84C7   95 0F                STA $0F,X
-84C9   86 5D                STX $5D
+84C9   86 5D                STX INBUFLEN
 84CB   A0 02                LDY #$02
 84CD   B1 EA                LDA ($EA),Y
 84CF   85 11                STA CURLINL
@@ -978,7 +980,7 @@
 86E5   A5 F5      L86E5     LDA LINLIM+1
 86E7   D0 25                BNE L870E
 86E9   A5 EE                LDA WORKLINL
-86EB   95 13                STA INBUFFL,X
+86EB   95 13                STA INBUFL,X
 86ED   D9 D4 02             CMP $02D4,Y
 86F0   D0 23                BNE L8715
 86F2   C0 00                CPY #$00
@@ -999,7 +1001,7 @@
 870A   28                   PLP
 870B   6C F0 02             JMP (SCHROUTV)
 870E   A5 EE      L870E     LDA WORKLINL
-8710   95 13                STA INBUFFL,X
+8710   95 13                STA INBUFL,X
 8712   4C FF 86             JMP L86FF
 8715   A0 00      L8715     LDY #$00
 8717   84 F4                STY LINLIM
@@ -1010,7 +1012,7 @@
 871E   48                   PHA
 871F   A6 FD                LDX $FD
 8721   A9 00                LDA #$00
-8723   95 13                STA INBUFFL,X
+8723   95 13                STA INBUFL,X
 8725   85 FD                STA $FD
 8727   85 FC                STA $FC
 8729   86 FB                STX SCANHIT
@@ -1049,8 +1051,8 @@
 8769   D0 DE                BNE L8749
 876B   A6 FB                LDX SCANHIT
 876D   A0 47                LDY #$47
-876F   B5 13      L876F     LDA INBUFFL,X
-8771   99 13 00             STA INBUFFL+$0000,Y
+876F   B5 13      L876F     LDA INBUFL,X
+8771   99 13 00             STA INBUFL+$0000,Y
 8774   88                   DEY
 8775   CA                   DEX
 8776   E4 F5                CPX LINLIM+1
@@ -1062,7 +1064,7 @@
 8782   C4 F7      L8782     CPY LINNUMH
 8784   B0 10                BCS L8796
 8786   B9 BF 02             LDA $02BF,Y
-8789   95 13                STA INBUFFL,X
+8789   95 13                STA INBUFL,X
 878B   C8                   INY
 878C   E8                   INX
 878D   E4 FC                CPX $FC
@@ -1071,8 +1073,8 @@
 8793   4C 9E 81             JMP BFERROR
 8796   A4 FC      L8796     LDY $FC
 8798   C8         L8798     INY
-8799   B9 13 00             LDA INBUFFL+$0000,Y
-879C   95 13                STA INBUFFL,X
+8799   B9 13 00             LDA INBUFL+$0000,Y
+879C   95 13                STA INBUFL,X
 879E   E8                   INX
 879F   C0 47                CPY #$47
 87A1   90 F5                BCC L8798
@@ -1102,7 +1104,7 @@
 87D9   4C A4 81             JMP LNERROR
 87DC   A0 04      L87DC     LDY #$04
 87DE   A2 05                LDX #$05
-87E0   B1 AA      L87E0     LDA ($AA),Y
+87E0   B1 AA      L87E0     LDA (CURLNPTR),Y
 87E2   95 0E                STA $0E,X
 87E4   F0 09                BEQ L87EF
 87E6   C8                   INY
@@ -1110,7 +1112,7 @@
 87E8   E0 48                CPX #$48
 87EA   90 F4                BCC L87E0
 87EC   4C 9E 81             JMP BFERROR
-87EF   86 5D      L87EF     STX $5D
+87EF   86 5D      L87EF     STX INBUFLEN
 87F1   A5 F4                LDA LINLIM
 87F3   85 11                STA CURLINL
 87F5   A5 F5                LDA LINLIM+1
@@ -1264,9 +1266,11 @@
  NEWMON     $FE00
  CURLINL      $11
  CURLINH      $12
- INBUFFL      $13
+ INBUFL       $13
+ INBUFLEN     $5D
  CMDEXEC    $00BC
  CHRGOT     $00C2
+ CURLNPTR     $AA
  TXTPTR       $C3
  TXTPTRH      $C4
  LINNUML      $F6

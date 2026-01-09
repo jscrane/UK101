@@ -11,10 +11,12 @@ NEWMON = 0xFE00 ; reset entry to m/c monitor
 ; BASIC
 CURLINL = $11    ; current BASIC line number (low)
 CURLINH = $12    ; current BASIC line number (high)
-INBUFFL = $13    ; BASIC input line buffer (low)
-INBUFFH = $14    ; BASIC input line buffer (high)
+INBUFL = $13    ; BASIC input line buffer (low)
+INBUFH = $14    ; BASIC input line buffer (high)
+INBUFLEN= $5D    ; BASIC input line length
 CMDEXEC = $00BC  ; statement executor (RTS trampoline)
 CHRGOT = $00C2   ; get current character without advancing
+CURLNPTR= $AA    ; current BASIC line pointer
 TXTPTR  = $C3    ; BASIC text pointer (low)
 TXTPTRH = $C4    ; BASIC text pointer (high)
 LINNUML = $F6    ; parsed line number (low)

@@ -4,8 +4,10 @@
 
 - Run disassembler on binary file, using e.g., [this online disassembler](https://www.masswerk.at/6502/disassembler.html).
 - Find ```.DATA``` sections by searching for unknown opcodes and adding to a symbol file.
+- Turn on "decode illegal opcodes" once all ```.DATA``` sections have been identified: some ROMs use them.
 - Resolve external entry-points, e.g., in ```CEGMON``` or ```BASIC``` and add them to the symbol file.
-- Invent useful names for internal subroutines and entry-points, i.e., ```L89AB```; perhaps ask [ChatGPT](https://chatgpt.com).
+- Invent useful names for internal subroutines and entry-points, i.e., ```L89AB```; [ChatGPT](https://chatgpt.com)
+is very useful for this.
 
 ## Toolkit II
 A collection of utilities commands run from ```BASIC```:
@@ -53,12 +55,27 @@ Options:
 
 Prints data from serial or tape until a key is pressed.
 
+### TRON and TROFF
+
+Turns on and off BASIC line tracing.
+
+### MC
+
+Jumps into the Machine Code Monitor.
+
+### DUPL
+
+Duplicates an existing BASIC line, inserting it at the end of the program.
+
+Options:
+- n: the line to duplicate
+
+Errors:
+- LN (line) if the argument is missing or malformed
+- BF (buffer full) if the new line is too long
+
 - FIND
 - REPL
-- TRON
-- TROFF
-- MC
-- DUPL
 
 ### Encoder
 An Assembler / Disassembler.
