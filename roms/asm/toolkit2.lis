@@ -1,3 +1,4 @@
+ NEWMON   = $FE00
  CURLINL  = $11
  CURLINH  = $12
  INBUFFL  = $13
@@ -30,6 +31,7 @@
  SCHRINV  = $02EE
  SCHROUTV = $02F0
  SLINEINV = $02F2
+ TRACEFLG = $02F4
  WORKLINL = $EE
  WORKLINH = $EF
  OFERROR  = $81A1
@@ -44,7 +46,7 @@
 
                             * = $8000
 8000   A9 00                LDA #$00
-8002   8D F4 02             STA $02F4
+8002   8D F4 02             STA TRACEFLG
 8005   A9 27                LDA #$27
 8007   A0 80                LDY #$80
 8009   20 C3 A8             JSR PRINT
@@ -350,26 +352,14 @@
 81CD   0D                   .BYTE $0D          ;%00001101
 81CE   0A                   .BYTE $0A          ;%00001010
 81CF   00                   .BYTE $00          ;%00000000
-81D0   4C         MCCMD     .BYTE $4C          ;%01001100 'L'
-81D1   00                   .BYTE $00          ;%00000000
-81D2   FE                   .BYTE $FE          ;%11111110
-81D3   A9         TRONCMD   .BYTE $A9          ;%10101001
-81D4   FF                   .BYTE $FF          ;%11111111
-81D5   8D                   .BYTE $8D          ;%10001101
-81D6   F4                   .BYTE $F4          ;%11110100
-81D7   02                   .BYTE $02          ;%00000010
-81D8   4C                   .BYTE $4C          ;%01001100 'L'
-81D9   19                   .BYTE $19          ;%00011001
-81DA   80                   .BYTE $80          ;%10000000
-81DB   A9         TROFFCMD  .BYTE $A9          ;%10101001
-81DC   00                   .BYTE $00          ;%00000000
-81DD   8D                   .BYTE $8D          ;%10001101
-81DE   F4                   .BYTE $F4          ;%11110100
-81DF   02                   .BYTE $02          ;%00000010
-81E0   4C                   .BYTE $4C          ;%01001100 'L'
-81E1   19                   .BYTE $19          ;%00011001
-81E2   80                   .BYTE $80          ;%10000000
-81E3   AD F4 02   LINEINH   LDA $02F4
+81D0   4C 00 FE   MCCMD     JMP NEWMON
+81D3   A9 FF      TRONCMD   LDA #$FF
+81D5   8D F4 02             STA TRACEFLG
+81D8   4C 19 80             JMP INITROM
+81DB   A9 00      TROFFCMD  LDA #$00
+81DD   8D F4 02             STA TRACEFLG
+81E0   4C 19 80             JMP INITROM
+81E3   AD F4 02   LINEINH   LDA TRACEFLG
 81E6   F0 52                BEQ SLINEIN
 81E8   8A                   TXA
 81E9   48                   PHA
@@ -445,7 +435,7 @@
 8272   A9 19                LDA #$19
 8274   8D 18 02             STA CHRINV
 8277   A9 80                LDA #$80
-8279   8D 19 02             STA $0219
+8279   8D 19 02             STA CHRINV+1
 827C   20 A1 82   L827C     JSR L82A1
 827F   20 4E 80   L827F     JSR VECINST
 8282   4C 0C AC             JMP EVAL
@@ -544,7 +534,7 @@
 834A   A5 11                LDA CURLINL
 834C   85 F4                STA LINLIM
 834E   A5 12                LDA CURLINH
-8350   85 F5                STA $F5
+8350   85 F5                STA LINLIM+1
 8352   A5 11                LDA CURLINL
 8354   05 12                ORA CURLINH
 8356   F0 E7                BEQ L833F
@@ -557,13 +547,13 @@
 8363   85 F6                STA LINNUML
 8365   D0 DB                BNE L8342
 8367   A9 00      L8367     LDA #$00
-8369   85 F5                STA $F5
+8369   85 F5                STA LINLIM+1
 836B   A9 0A                LDA #$0A
 836D   85 F4                STA LINLIM
 836F   60                   RTS
 8370   A9 00      L8370     LDA #$00
 8372   85 F7                STA LINNUMH
-8374   85 F5                STA $F5
+8374   85 F5                STA LINLIM+1
 8376   A9 0A                LDA #$0A
 8378   85 F6                STA LINNUML
 837A   85 F4                STA LINLIM
@@ -598,7 +588,7 @@
 83BD   A9 DA                LDA #$DA
 83BF   8D 18 02             STA CHRINV
 83C2   A9 83                LDA #$83
-83C4   8D 19 02             STA $0219
+83C4   8D 19 02             STA CHRINV+1
 83C7   A5 F0                LDA FROMLINL
 83C9   85 11                STA CURLINL
 83CB   A5 F1                LDA FROMLINH
@@ -643,7 +633,7 @@
 8419   A9 26                LDA #$26
 841B   8D 18 02             STA CHRINV
 841E   A9 84                LDA #$84
-8420   8D 19 02             STA $0219
+8420   8D 19 02             STA CHRINV+1
 8423   4C 7D A2             JMP NEXTSTMT
 8426   A4 EF                LDY WORKLINH
 8428   C0 FA                CPY #$FA
@@ -669,7 +659,7 @@
 8455   A9 5F      L8455     LDA #$5F
 8457   8D 18 02             STA CHRINV
 845A   A9 84                LDA #$84
-845C   8D 19 02             STA $0219
+845C   8D 19 02             STA CHRINV+1
 845F   20 D5 80             JSR SCHRIN
 8462   C9 0D                CMP #$0D
 8464   F0 08                BEQ L846E
@@ -680,13 +670,13 @@
 846E   A9 26      L846E     LDA #$26
 8470   8D 18 02             STA CHRINV
 8473   A9 84                LDA #$84
-8475   8D 19 02             STA $0219
+8475   8D 19 02             STA CHRINV+1
 8478   18                   CLC
 8479   A5 EE                LDA WORKLINL
 847B   65 F4                ADC LINLIM
 847D   85 EE                STA WORKLINL
 847F   A5 EF                LDA WORKLINH
-8481   65 F5                ADC $F5
+8481   65 F5                ADC LINLIM+1
 8483   85 EF                STA WORKLINH
 8485   A9 0D                LDA #$0D
 8487   60                   RTS
@@ -702,7 +692,7 @@
 849D   A9 D9                LDA #$D9
 849F   8D 18 02             STA CHRINV
 84A2   A9 84                LDA #$84
-84A4   8D 19 02             STA $0219
+84A4   8D 19 02             STA CHRINV+1
 84A7   20 CE 85   L84A7     JSR SCANLINE
 84AA   A5 FA                LDA SCANSTAT
 84AC   D0 06                BNE L84B4
@@ -891,7 +881,7 @@
 8626   65 F4                ADC LINLIM
 8628   85 EE                STA WORKLINL
 862A   A5 EF                LDA WORKLINH
-862C   65 F5                ADC $F5
+862C   65 F5                ADC LINLIM+1
 862E   85 EF                STA WORKLINH
 8630   C9 FA      L8630     CMP #$FA
 8632   90 03                BCC L8637
@@ -908,10 +898,10 @@
 8649   38                   SEC
 864A   60         L864A     RTS
 864B   A9 FF      REPLCMD   LDA #$FF
-864D   8D F5 02             STA $02F5
+864D   8D F5 02             STA TRACEFLG+1
 8650   D0 05                BNE L8657
 8652   A9 00      FINDCMD   LDA #$00
-8654   8D F5 02             STA $02F5
+8654   8D F5 02             STA TRACEFLG+1
 8657   20 B7 82   L8657     JSR L82B7
 865A   E6 C3                INC TXTPTR
 865C   EA                   NOP
@@ -932,7 +922,7 @@
 867B   A9 00                LDA #$00
 867D   85 FD                STA $FD
 867F   85 FC                STA $FC
-8681   85 F5                STA $F5
+8681   85 F5                STA LINLIM+1
 8683   20 A1 82             JSR L82A1
 8686   AA                   TAX
 8687   87 CC                SAX $CC
@@ -985,7 +975,7 @@
 86DF   90 1F                BCC L8700
 86E1   C9 3A                CMP #$3A
 86E3   B0 1B                BCS L8700
-86E5   A5 F5      L86E5     LDA $F5
+86E5   A5 F5      L86E5     LDA LINLIM+1
 86E7   D0 25                BNE L870E
 86E9   A5 EE                LDA WORKLINL
 86EB   95 13                STA INBUFFL,X
@@ -997,7 +987,7 @@
 86F8   C8         L86F8     INY
 86F9   C4 F6                CPY LINNUML
 86FB   90 02                BCC L86FF
-86FD   86 F5                STX $F5
+86FD   86 F5                STX LINLIM+1
 86FF   E8         L86FF     INX
 8700   86 FD      L8700     STX $FD
 8702   84 FC                STY $FC
@@ -1024,7 +1014,7 @@
 8725   85 FD                STA $FD
 8727   85 FC                STA $FC
 8729   86 FB                STX SCANHIT
-872B   A5 F5                LDA $F5
+872B   A5 F5                LDA LINLIM+1
 872D   F0 1A                BEQ L8749
 872F   20 6C A8             JSR STMTDISP
 8732   A4 F4                LDY LINLIM
@@ -1034,11 +1024,11 @@
 873A   10 FA                BPL L8736
 873C   A9 5E                LDA #$5E
 873E   20 93 80             JSR SCHROUT
-8741   AD F5 02             LDA $02F5
+8741   AD F5 02             LDA TRACEFLG+1
 8744   D0 14                BNE L875A
 8746   20 BE 87             JSR L87BE
 8749   A9 00      L8749     LDA #$00
-874B   85 F5                STA $F5
+874B   85 F5                STA LINLIM+1
 874D   68                   PLA
 874E   A8                   TAY
 874F   68                   PLA
@@ -1063,12 +1053,12 @@
 8771   99 13 00             STA INBUFFL+$0000,Y
 8774   88                   DEY
 8775   CA                   DEX
-8776   E4 F5                CPX $F5
+8776   E4 F5                CPX LINLIM+1
 8778   D0 F5                BNE L876F
 877A   84 FC                STY $FC
 877C   A6 F4                LDX LINLIM
 877E   A0 00                LDY #$00
-8780   84 F5                STY $F5
+8780   84 F5                STY LINLIM+1
 8782   C4 F7      L8782     CPY LINNUMH
 8784   B0 10                BCS L8796
 8786   B9 BF 02             LDA $02BF,Y
@@ -1123,7 +1113,7 @@
 87EF   86 5D      L87EF     STX $5D
 87F1   A5 F4                LDA LINLIM
 87F3   85 11                STA CURLINL
-87F5   A5 F5                LDA $F5
+87F5   A5 F5                LDA LINLIM+1
 87F7   85 12                STA CURLINH
 87F9   4C 9D A2             JMP NEXTLINE
 87FC   34                   .BYTE $34          ;%00110100 '4'
@@ -1271,6 +1261,7 @@
  SCANLINE   $85CE
  LNERROR    $81A4
  BFERROR    $819E
+ NEWMON     $FE00
  CURLINL      $11
  CURLINH      $12
  INBUFFL      $13
@@ -1303,6 +1294,7 @@
  SCHRINV    $02EE
  SCHROUTV   $02F0
  SLINEINV   $02F2
+ TRACEFLG   $02F4
  WORKLINL     $EE
  WORKLINH     $EF
  CHRINH     $80D8

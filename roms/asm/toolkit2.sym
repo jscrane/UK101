@@ -1,7 +1,7 @@
 .DATA $8027 ... $804D
 .DATA $806E ... $807B
 .DATA $8159 ... $819D
-.DATA $81C1 ... $81E2
+.DATA $81C1 ... $81CF
 .DATA $8754 ... $8759
 .DATA $87FC ... $87FF
 
@@ -46,6 +46,7 @@ LINEINV = $0222
 SCHRINV = $02EE   ; stored vectors
 SCHROUTV = $02F0
 SLINEINV = $02F2
+TRACEFLG = $02F4  ; $FF = trace on, $00 = trace off
 
 ; toolkit ii
 WORKLINL = $EE   ; working line number (low)

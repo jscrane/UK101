@@ -10,6 +10,9 @@
 ## Toolkit II
 A collection of utilities commands run from ```BASIC```:
 
+- in immediate mode, prints '*'
+- CTRL-T is used to abort some commands
+
 ### LIST
 
 A paging-aware, interruptible, range-capable reimplementation of LIST that runs alongside BASIC, not inside it.
@@ -38,14 +41,23 @@ Options:
 - n,m: renumber all lines from line m, starting at line n
 - n,m,i: renumber all lines from line m, starting at line n, in increments of i
 
-- DELETE
-- RENUM
+### DELETE
+
+DELETE removes one or more BASIC lines from the program.
+
+Options:
+- n: delete line n
+- n-m: delete lines between n and m
+
+### VIEW
+
+Prints data from serial or tape until a key is pressed.
+
 - FIND
 - REPL
 - TRON
 - TROFF
 - MC
-- VIEW
 - DUPL
 
 ### Encoder
