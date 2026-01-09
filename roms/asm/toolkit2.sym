@@ -43,6 +43,7 @@ HIFROM = $FF      ; ... address in save, move and tabular display
 EDFLAG = $0204    ; EDITOR flag: 00 disable cursor, FF enable it
 CCFLAG = $0212    ; BASIC CTRL-C flag: 00 enables CTRL-C break, 01 disables
 CHRINV = $0218    ; BASIC I/O vectors
+CHRINVH = $0219   ; chr input vec (high)
 CHROUTV = $0220
 LINEINV = $0222
 SCHRINV = $02EE   ; stored vectors
@@ -51,8 +52,13 @@ SLINEINV = $02F2
 TRACEFLG = $02F4  ; $FF = trace on, $00 = trace off
 
 ; toolkit ii
+ARGPTR = $79     ; pointer to argument text (set by ARGINIT, used by many commands)
+ARGPTRH = $7A    ; high byte of argument pointer
+SCANPTR = $EA    ; pointer to program line being scanned
+SCANPTRH = $EB   ; high byte of scan pointer
 WORKLINL = $EE   ; working line number (low)
 WORKLINH = $EF   ; working line number (high)
+
 INITROM  = $8019 ; ROM initialization entry
 VECINST  = $804E ; install BASIC I/O vectors
 IOVECS = $806E   ; BASIC I/O vector table
@@ -67,6 +73,8 @@ SLINEIN = $823A
 CMDRETNS = $8159 ; table of RTS return addresses (continuation points)
 CMDNAMES = $816F ; command name table (11 entries)
 ARGINIT  = $8324 ; initialize argument parsing
+INITSRCH = $85E9 ; initialise FIND/REPL/RENUM scan state
+INITSCAN = $859C ; initialise per-line scan state for FIND/REPL/RENUM
 SCANLINE = $85CE ; scans tokens in line
 
 BFERROR = $819E
