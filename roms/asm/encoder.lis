@@ -16,6 +16,11 @@
  FRMNUM   = $A357
  LOFROM   = $FE
  HIFROM   = $FF
+ LDFLAG   = $0203
+ CHROUTV  = $021A
+ CHROUTVH = $021B
+ USERLO   = $0233
+ USERHI   = $0234
 
                             * = $8800
 8800   20 8A 88   L8800     JSR L888A
@@ -27,8 +32,8 @@
 880C   CA                   DEX
 880D   D0 FB                BNE L880A
 880F   A2 88                LDX #$88
-8811   8E 34 02             STX $0234
-8814   8C 33 02             STY $0233
+8811   8E 34 02             STX USERHI
+8814   8C 33 02             STY USERLO
 8817   A6 86                LDX $86
 8819   CA                   DEX
 881A   86 E8                STX $E8
@@ -48,7 +53,7 @@
 8836   C9 0D                CMP #$0D
 8838   D0 F1                BNE L882B
 883A   4C 00 00             JMP $0000
-883D   C9 60                CMP #$60
+883D   C9 60      CHROUTH   CMP #$60
 883F   F0 BF                BEQ L8800
 8841   4C 9B FF             JMP OUTPUT
 8844   C6 E0      L8844     DEC $E0
@@ -81,9 +86,9 @@
 8884   20 57 A3   L8884     JSR FRMNUM
 8887   4C 06 8B             JMP L8B06
 888A   A9 3D      L888A     LDA #$3D
-888C   8D 1A 02             STA $021A
+888C   8D 1A 02             STA CHROUTV
 888F   A9 88                LDA #$88
-8891   8D 1B 02             STA $021B
+8891   8D 1B 02             STA CHROUTVH
 8894   60                   RTS
 8895   18         L8895     CLC
 8896   65 F3                ADC $F3
@@ -194,7 +199,7 @@
 8953   A5 E0                LDA $E0
 8955   30 08                BMI L895F
 8957   A9 00                LDA #$00
-8959   8D 03 02             STA $0203
+8959   8D 03 02             STA LDFLAG
 895C   4C 65 A2             JMP ENDSTMT
 895F   4C 00 88   L895F     JMP L8800
 8962   C9 25      L8962     CMP #$25
@@ -374,9 +379,9 @@
 8A95   20                   .BYTE $20          ;%00100000 ' '
 8A96   3F                   .BYTE $3F          ;%00111111 '?'
 8A97   A9 DF      L8A97     LDA #$DF
-8A99   8D 1A 02             STA $021A
+8A99   8D 1A 02             STA CHROUTV
 8A9C   A9 8A                LDA #$8A
-8A9E   8D 1B 02             STA $021B
+8A9E   8D 1B 02             STA CHROUTVH
 8AA1   60                   RTS
 8AA2   18         L8AA2     CLC
 8AA3   A5 FE                LDA LOFROM
@@ -425,7 +430,7 @@
 8AF7   8A                   TXA
 8AF8   D0 08                BNE L8B02
 8AFA   85 E0      L8AFA     STA $E0
-8AFC   8D 03 02             STA $0203
+8AFC   8D 03 02             STA LDFLAG
 8AFF   4C 4B 88             JMP L884B
 8B02   A9 00      L8B02     LDA #$00
 8B04   95 12                STA $12,X
@@ -1450,3 +1455,9 @@
  FRMNUM     $A357
  LOFROM       $FE
  HIFROM       $FF
+ LDFLAG     $0203
+ CHROUTV    $021A
+ CHROUTVH   $021B
+ USERLO     $0233
+ USERHI     $0234
+ CHROUTH    $883D

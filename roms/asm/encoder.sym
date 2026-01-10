@@ -42,16 +42,14 @@ EVAL = $AC0C     ; expression evaluation
 CLEAR = $B7E8    ; CLEAR statement handler
 INPUT = $B96E    ; INPUT statement handler
 
-
 ; ram addresses
 LOFROM = $FE      ; store 'current address' for most routines; 'from'
 HIFROM = $FF      ; ... address in save, move and tabular display
-EDFLAG = $0204    ; EDITOR flag: 00 disable cursor, FF enable it
-CCFLAG = $0212    ; BASIC CTRL-C flag: 00 enables CTRL-C break, 01 disables
-CHRINV = $0218    ; BASIC I/O vectors
-CHRINVH = $0219   ; chr input vec (high)
-CHROUTV = $0220
-LINEINV = $0222
-SCHRINV = $02EE   ; stored vectors
-SCHROUTV = $02F0
-SLINEINV = $02F2
+LDFLAG = $0203    ; BASIC load flag: 00 - no load; FF - load from ACIA
+CHROUTV = $021A   ; chr output vector (low)
+CHROUTVH = $021B  ; chr output vector (high)
+USERLO = $0233    ; location of start of  user routine called by
+USERHI = $0234    ; machine code monitor's U command
+
+; encoder
+CHROUTH = $883D   ; chr output handler
