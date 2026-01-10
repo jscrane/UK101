@@ -11,7 +11,9 @@
  SPCOUT   = $FBE6
  PRDATD   = $FEBD
  QDDATD   = $FEB6
+ ENDSTMT  = $A265
  ERROR    = $A280
+ FRMNUM   = $A357
  LOFROM   = $FE
  HIFROM   = $FF
 
@@ -74,9 +76,9 @@
 8875   4C 80 A2             JMP ERROR
 8878   20 EE FF   L8878     JSR OUTVEC
 887B   20 70 FE             JSR SETLOD
-887E   20 57 A3             JSR $A357
-8881   20 57 A3             JSR $A357
-8884   20 57 A3   L8884     JSR $A357
+887E   20 57 A3             JSR FRMNUM
+8881   20 57 A3             JSR FRMNUM
+8884   20 57 A3   L8884     JSR FRMNUM
 8887   4C 06 8B             JMP L8B06
 888A   A9 3D      L888A     LDA #$3D
 888C   8D 1A 02             STA $021A
@@ -193,7 +195,7 @@
 8955   30 08                BMI L895F
 8957   A9 00                LDA #$00
 8959   8D 03 02             STA $0203
-895C   4C 65 A2             JMP $A265
+895C   4C 65 A2             JMP ENDSTMT
 895F   4C 00 88   L895F     JMP L8800
 8962   C9 25      L8962     CMP #$25
 8964   F0 2B                BEQ L8991
@@ -725,7 +727,7 @@
 8D5E   20 EE FF   L8D5E     JSR OUTVEC
 8D61   A9 24                LDA #$24
 8D63   20 EE FF             JSR OUTVEC
-8D66   20 57 A3             JSR $A357
+8D66   20 57 A3             JSR FRMNUM
 8D69   A2 FF                LDX #$FF
 8D6B   A9 24                LDA #$24
 8D6D   20 D3 89             JSR L89D3
@@ -1443,6 +1445,8 @@
  SPCOUT     $FBE6
  PRDATD     $FEBD
  QDDATD     $FEB6
+ ENDSTMT    $A265
  ERROR      $A280
+ FRMNUM     $A357
  LOFROM       $FE
  HIFROM       $FF

@@ -25,20 +25,23 @@ PRDATD = $FEBD   ; print data byte in FC to display
 QDDATD = $FEB6   ; print address in (FE) to display
 
 ; basic
-PREPWMST = $A274
-NEXTSTMT = $A27D
-ERROR = $A280
-NEXTLINE = $A29D
-CHRGET = $A432
-WARMSTRT = $A491
-PRNREADY = $A4D4
-COLDSTRT = $A77F
-STMTDISP = $A86C
-PRINT = $A8C3
-PRNTCRLF = $A8E5
-EVAL = $AC0C
-CLEAR = $B7E8
-INPUT = $B96E
+ENDSTMT = $A265  ; finish BASIC statement, continue execution
+PREPWMST = $A274 ; abort execution, return to READY
+NEXTSTMT = $A27D ; statement finished, maybe more on this line
+ERROR = $A280    ; general error
+NEXTLINE = $A29D ; line finished, go to next line
+FRMNUM = $A357   ; parse numeric expression into floating-point accumulator (FAC)
+CHRGET = $A432   ; character fetch
+WARMSTRT = $A491 ; warm start
+PRNREADY = $A4D4 ; READY prompt
+COLDSTRT = $A77F ; cold start
+STMTDISP = $A86C ; statement dispatcher
+PRINT = $A8C3    ; PRINT statement handler
+PRNTCRLF = $A8E5 ; end-of-PRINT, newline handler
+EVAL = $AC0C     ; expression evaluation
+CLEAR = $B7E8    ; CLEAR statement handler
+INPUT = $B96E    ; INPUT statement handler
+
 
 ; ram addresses
 LOFROM = $FE      ; store 'current address' for most routines; 'from'
