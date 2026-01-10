@@ -156,6 +156,7 @@ OK
 
 ### TRON and TROFF
 Enables and disables BASIC execution tracing by turning on the line-trace flag.
+When enabled, a bracketed line number is written directly into screen memory.
 
 ### MC
 Enters the Machine Code Monitor.

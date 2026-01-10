@@ -1,3 +1,5 @@
+ ACIA     = $F000
+ KEYBOARD = $DF00
  NEWMON   = $FE00
  CURLINL  = $11
  CURLINH  = $12
@@ -399,7 +401,7 @@
 821A   91 FE                STA (LOFROM),Y
 821C   AD 12 02             LDA CCFLAG
 821F   D0 09                BNE L822A
-8221   AD 00 DF             LDA $DF00
+8221   AD 00 DF             LDA KEYBOARD
 8224   F0 07                BEQ L822D
 8226   C9 FF                CMP #$FF
 8228   F0 03                BEQ L822D
@@ -572,23 +574,23 @@
 8384   20 E8 B7             JSR CLEAR
 8387   20 6E B9             JSR INPUT
 838A   60                   RTS
-838B   AD 00 DF   VIEWCMD   LDA $DF00
+838B   AD 00 DF   VIEWCMD   LDA KEYBOARD
 838E   30 1B                BMI L83AB
 8390   A9 02                LDA #$02
-8392   8D 00 DF             STA $DF00
+8392   8D 00 DF             STA KEYBOARD
 8395   A9 10                LDA #$10
-8397   2C 00 DF             BIT $DF00
+8397   2C 00 DF             BIT KEYBOARD
 839A   D0 1B                BNE L83B7
-839C   AD 00 F0   L839C     LDA $F000
+839C   AD 00 F0   L839C     LDA ACIA
 839F   4A                   LSR A
 83A0   90 E9                BCC VIEWCMD
-83A2   AD 01 F0             LDA $F001
+83A2   AD 01 F0             LDA ACIA+1
 83A5   20 93 80             JSR SCHROUT
 83A8   4C 8B 83             JMP VIEWCMD
 83AB   A9 FD      L83AB     LDA #$FD
-83AD   8D 00 DF             STA $DF00
+83AD   8D 00 DF             STA KEYBOARD
 83B0   A9 10                LDA #$10
-83B2   2C 00 DF             BIT $DF00
+83B2   2C 00 DF             BIT KEYBOARD
 83B5   D0 E5                BNE L839C
 83B7   4C 19 80   L83B7     JMP INITROM
 83BA   20 B7 82   DELETCMD  JSR L82B7
@@ -1268,6 +1270,8 @@
  SCANLINE   $85CE
  LNERROR    $81A4
  BFERROR    $819E
+ ACIA       $F000
+ KEYBOARD   $DF00
  NEWMON     $FE00
  CURLINL      $11
  CURLINH      $12
