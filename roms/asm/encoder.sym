@@ -56,8 +56,23 @@ ENCODER = $8800   ; main ROM entry, prints "ENCODER D/A?"
 CMDLOOP = $882B   ; wait for D/A/CR command
 GOBASIC = $883A   ; JMP $0000 (warm start BASIC)
 CHROUTH = $883D   ; chr output handler
-DASMCMD = $8844   ; handle 'D' command (disassembler)
+DISCMD = $8844    ; handle 'D' command, enter disassembly mode
+DISPAGE = $8D5E   ; disassemble one page (15 instructions) from address
+DISWAIT = $8D7E   ; wait for CR/LF/D during disassembly
+DISNEXT = $8D70   ; start next instruction line
+DISLOOP = $8D90   ; per-instruction disassembly loop (one page)
+OPCDEC  = $8DA4   ; decode opcode, classify instruction
+OPCEMIT = $8E90   ; print decoded instruction
 ASMCMD = $8849    ; handle 'A' command, prompt for M/L
 ASMLOOP = $8850   ; wait for M, L, or CR after 'A'
 ASMMEM = $885B    ; assemble source from BASIC program text
 ASMTAPE = $8878   ; assemble source loaded from tape
+
+; ram addresses used
+OPCODE  = $F1     ; decoded opcode / mnemonic selector
+OPMODE  = $F2     ; addressing mode / operand length
+INSLEN = $F3      ; instruction length / operand byte count
+PAGCNT  = $F7     ; instruction counter per page (~15)
+ABRTFLG = $F8     ; abort / formatting flag
+PCLO    = $F9     ; current disassembly PC (low byte)
+PCHI    = $FA     ; current disassembly PC (high byte)
