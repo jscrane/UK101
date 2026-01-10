@@ -1,29 +1,19 @@
- GETCHAR  = $FEE9
  OUTPUT   = $FF9B
- CRLF     = $FBF5
- SETLOD   = $FE70
- SPCOUT   = $FBE6
- OUTVEC   = $FFEE
- ASCHEX   = $FE93
- PRDATD   = $FEBD
- QDDATD   = $FEB6
- ROLSTR   = $FEDA
- BUMP     = $FEF9
- STOCUR   = $FEF7
  MENTRY   = $FE0C
  MSTART   = $F97E
- CHRGET   = $A357
+ OUTVEC   = $FFEE
+ GETCHR   = $FEE9
+ SETLOD   = $FE70
+ BUMP     = $FEF9
+ ROLSTR   = $FEDA
+ ASCHEX   = $FE93
+ CRLF     = $FBF5
+ SPCOUT   = $FBE6
+ PRDATD   = $FEBD
+ QDDATD   = $FEB6
  ERROR    = $A280
- SYNERR   = $A265
- LOTO     = $F9
- HITO     = $FA
- STORE    = $FC
  LOFROM   = $FE
  HIFROM   = $FF
- LDFLAG   = $0203
- CHRINV   = $021A
- USERLO   = $0233
- USERHI   = $0234
 
                             * = $8800
 8800   20 8A 88   L8800     JSR L888A
@@ -35,8 +25,8 @@
 880C   CA                   DEX
 880D   D0 FB                BNE L880A
 880F   A2 88                LDX #$88
-8811   8E 34 02             STX USERHI
-8814   8C 33 02             STY USERLO
+8811   8E 34 02             STX $0234
+8814   8C 33 02             STY $0233
 8817   A6 86                LDX $86
 8819   CA                   DEX
 881A   86 E8                STX $E8
@@ -48,7 +38,7 @@
 8825   88                   DEY
 8826   D0 F9                BNE L8821
 8828   20 72 8A             JSR L8A72
-882B   20 E9 FE   L882B     JSR GETCHAR
+882B   20 E9 FE   L882B     JSR GETCHR
 882E   C9 41                CMP #$41
 8830   F0 17                BEQ L8849
 8832   C9 44                CMP #$44
@@ -64,7 +54,7 @@
 8849   C6 F0      L8849     DEC $F0
 884B   A0 10      L884B     LDY #$10
 884D   20 72 8A             JSR L8A72
-8850   20 E9 FE   L8850     JSR GETCHAR
+8850   20 E9 FE   L8850     JSR GETCHR
 8853   C9 4C                CMP #$4C
 8855   F0 21                BEQ L8878
 8857   C9 0D                CMP #$0D
@@ -84,25 +74,25 @@
 8875   4C 80 A2             JMP ERROR
 8878   20 EE FF   L8878     JSR OUTVEC
 887B   20 70 FE             JSR SETLOD
-887E   20 57 A3             JSR CHRGET
-8881   20 57 A3             JSR CHRGET
-8884   20 57 A3   L8884     JSR CHRGET
+887E   20 57 A3             JSR $A357
+8881   20 57 A3             JSR $A357
+8884   20 57 A3   L8884     JSR $A357
 8887   4C 06 8B             JMP L8B06
 888A   A9 3D      L888A     LDA #$3D
-888C   8D 1A 02             STA CHRINV
+888C   8D 1A 02             STA $021A
 888F   A9 88                LDA #$88
-8891   8D 1B 02             STA CHRINV+1
+8891   8D 1B 02             STA $021B
 8894   60                   RTS
 8895   18         L8895     CLC
 8896   65 F3                ADC $F3
 8898   20 A6 88             JSR L88A6
 889B   F0 10                BEQ L88AD
-889D   A5 F9      L889D     LDA LOTO
+889D   A5 F9      L889D     LDA $F9
 889F   20 A6 88             JSR L88A6
 88A2   F0 09                BEQ L88AD
-88A4   A5 FA      L88A4     LDA HITO
+88A4   A5 FA      L88A4     LDA $FA
 88A6   A0 00      L88A6     LDY #$00
-88A8   20 F7 FE             JSR STOCUR
+88A8   20 F7 FE             JSR $FEF7
 88AB   C6 F1                DEC $F1
 88AD   60         L88AD     RTS
 88AE   A9 7F      L88AE     LDA #$7F
@@ -172,9 +162,9 @@
 891C   F0 0F                BEQ L892D
 891E   C0 0A                CPY #$0A
 8920   B0 16                BCS L8938
-8922   A5 F9      L8922     LDA LOTO
+8922   A5 F9      L8922     LDA $F9
 8924   65 E3                ADC $E3
-8926   85 F9                STA LOTO
+8926   85 F9                STA $F9
 8928   B0 5D      L8928     BCS L8987
 892A   88                   DEY
 892B   D0 F5                BNE L8922
@@ -202,8 +192,8 @@
 8953   A5 E0                LDA $E0
 8955   30 08                BMI L895F
 8957   A9 00                LDA #$00
-8959   8D 03 02             STA LDFLAG
-895C   4C 65 A2             JMP SYNERR
+8959   8D 03 02             STA $0203
+895C   4C 65 A2             JMP $A265
 895F   4C 00 88   L895F     JMP L8800
 8962   C9 25      L8962     CMP #$25
 8964   F0 2B                BEQ L8991
@@ -237,7 +227,7 @@
 899B   B0 EA                BCS L8987
 899D   C8                   INY
 899E   4A                   LSR A
-899F   26 F9                ROL LOTO
+899F   26 F9                ROL $F9
 89A1   90 EE                BCC L8991
 89A3   98         L89A3     TYA
 89A4   F0 E1                BEQ L8987
@@ -268,8 +258,8 @@
 89D0   E8         L89D0     INX
 89D1   B5 13      L89D1     LDA $13,X
 89D3   A0 00      L89D3     LDY #$00
-89D5   84 F9                STY LOTO
-89D7   84 FA                STY HITO
+89D5   84 F9                STY $F9
+89D7   84 FA                STY $FA
 89D9   84 E3                STY $E3
 89DB   C9 3A                CMP #$3A
 89DD   D0 83                BNE L8962
@@ -280,10 +270,10 @@
 89E8   D0 09                BNE L89F3
 89EA   20 D0 89             JSR L89D0
 89ED   C6 F1                DEC $F1
-89EF   A5 FA                LDA HITO
+89EF   A5 FA                LDA $FA
 89F1   D0 94                BNE L8987
 89F3   A0 01      L89F3     LDY #$01
-89F5   A5 F9                LDA LOTO
+89F5   A5 F9                LDA $F9
 89F7   91 FE                STA (LOFROM),Y
 89F9   A5 E6                LDA $E6
 89FB   B4 13                LDY $13,X
@@ -315,13 +305,13 @@
 8A2D   C9 01                CMP #$01
 8A2F   D0 20                BNE L8A51
 8A31   A5 E4                LDA $E4
-8A33   E5 F9                SBC LOTO
+8A33   E5 F9                SBC $F9
 8A35   A8                   TAY
 8A36   88                   DEY
 8A37   88                   DEY
-8A38   84 F9                STY LOTO
+8A38   84 F9                STY $F9
 8A3A   A5 E5                LDA $E5
-8A3C   E5 FA                SBC HITO
+8A3C   E5 FA                SBC $FA
 8A3E   F0 09                BEQ L8A49
 8A40   C9 FF                CMP #$FF
 8A42   90 08                BCC L8A4C
@@ -341,14 +331,14 @@
 8A5C   68                   PLA
 8A5D   85 E5                STA $E5
 8A5F   A5 E4      L8A5F     LDA $E4
-8A61   85 F9                STA LOTO
+8A61   85 F9                STA $F9
 8A63   E6 F1                INC $F1
 8A65   A5 E5                LDA $E5
 8A67   D0 04                BNE L8A6D
 8A69   A4 F4                LDY $F4
 8A6B   D0 02                BNE L8A6F
 8A6D   E6 F1      L8A6D     INC $F1
-8A6F   85 FA      L8A6F     STA HITO
+8A6F   85 FA      L8A6F     STA $FA
 8A71   60                   RTS
 8A72   C8         L8A72     INY
 8A73   B9 7D 8A             LDA $8A7D,Y
@@ -382,17 +372,17 @@
 8A95   20                   .BYTE $20          ;%00100000 ' '
 8A96   3F                   .BYTE $3F          ;%00111111 '?'
 8A97   A9 DF      L8A97     LDA #$DF
-8A99   8D 1A 02             STA CHRINV
+8A99   8D 1A 02             STA $021A
 8A9C   A9 8A                LDA #$8A
-8A9E   8D 1B 02             STA CHRINV+1
+8A9E   8D 1B 02             STA $021B
 8AA1   60                   RTS
 8AA2   18         L8AA2     CLC
 8AA3   A5 FE                LDA LOFROM
 8AA5   65 F7                ADC $F7
-8AA7   85 F9                STA LOTO
+8AA7   85 F9                STA $F9
 8AA9   A5 FF                LDA HIFROM
 8AAB   65 F8                ADC $F8
-8AAD   85 FA                STA HITO
+8AAD   85 FA                STA $FA
 8AAF   60                   RTS
 8AB0   E8         L8AB0     INX
 8AB1   38         L8AB1     SEC
@@ -433,7 +423,7 @@
 8AF7   8A                   TXA
 8AF8   D0 08                BNE L8B02
 8AFA   85 E0      L8AFA     STA $E0
-8AFC   8D 03 02             STA LDFLAG
+8AFC   8D 03 02             STA $0203
 8AFF   4C 4B 88             JMP L884B
 8B02   A9 00      L8B02     LDA #$00
 8B04   95 12                STA $12,X
@@ -451,18 +441,18 @@
 8B1B   A9 2A                LDA #$2A
 8B1D   4C 48 89             JMP L8948
 8B20   20 D0 89   L8B20     JSR L89D0
-8B23   A5 F9                LDA LOTO
+8B23   A5 F9                LDA $F9
 8B25   85 FE                STA LOFROM
-8B27   A5 FA                LDA HITO
+8B27   A5 FA                LDA $FA
 8B29   85 FF                STA HIFROM
 8B2B   20 B1 8A             JSR L8AB1
 8B2E   B0 10                BCS L8B40
 8B30   20 D1 89             JSR L89D1
 8B33   38                   SEC
-8B34   A5 F9                LDA LOTO
+8B34   A5 F9                LDA $F9
 8B36   E5 FE                SBC LOFROM
 8B38   85 F7                STA $F7
-8B3A   A5 FA                LDA HITO
+8B3A   A5 FA                LDA $FA
 8B3C   E5 FF                SBC HIFROM
 8B3E   85 F8                STA $F8
 8B40   4C C0 8A   L8B40     JMP L8AC0
@@ -498,10 +488,10 @@
 8B84   4C 38 8C             JMP L8C38
 8B87   20 D0 89   L8B87     JSR L89D0
 8B8A   A4 ED      L8B8A     LDY $ED
-8B8C   A5 F9                LDA LOTO
+8B8C   A5 F9                LDA $F9
 8B8E   91 E7                STA ($E7),Y
 8B90   C8                   INY
-8B91   A5 FA                LDA HITO
+8B91   A5 FA                LDA $FA
 8B93   91 E7                STA ($E7),Y
 8B95   A5 FE                LDA LOFROM
 8B97   48                   PHA
@@ -624,7 +614,7 @@
 8C76   C9 22                CMP #$22
 8C78   D0 1D                BNE L8C97
 8C7A   B5 14                LDA $14,X
-8C7C   85 F9                STA LOTO
+8C7C   85 F9                STA $F9
 8C7E   D0 03                BNE L8C83
 8C80   20 D0 89   L8C80     JSR L89D0
 8C83   A9 02      L8C83     LDA #$02
@@ -735,7 +725,7 @@
 8D5E   20 EE FF   L8D5E     JSR OUTVEC
 8D61   A9 24                LDA #$24
 8D63   20 EE FF             JSR OUTVEC
-8D66   20 57 A3             JSR CHRGET
+8D66   20 57 A3             JSR $A357
 8D69   A2 FF                LDX #$FF
 8D6B   A9 24                LDA #$24
 8D6D   20 D3 89             JSR L89D3
@@ -744,7 +734,7 @@
 8D75   20 90 8D             JSR L8D90
 8D78   20 97 8D             JSR L8D97
 8D7B   20 F5 FB             JSR CRLF
-8D7E   20 E9 FE   L8D7E     JSR GETCHAR
+8D7E   20 E9 FE   L8D7E     JSR GETCHR
 8D81   C9 0A                CMP #$0A
 8D83   F0 EB                BEQ L8D70
 8D85   C9 44                CMP #$44
@@ -756,13 +746,13 @@
 8D92   85 F7                STA $F7
 8D94   20 A4 8D   L8D94     JSR L8DA4
 8D97   20 90 8E   L8D97     JSR L8E90
-8D9A   85 F9                STA LOTO
-8D9C   84 FA                STY HITO
+8D9A   85 F9                STA $F9
+8D9C   84 FA                STY $FA
 8D9E   C6 F7                DEC $F7
 8DA0   30 37                BMI L8DD9
 8DA2   D0 F0                BNE L8D94
 8DA4   20 7D 8E   L8DA4     JSR L8E7D
-8DA7   A1 F9                LDA (LOTO,X)
+8DA7   A1 F9                LDA ($F9,X)
 8DA9   A8                   TAY
 8DAA   4A                   LSR A
 8DAB   90 0B                BCC L8DB8
@@ -810,7 +800,7 @@
 8DF0   88         L8DF0     DEY
 8DF1   D0 F2                BNE L8DE5
 8DF3   48                   PHA
-8DF4   B1 F9      L8DF4     LDA (LOTO),Y
+8DF4   B1 F9      L8DF4     LDA ($F9),Y
 8DF6   20 73 8E             JSR L8E73
 8DF9   C4 F2                CPY $F2
 8DFB   C8                   INY
@@ -851,7 +841,7 @@
 8E3F   4C EE FF             JMP OUTVEC
 8E42   A5 F1      L8E42     LDA $F1
 8E44   C9 E8                CMP #$E8
-8E46   B1 F9                LDA (LOTO),Y
+8E46   B1 F9                LDA ($F9),Y
 8E48   B0 1C                BCS L8E66
 8E4A   20 73 8E             JSR L8E73
 8E4D   88                   DEY
@@ -874,7 +864,7 @@
 8E6E   98         L8E6E     TYA
 8E6F   20 73 8E   L8E6F     JSR L8E73
 8E72   8A                   TXA
-8E73   85 FC      L8E73     STA STORE
+8E73   85 FC      L8E73     STA $FC
 8E75   8A                   TXA
 8E76   48                   PHA
 8E77   20 BD FE             JSR PRDATD
@@ -882,8 +872,8 @@
 8E7B   AA                   TAX
 8E7C   60                   RTS
 8E7D   20 F5 FB   L8E7D     JSR CRLF
-8E80   A5 FA                LDA HITO
-8E82   A6 F9                LDX LOTO
+8E80   A5 FA                LDA $FA
+8E82   A6 F9                LDX $F9
 8E84   20 6F 8E             JSR L8E6F
 8E87   A2 01      L8E87     LDX #$01
 8E89   20 E6 FB   L8E89     JSR SPCOUT
@@ -892,11 +882,11 @@
 8E8F   60                   RTS
 8E90   A5 F2      L8E90     LDA $F2
 8E92   38                   SEC
-8E93   A4 FA      L8E93     LDY HITO
+8E93   A4 FA      L8E93     LDY $FA
 8E95   AA                   TAX
 8E96   10 01                BPL L8E99
 8E98   88                   DEY
-8E99   65 F9      L8E99     ADC LOTO
+8E99   65 F9      L8E99     ADC $F9
 8E9B   90 01                BCC L8E9E
 8E9D   C8                   INY
 8E9E   60         L8E9E     RTS
@@ -1440,30 +1430,19 @@
  L8FDD      $8FDD
 
 ;defined symbols used as labels
- GETCHAR    $FEE9
  OUTPUT     $FF9B
- CRLF       $FBF5
- SETLOD     $FE70
- SPCOUT     $FBE6
- OUTVEC     $FFEE
- ASCHEX     $FE93
- PRDATD     $FEBD
- QDDATD     $FEB6
- ROLSTR     $FEDA
- BUMP       $FEF9
- STOCUR     $FEF7
  MENTRY     $FE0C
  MSTART     $F97E
- CHRGET     $A357
+ OUTVEC     $FFEE
+ GETCHR     $FEE9
+ SETLOD     $FE70
+ BUMP       $FEF9
+ ROLSTR     $FEDA
+ ASCHEX     $FE93
+ CRLF       $FBF5
+ SPCOUT     $FBE6
+ PRDATD     $FEBD
+ QDDATD     $FEB6
  ERROR      $A280
- SYNERR     $A265
- LOTO         $F9
- HITO         $FA
- STORE        $FC
  LOFROM       $FE
  HIFROM       $FF
- LDFLAG     $0203
- CHRINV     $021A
- USERLO     $0233
- USERHI     $0234
-

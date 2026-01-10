@@ -5,12 +5,24 @@
 .DATA $864B ... $868B
 .DATA $8754 ... $8759
 .DATA $87FC ... $87FF
+.DATA $8A7E ... $8A96
+.DATA $8E9F ... $8FFF
 
 ; cegmon
-;INPUT = 0xFB46
-;CTRLC = 0xFB94
-NEWMON = 0xFE00
-;OUTPUT = 0xFF9B
+NEWMON = $FE00   ; reset entry to machine code monitor
+OUTPUT = $FF9B   ; general output routine, to screen and ACIA
+MENTRY = $FE0C   ; non-reset entry to monitor: clear screen, zero 'current address'
+MSTART = $F97E   ; entry to command/address mode
+OUTVEC = $FFEE   ; normally points to OUTPUT
+GETCHR = $FEE9   ; get char from keyboard or ACIA
+SETLOD = $FE70   ; sets BASIC load flag, clears save flag
+BUMP = $FEF9     ; increment 'current address' at (FE)
+ROLSTR = $FEDA   ; roll new nibble into (FE) if X=2, or into FC if X=0
+ASCHEX = $FE93   ; strip ASCII digit to hex; set to 0x80 if not hex
+CRLF = $FBF5     ; print CR/LF to display
+SPCOUT = $FBE6   ; print ASCII space to display
+PRDATD = $FEBD   ; print data byte in FC to display
+QDDATD = $FEB6   ; print address in (FE) to display
 
 ; basic
 PREPWMST = $A274
@@ -29,11 +41,14 @@ CLEAR = $B7E8
 INPUT = $B96E
 
 ; ram addresses
-LOFROM = $FE
-HIFROM = $FF
-EDFLAG = $0204
-CCFLAG = $0212
-CHOVEC = $0218
-SCOVEC = $02EE
-SCIVEC = $02F0
-SLIVEC = $02F2
+LOFROM = $FE      ; store 'current address' for most routines; 'from'
+HIFROM = $FF      ; ... address in save, move and tabular display
+EDFLAG = $0204    ; EDITOR flag: 00 disable cursor, FF enable it
+CCFLAG = $0212    ; BASIC CTRL-C flag: 00 enables CTRL-C break, 01 disables
+CHRINV = $0218    ; BASIC I/O vectors
+CHRINVH = $0219   ; chr input vec (high)
+CHROUTV = $0220
+LINEINV = $0222
+SCHRINV = $02EE   ; stored vectors
+SCHROUTV = $02F0
+SLINEINV = $02F2
