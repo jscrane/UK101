@@ -23,7 +23,7 @@
  USERHI   = $0234
 
                             * = $8800
-8800   20 8A 88   L8800     JSR L888A
+8800   20 8A 88   ENCODER   JSR L888A
 8803   A2 FE                LDX #$FE
 8805   9A                   TXS
 8806   A2 25                LDX #$25
@@ -45,30 +45,30 @@
 8825   88                   DEY
 8826   D0 F9                BNE L8821
 8828   20 72 8A             JSR L8A72
-882B   20 E9 FE   L882B     JSR GETCHR
+882B   20 E9 FE   CMDLOOP   JSR GETCHR
 882E   C9 41                CMP #$41
-8830   F0 17                BEQ L8849
+8830   F0 17                BEQ ASMCMD
 8832   C9 44                CMP #$44
-8834   F0 0E                BEQ L8844
+8834   F0 0E                BEQ DASMCMD
 8836   C9 0D                CMP #$0D
-8838   D0 F1                BNE L882B
-883A   4C 00 00             JMP $0000
+8838   D0 F1                BNE CMDLOOP
+883A   4C 00 00   GOBASIC   JMP $0000
 883D   C9 60      CHROUTH   CMP #$60
-883F   F0 BF                BEQ L8800
+883F   F0 BF                BEQ ENCODER
 8841   4C 9B FF             JMP OUTPUT
-8844   C6 E0      L8844     DEC $E0
+8844   C6 E0      DASMCMD   DEC $E0
 8846   4C 5E 8D             JMP L8D5E
-8849   C6 F0      L8849     DEC $F0
+8849   C6 F0      ASMCMD    DEC $F0
 884B   A0 10      L884B     LDY #$10
 884D   20 72 8A             JSR L8A72
-8850   20 E9 FE   L8850     JSR GETCHR
+8850   20 E9 FE   ASMLOOP   JSR GETCHR
 8853   C9 4C                CMP #$4C
-8855   F0 21                BEQ L8878
+8855   F0 21                BEQ ASMTAPE
 8857   C9 0D                CMP #$0D
 8859   D0 03                BNE L885E
-885B   4C 0C FE             JMP MENTRY
+885B   4C 0C FE   ASMMEM    JMP MENTRY
 885E   C9 4D      L885E     CMP #$4D
-8860   D0 EE                BNE L8850
+8860   D0 EE                BNE ASMLOOP
 8862   E6 E0                INC $E0
 8864   20 97 8A             JSR L8A97
 8867   A9 FD                LDA #$FD
@@ -79,7 +79,7 @@
 8871   84 14                STY $14
 8873   A2 12                LDX #$12
 8875   4C 80 A2             JMP ERROR
-8878   20 EE FF   L8878     JSR OUTVEC
+8878   20 EE FF   ASMTAPE   JSR OUTVEC
 887B   20 70 FE             JSR SETLOD
 887E   20 57 A3             JSR FRMNUM
 8881   20 57 A3             JSR FRMNUM
@@ -201,7 +201,7 @@
 8957   A9 00                LDA #$00
 8959   8D 03 02             STA LDFLAG
 895C   4C 65 A2             JMP ENDSTMT
-895F   4C 00 88   L895F     JMP L8800
+895F   4C 00 88   L895F     JMP ENCODER
 8962   C9 25      L8962     CMP #$25
 8964   F0 2B                BEQ L8991
 8966   C9 24                CMP #$24
@@ -1253,12 +1253,7 @@
                             .END
 
 ;auto-generated symbols and labels
- L8800      $8800
  L8821      $8821
- L8844      $8844
- L8849      $8849
- L8850      $8850
- L8878      $8878
  L8884      $8884
  L8895      $8895
  L8903      $8903
@@ -1278,7 +1273,6 @@
  L888A      $888A
  L880A      $880A
  L8A72      $8A72
- L882B      $882B
  L8D5E      $8D5E
  L885E      $885E
  L8A97      $8A97
@@ -1437,6 +1431,12 @@
  L8FDD      $8FDD
 
 ;defined symbols used as labels
+ ENCODER    $8800
+ DASMCMD    $8844
+ ASMCMD     $8849
+ ASMLOOP    $8850
+ ASMTAPE    $8878
+ CMDLOOP    $882B
  OUTPUT     $FF9B
  MENTRY     $FE0C
  MSTART     $F97E
@@ -1460,4 +1460,6 @@
  CHROUTVH   $021B
  USERLO     $0233
  USERHI     $0234
+ GOBASIC    $883A
  CHROUTH    $883D
+ ASMMEM     $885B
