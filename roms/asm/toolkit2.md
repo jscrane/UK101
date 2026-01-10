@@ -1,6 +1,15 @@
-# ROM Disassemblies
+# Toolkit II
+This is a machine-code extension to Microsoft BASIC that hooks into the interpreter’s command dispatch and line-handling routines to add advanced program-editing 
+features without modifying BASIC itself. It introduces new commands such as LIST variants, AUTO, DELETE, RENUM, FIND, REPL, DUPL, VIEW, TRON, and TROFF, implemented 
+by intercepting BASIC's input stream, reusing the interpreter’s internal line pointers and token scanner, and temporarily patching character-input/output vectors as 
+needed. It operates directly on BASIC’s in-memory program format, scanning and rewriting tokenised lines rather than source text, which allows fast manipulation of 
+programs.
+
+Overall, it functions as a lightweight “program editor inside BASIC,” aimed at power users.
 
 ## Approach
+Because its manual was missing, the intention was to create one from reverse-engineering. The approach taken to that
+was as follows:
 
 - Run disassembler on binary file, using e.g., [this online disassembler](https://www.masswerk.at/6502/disassembler.html).
 - Find ```.DATA``` sections by searching for unknown opcodes and adding to a symbol file.
@@ -9,16 +18,19 @@
 - Invent useful names for internal subroutines and entry-points, i.e., ```L89AB```; [ChatGPT](https://chatgpt.com)
 is very useful for this.
 
-## Toolkit II
-A collection of utilities commands run from ```BASIC```:
+## Commands
 
 ### AUTO
-Program entry with automatic line numbering in increments of 10. CTRL-T terminates input.
-If a line exists already, '*' will be printed before it.
+Automatically generates and inserts incrementing line numbers while the user types program lines. Lines increment by 10.
+
+If a line exists already, '*' will be printed before it.  CTRL-T terminates input.
 
 Options:
 - none: start numbering at line 10
 - n: start numbering at line n
+
+Errors:
+- OF (overflow) when the generated line-number exceeds BASIC's maximum (63999)
 
 ```
 AUTO 100
@@ -29,7 +41,8 @@ AUTO 100
 ```
 
 ### LIST
-A paging-aware, interruptible, range-capable reimplementation of LIST that runs alongside BASIC, not inside it.
+A paging-aware, interruptible, range-capable reimplementation of LIST.
+
 CTRL-T: terminates paging.
 
 ```
@@ -64,10 +77,15 @@ OK
 ```
 
 ### RENUM
-Line renumbering.
+Renumbers program lines and updates all line-number references accordingly.
 
 Options:
 - n: renumber all lines with new start at line n in increments of 10
+
+Errors:
+- OF (overflow) when the generated line-number exceeds BASIC's maximum (63999)
+- BF (buffer full) if the new line is too long
+- L# (line number) if the number is missing or malformed
 
 ```
 RENUM 100
@@ -80,10 +98,10 @@ OK
 ```
 
 ### FIND
-Finds a text string in the program. 
+Interactively searches program text for a pattern delimited by / and marks matching lines.
 
 Options:
-- /str: search for ```str``` in the program and halt on find, hit ENTER to continue, CTRL-T to abort
+- /str: search for ```str``` in the program and halt on find, hit ENTER to continue, CTRL-T aborts
 - none: repeat last search
 
 ```
@@ -107,8 +125,9 @@ FIND /FOO
 ```
 
 ### REPL
-Replaces a text string in the program. Requires confirmation of each
-replacement with Y. CTRL-T aborts.
+Interactively replaces occurrences of one /pattern with /another throughout the program.
+
+Requires confirmation of each replacement with Y. CTRL-T aborts.
 
 Options:
 - /from/to: search for ```from```, and interactively replace with ```to```
@@ -136,15 +155,15 @@ OK
 ```
 
 ### TRON and TROFF
-Turns on and off tracing.
+Enables and disables BASIC execution tracing by turning on the line-trace flag.
 
 ### MC
-Jumps into the Machine Code Monitor.
+Enters the Machine Code Monitor.
 
 ```
 MC
 
->0800/24 G
+>8000/24 G
           TKII V1.1
 
 [C] 1981 P.Rihan/PREMIER
@@ -152,7 +171,7 @@ OK
 ```
 
 ### VIEW
-Prints data from tape (or serial) until a key is pressed.
+Continuously displays input from the ACIA (tape/serial) until interrupted by a keypress.
 
 ### DUPL
 Duplicates an existing BASIC line, inserting it at line 10. If line 10 already
@@ -177,6 +196,3 @@ LIST
  120 PRINT"BAR"
 OK
 ```
-
-### Encoder
-An Assembler / Disassembler.
