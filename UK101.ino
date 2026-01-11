@@ -158,11 +158,13 @@ static void reset() {
 	disk.reset();
 #endif
 
-	if (!sd)
+	if (!sd) {
+		DBG_EMU(println(F("No SD Card")));
 		screen.status("No SD Card");
-	else if (!files.start())
+	} else if (!files.start()) {
+		DBG_EMU(println(F("Failed to open " PROGRAMS)));
 		screen.status("Failed to open " PROGRAMS);
-	else
+	} else
 		file_status();
 }
 
