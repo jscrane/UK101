@@ -24,6 +24,7 @@
  OPCODE   = $F1
  OPMODE   = $F2
  INSLEN   = $F3
+ MNEMBIT  = $F4
  PAGCNT   = $F7
  ABRTFLG  = $F8
  PCLO     = $F9
@@ -195,7 +196,7 @@
 893D   A6 E2                LDX $E2
 893F   E6 F1                INC OPCODE
 8941   60         L8941     RTS
-8942   25 F4      L8942     AND $F4
+8942   25 F4      L8942     AND MNEMBIT
 8944   D0 FB                BNE L8941
 8946   A9 4D      L8946     LDA #$4D
 8948   48         L8948     PHA
@@ -315,7 +316,7 @@
 8A25   85 E4                STA $E4
 8A27   90 02                BCC L8A2B
 8A29   E6 E5                INC $E5
-8A2B   A5 F4      L8A2B     LDA $F4
+8A2B   A5 F4      L8A2B     LDA MNEMBIT
 8A2D   C9 01                CMP #$01
 8A2F   D0 20                BNE L8A51
 8A31   A5 E4                LDA $E4
@@ -349,7 +350,7 @@
 8A63   E6 F1                INC OPCODE
 8A65   A5 E5                LDA $E5
 8A67   D0 04                BNE L8A6D
-8A69   A4 F4                LDY $F4
+8A69   A4 F4                LDY MNEMBIT
 8A6B   D0 02                BNE L8A6F
 8A6D   E6 F1      L8A6D     INC OPCODE
 8A6F   85 FA      L8A6F     STA PCHI
@@ -540,7 +541,7 @@
 8BC9   A0 00                LDY #$00
 8BCB   B1 FE                LDA (LOFROM),Y
 8BCD   84 F1                STY OPCODE
-8BCF   84 F4                STY $F4
+8BCF   84 F4                STY MNEMBIT
 8BD1   88                   DEY
 8BD2   C8         L8BD2     INY
 8BD3   C0 40                CPY #$40
@@ -548,7 +549,7 @@
 8BD7   D9 7F 8F             CMP $8F7F,Y
 8BDA   D0 F6                BNE L8BD2
 8BDC   B9 BF 8F             LDA L8FBF,Y
-8BDF   85 F4                STA $F4
+8BDF   85 F4                STA MNEMBIT
 8BE1   20 1B 8A   L8BE1     JSR L8A1B
 8BE4   A0 00                LDY #$00
 8BE6   B1 FE                LDA (LOFROM),Y
@@ -576,20 +577,20 @@
 8C0F   E9 3F                SBC #$3F
 8C11   4A         L8C11     LSR A
 8C12   66 F3                ROR INSLEN
-8C14   66 F4                ROR $F4
+8C14   66 F4                ROR MNEMBIT
 8C16   88                   DEY
 8C17   D0 F8                BNE L8C11
 8C19   CA                   DEX
 8C1A   E4 F0                CPX $F0
 8C1C   10 EC                BPL L8C0A
 8C1E   A5 F3      L8C1E     LDA INSLEN
-8C20   D9 FF 8E             CMP $8EFF,Y
+8C20   D9 FF 8E             CMP MNEMLEN,Y
 8C23   D0 0E                BNE L8C33
-8C25   A5 F4                LDA $F4
-8C27   D9 3F 8F             CMP $8F3F,Y
+8C25   A5 F4                LDA MNEMBIT
+8C27   D9 3F 8F             CMP MNEMTAB,Y
 8C2A   F0 11                BEQ L8C3D
 8C2C   09 01                ORA #$01
-8C2E   D9 3F 8F             CMP $8F3F,Y
+8C2E   D9 3F 8F             CMP MNEMTAB,Y
 8C31   F0 0A                BEQ L8C3D
 8C33   C8         L8C33     INY
 8C34   C0 40                CPY #$40
@@ -604,7 +605,7 @@
 8C43   B9 7F 8F             LDA $8F7F,Y
 8C46   85 F3                STA INSLEN
 8C48   B9 BF 8F             LDA L8FBF,Y
-8C4B   85 F4                STA $F4
+8C4B   85 F4                STA MNEMBIT
 8C4D   D0 07                BNE L8C56
 8C4F   20 B1 8A             JSR L8AB1
 8C52   B0 3E                BCS L8C92
@@ -650,7 +651,7 @@
 8CA5   D0 ED                BNE L8C94
 8CA7   C9 28      L8CA7     CMP #$28
 8CA9   D0 03                BNE L8CAE
-8CAB   85 F5                STA $F5
+8CAB   85 F5                STA MNEMBIT+1
 8CAD   E8                   INX
 8CAE   20 D1 89   L8CAE     JSR L89D1
 8CB1   20 B1 8A   L8CB1     JSR L8AB1
@@ -660,7 +661,7 @@
 8CB9   85 F6                STA $F6
 8CBB   E8                   INX
 8CBC   D0 F3                BNE L8CB1
-8CBE   A5 F5      L8CBE     LDA $F5
+8CBE   A5 F5      L8CBE     LDA MNEMBIT+1
 8CC0   F0 39                BEQ L8CFB
 8CC2   A5 F6                LDA $F6
 8CC4   C9 29                CMP #$29
@@ -697,7 +698,7 @@
 8D05   C9 02                CMP #$02
 8D07   D0 08                BNE L8D11
 8D09   A9 01                LDA #$01
-8D0B   25 F4                AND $F4
+8D0B   25 F4                AND MNEMBIT
 8D0D   D0 1B                BNE L8D2A
 8D0F   E6 F1                INC OPCODE
 8D11   A9 08      L8D11     LDA #$08
@@ -710,7 +711,7 @@
 8D20   C9 02                CMP #$02
 8D22   D0 0C                BNE L8D30
 8D24   A9 40                LDA #$40
-8D26   25 F4                AND $F4
+8D26   25 F4                AND MNEMBIT
 8D28   F0 04                BEQ L8D2E
 8D2A   A9 14      L8D2A     LDA #$14
 8D2C   D0 0F                BNE L8D3D
@@ -727,7 +728,7 @@
 8D45   C9 02                CMP #$02
 8D47   D0 0C                BNE L8D55
 8D49   A9 20                LDA #$20
-8D4B   25 F4                AND $F4
+8D4B   25 F4                AND MNEMBIT
 8D4D   F0 04                BEQ L8D53
 8D4F   A9 04                LDA #$04
 8D51   D0 EA                BNE L8D3D
@@ -759,7 +760,7 @@
 8D90   A9 0D      DISLOOP   LDA #$0D
 8D92   85 F7                STA PAGCNT
 8D94   20 A4 8D   L8D94     JSR OPCDEC
-8D97   20 90 8E   L8D97     JSR OPCEMIT
+8D97   20 90 8E   L8D97     JSR NEXTPC
 8D9A   85 F9                STA PCLO
 8D9C   84 FA                STY PCHI
 8D9E   C6 F7                DEC PAGCNT
@@ -778,7 +779,7 @@
 8DB6   09 80                ORA #$80
 8DB8   4A         L8DB8     LSR A
 8DB9   AA                   TAX
-8DBA   BD 9F 8E             LDA $8E9F,X
+8DBA   BD 9F 8E             LDA OPCLASS,X
 8DBD   B0 04                BCS L8DC3
 8DBF   4A                   LSR A
 8DC0   4A                   LSR A
@@ -789,14 +790,14 @@
 8DC7   A0 80      L8DC7     LDY #$80
 8DC9   A9 00                LDA #$00
 8DCB   AA         L8DCB     TAX
-8DCC   BD E3 8E             LDA $8EE3,X
+8DCC   BD E3 8E             LDA OPINFO,X
 8DCF   85 F1                STA OPCODE
 8DD1   29 03                AND #$03
 8DD3   85 F2                STA OPMODE
 8DD5   A5 F8                LDA ABRTFLG
-8DD7   D0 01                BNE L8DDA
+8DD7   D0 01                BNE DISFMT
 8DD9   60         L8DD9     RTS
-8DDA   98         L8DDA     TYA
+8DDA   98         DISFMT    TYA
 8DDB   29 8F                AND #$8F
 8DDD   AA                   TAX
 8DDE   98                   TYA
@@ -815,34 +816,34 @@
 8DF1   D0 F2                BNE L8DE5
 8DF3   48                   PHA
 8DF4   B1 F9      L8DF4     LDA (PCLO),Y
-8DF6   20 73 8E             JSR L8E73
+8DF6   20 73 8E             JSR PRHEX
 8DF9   C4 F2                CPY OPMODE
 8DFB   C8                   INY
 8DFC   90 F6                BCC L8DF4
 8DFE   A2 01                LDX #$01
-8E00   20 89 8E   L8E00     JSR L8E89
+8E00   20 89 8E   L8E00     JSR EMITSPC
 8E03   C8                   INY
 8E04   A2 02                LDX #$02
 8E06   C0 04                CPY #$04
 8E08   90 F6                BCC L8E00
 8E0A   68                   PLA
 8E0B   A8                   TAY
-8E0C   B9 FF 8E             LDA $8EFF,Y
+8E0C   B9 FF 8E             LDA MNEMLEN,Y
 8E0F   85 F3                STA INSLEN
-8E11   B9 3F 8F             LDA $8F3F,Y
-8E14   85 F4                STA $F4
+8E11   B9 3F 8F             LDA MNEMTAB,Y
+8E14   85 F4                STA MNEMBIT
 8E16   A9 00      L8E16     LDA #$00
 8E18   A0 05                LDY #$05
-8E1A   06 F4      L8E1A     ASL $F4
+8E1A   06 F4      L8E1A     ASL MNEMBIT
 8E1C   26 F3                ROL INSLEN
 8E1E   2A                   ROL A
 8E1F   88                   DEY
 8E20   D0 F8                BNE L8E1A
 8E22   69 3F                ADC #$3F
-8E24   20 3D 8E             JSR L8E3D
+8E24   20 3D 8E             JSR EMITCHR
 8E27   CA                   DEX
 8E28   10 EC                BPL L8E16
-8E2A   20 87 8E             JSR L8E87
+8E2A   20 87 8E             JSR INSTSEP
 8E2D   A2 06                LDX #$06
 8E2F   E0 03      L8E2F     CPX #$03
 8E31   D0 1D                BNE L8E50
@@ -851,22 +852,22 @@
 8E37   06 F3                ASL INSLEN
 8E39   90 15                BCC L8E50
 8E3B   A9 41                LDA #$41
-8E3D   29 7F      L8E3D     AND #$7F
+8E3D   29 7F      EMITCHR   AND #$7F
 8E3F   4C EE FF             JMP OUTVEC
 8E42   A5 F1      L8E42     LDA OPCODE
 8E44   C9 E8                CMP #$E8
 8E46   B1 F9                LDA (PCLO),Y
 8E48   B0 1C                BCS L8E66
-8E4A   20 73 8E             JSR L8E73
+8E4A   20 73 8E             JSR PRHEX
 8E4D   88                   DEY
 8E4E   D0 F2                BNE L8E42
 8E50   06 F1      L8E50     ASL OPCODE
 8E52   90 0E                BCC L8E62
-8E54   BD F0 8E             LDA $8EF0,X
-8E57   20 3D 8E             JSR L8E3D
-8E5A   BD F6 8E             LDA $8EF6,X
+8E54   BD F0 8E             LDA ADRPFX,X
+8E57   20 3D 8E             JSR EMITCHR
+8E5A   BD F6 8E             LDA ADRSFX,X
 8E5D   F0 03                BEQ L8E62
-8E5F   20 3D 8E             JSR L8E3D
+8E5F   20 3D 8E             JSR EMITCHR
 8E62   CA         L8E62     DEX
 8E63   D0 CA                BNE L8E2F
 8E65   60                   RTS
@@ -876,9 +877,9 @@
 8E6B   D0 01                BNE L8E6E
 8E6D   C8                   INY
 8E6E   98         L8E6E     TYA
-8E6F   20 73 8E   L8E6F     JSR L8E73
+8E6F   20 73 8E   L8E6F     JSR PRHEX
 8E72   8A                   TXA
-8E73   85 FC      L8E73     STA $FC
+8E73   85 FC      PRHEX     STA $FC
 8E75   8A                   TXA
 8E76   48                   PHA
 8E77   20 BD FE             JSR PRDATD
@@ -889,12 +890,12 @@
 8E80   A5 FA                LDA PCHI
 8E82   A6 F9                LDX PCLO
 8E84   20 6F 8E             JSR L8E6F
-8E87   A2 01      L8E87     LDX #$01
-8E89   20 E6 FB   L8E89     JSR SPCOUT
+8E87   A2 01      INSTSEP   LDX #$01
+8E89   20 E6 FB   EMITSPC   JSR SPCOUT
 8E8C   CA                   DEX
-8E8D   D0 FA                BNE L8E89
+8E8D   D0 FA                BNE EMITSPC
 8E8F   60                   RTS
-8E90   A5 F2      OPCEMIT   LDA OPMODE
+8E90   A5 F2      NEXTPC    LDA OPMODE
 8E92   38                   SEC
 8E93   A4 FA      L8E93     LDY PCHI
 8E95   AA                   TAX
@@ -904,7 +905,7 @@
 8E9B   90 01                BCC L8E9E
 8E9D   C8                   INY
 8E9E   60         L8E9E     RTS
-8E9F   40                   .BYTE $40          ;%01000000 '@'
+8E9F   40         OPCLASS   .BYTE $40          ;%01000000 '@'
 8EA0   02                   .BYTE $02          ;%00000010
 8EA1   45                   .BYTE $45          ;%01000101 'E'
 8EA2   03                   .BYTE $03          ;%00000011
@@ -972,7 +973,7 @@
 8EE0   13                   .BYTE $13          ;%00010011
 8EE1   78                   .BYTE $78          ;%01111000 'x'
 8EE2   A9                   .BYTE $A9          ;%10101001
-8EE3   00                   .BYTE $00          ;%00000000
+8EE3   00         OPINFO    .BYTE $00          ;%00000000
 8EE4   21                   .BYTE $21          ;%00100001 '!'
 8EE5   81         L8EE5     .BYTE $81          ;%10000001
 8EE6   82                   .BYTE $82          ;%10000010
@@ -985,13 +986,13 @@
 8EED   86                   .BYTE $86          ;%10000110
 8EEE   4A                   .BYTE $4A          ;%01001010 'J'
 8EEF   85                   .BYTE $85          ;%10000101
-8EF0   9D                   .BYTE $9D          ;%10011101
+8EF0   9D         ADRPFX    .BYTE $9D          ;%10011101
 8EF1   AC                   .BYTE $AC          ;%10101100
 8EF2   A9                   .BYTE $A9          ;%10101001
 8EF3   AC         L8EF3     .BYTE $AC          ;%10101100
 8EF4   A3                   .BYTE $A3          ;%10100011
 8EF5   A8                   .BYTE $A8          ;%10101000
-8EF6   A4                   .BYTE $A4          ;%10100100
+8EF6   A4         ADRSFX    .BYTE $A4          ;%10100100
 8EF7   D9                   .BYTE $D9          ;%11011001
 8EF8   00                   .BYTE $00          ;%00000000
 8EF9   D8                   .BYTE $D8          ;%11011000
@@ -1000,7 +1001,7 @@
 8EFC   00                   .BYTE $00          ;%00000000
 8EFD   00                   .BYTE $00          ;%00000000
 8EFE   00                   .BYTE $00          ;%00000000
-8EFF   1C                   .BYTE $1C          ;%00011100
+8EFF   1C         MNEMLEN   .BYTE $1C          ;%00011100
 8F00   8A                   .BYTE $8A          ;%10001010
 8F01   1C                   .BYTE $1C          ;%00011100
 8F02   23                   .BYTE $23          ;%00100011 '#'
@@ -1064,7 +1065,7 @@
 8F3C   69                   .BYTE $69          ;%01101001 'i'
 8F3D   23                   .BYTE $23          ;%00100011 '#'
 8F3E   A0                   .BYTE $A0          ;%10100000
-8F3F   D8                   .BYTE $D8          ;%11011000
+8F3F   D8         MNEMTAB   .BYTE $D8          ;%11011000
 8F40   62                   .BYTE $62          ;%01100010 'b'
 8F41   5A                   .BYTE $5A          ;%01011010 'Z'
 8F42   48                   .BYTE $48          ;%01001000 'H'
@@ -1392,18 +1393,13 @@
  L8DC7      $8DC7
  L8DC3      $8DC3
  L8DCB      $8DCB
- L8DDA      $8DDA
  L8DF0      $8DF0
  L8DE9      $8DE9
  L8DE5      $8DE5
- L8E73      $8E73
  L8DF4      $8DF4
- L8E89      $8E89
  L8E00      $8E00
  L8E1A      $8E1A
- L8E3D      $8E3D
  L8E16      $8E16
- L8E87      $8E87
  L8E50      $8E50
  L8E42      $8E42
  L8E66      $8E66
@@ -1443,7 +1439,12 @@
  DISNEXT    $8D70
  DISWAIT    $8D7E
  OPCDEC     $8DA4
- OPCEMIT    $8E90
+ NEXTPC     $8E90
+ DISFMT     $8DDA
+ PRHEX      $8E73
+ EMITSPC    $8E89
+ EMITCHR    $8E3D
+ INSTSEP    $8E87
  OUTPUT     $FF9B
  MENTRY     $FE0C
  MSTART     $F97E
@@ -1470,9 +1471,16 @@
  GOBASIC    $883A
  CHROUTH    $883D
  ASMMEM     $885B
+ OPCLASS    $8E9F
+ OPINFO     $8EE3
+ ADRPFX     $8EF0
+ ADRSFX     $8EF6
+ MNEMLEN    $8EFF
+ MNEMTAB    $8F3F
  OPCODE       $F1
  OPMODE       $F2
  INSLEN       $F3
+ MNEMBIT      $F4
  PAGCNT       $F7
  ABRTFLG      $F8
  PCLO         $F9
