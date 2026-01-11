@@ -31,7 +31,7 @@
  PCHI     = $FA
 
                             * = $8800
-8800   20 8A 88   ENCODER   JSR L888A
+8800   20 8A 88   ENCODER   JSR INSCHOUT
 8803   A2 FE                LDX #$FE
 8805   9A                   TXS
 8806   A2 25                LDX #$25
@@ -73,12 +73,12 @@
 8853   C9 4C                CMP #$4C
 8855   F0 21                BEQ ASMTAPE
 8857   C9 0D                CMP #$0D
-8859   D0 03                BNE L885E
-885B   4C 0C FE   ASMMEM    JMP MENTRY
-885E   C9 4D      L885E     CMP #$4D
+8859   D0 03                BNE ASMMEM
+885B   4C 0C FE   GOMON     JMP MENTRY
+885E   C9 4D      ASMMEM    CMP #$4D
 8860   D0 EE                BNE ASMLOOP
 8862   E6 E0                INC $E0
-8864   20 97 8A             JSR L8A97
+8864   20 97 8A             JSR ASMCHOUT
 8867   A9 FD                LDA #$FD
 8869   85 E1                STA $E1
 886B   A9 99                LDA #$99
@@ -92,8 +92,8 @@
 887E   20 57 A3             JSR FRMNUM
 8881   20 57 A3             JSR FRMNUM
 8884   20 57 A3   L8884     JSR FRMNUM
-8887   4C 06 8B             JMP L8B06
-888A   A9 3D      L888A     LDA #$3D
+8887   4C 06 8B             JMP ASMTAPG
+888A   A9 3D      INSCHOUT  LDA #$3D
 888C   8D 1A 02             STA CHROUTV
 888F   A9 88                LDA #$88
 8891   8D 1B 02             STA CHROUTVH
@@ -386,7 +386,7 @@
 8A94   4C                   .BYTE $4C          ;%01001100 'L'
 8A95   20                   .BYTE $20          ;%00100000 ' '
 8A96   3F                   .BYTE $3F          ;%00111111 '?'
-8A97   A9 DF      L8A97     LDA #$DF
+8A97   A9 DF      ASMCHOUT  LDA #$DF
 8A99   8D 1A 02             STA CHROUTV
 8A9C   A9 8A                LDA #$8A
 8A9E   8D 1B 02             STA CHROUTVH
@@ -418,23 +418,23 @@
 8ACC   A5 E0                LDA $E0
 8ACE   D0 03                BNE L8AD3
 8AD0   4C 84 88             JMP L8884
-8AD3   20 97 8A   L8AD3     JSR L8A97
+8AD3   20 97 8A   L8AD3     JSR ASMCHOUT
 8AD6   86 E1                STX $E1
-8AD8   A6 DD      L8AD8     LDX $DD
+8AD8   A6 DD      RESTREG   LDX $DD
 8ADA   A4 DE                LDY $DE
 8ADC   A5 DF                LDA $DF
 8ADE   60                   RTS
-8ADF   86 DD                STX $DD
+8ADF   86 DD      ASMCOUTH  STX $DD
 8AE1   84 DE                STY $DE
 8AE3   85 DF                STA $DF
 8AE5   20 9B FF             JSR OUTPUT
 8AE8   E6 E1                INC $E1
-8AEA   30 EC                BMI L8AD8
+8AEA   30 EC                BMI RESTREG
 8AEC   A6 E1                LDX $E1
 8AEE   95 13                STA $13,X
 8AF0   C9 0A                CMP #$0A
-8AF2   D0 E4                BNE L8AD8
-8AF4   20 8A 88             JSR L888A
+8AF2   D0 E4                BNE RESTREG
+8AF4   20 8A 88             JSR INSCHOUT
 8AF7   8A                   TXA
 8AF8   D0 08                BNE L8B02
 8AFA   85 E0      L8AFA     STA $E0
@@ -442,7 +442,7 @@
 8AFF   4C 4B 88             JMP L884B
 8B02   A9 00      L8B02     LDA #$00
 8B04   95 12                STA $12,X
-8B06   A2 01      L8B06     LDX #$01
+8B06   A2 01      ASMTAPG   LDX #$01
 8B08   E8         L8B08     INX
 8B09   B5 12                LDA $12,X
 8B0B   F0 ED                BEQ L8AFA
@@ -1278,12 +1278,8 @@
  L8987      $8987
  L8989      $8989
  L8991      $8991
- L888A      $888A
  L880A      $880A
  L8A72      $8A72
- L885E      $885E
- L8A97      $8A97
- L8B06      $8B06
  L88A6      $88A6
  L88AD      $88AD
  L88B4      $88B4
@@ -1322,7 +1318,6 @@
  L8AB0      $8AB0
  L8AC7      $8AC7
  L8AD3      $8AD3
- L8AD8      $8AD8
  L8B02      $8B02
  L884B      $884B
  L8AFA      $8AFA
@@ -1433,8 +1428,13 @@
  ASMCMD     $8849
  ASMLOOP    $8850
  ASMTAPE    $8878
+ INSCHOUT   $888A
  CMDLOOP    $882B
  DISPAGE    $8D5E
+ ASMMEM     $885E
+ ASMCHOUT   $8A97
+ ASMTAPG    $8B06
+ RESTREG    $8AD8
  DISLOOP    $8D90
  DISNEXT    $8D70
  DISWAIT    $8D7E
@@ -1470,7 +1470,8 @@
  USERHI     $0234
  GOBASIC    $883A
  CHROUTH    $883D
- ASMMEM     $885B
+ GOMON      $885B
+ ASMCOUTH   $8ADF
  OPCLASS    $8E9F
  OPINFO     $8EE3
  ADRPFX     $8EF0
