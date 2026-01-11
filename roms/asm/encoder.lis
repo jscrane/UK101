@@ -23,13 +23,15 @@
  USERHI   = $0234
  SRCLINE  = $12
  WORKPTR2 = $DB
+ WORKPT2H = $DC
  SAVEX    = $DD
  SAVEY    = $DE
  SAVEA    = $DF
- ASMMODE  = $E0
+ MODEFLG  = $E0
  ASMIDX   = $E1
  WORKPTR  = $E7
- MODECNT  = $F0
+ WORKPTRH = $E8
+ CMDDEPTH = $F0
  OPCODE   = $F1
  OPMODE   = $F2
  INSLEN   = $F3
@@ -53,15 +55,15 @@
 8814   8C 33 02             STY USERLO
 8817   A6 86                LDX $86
 8819   CA                   DEX
-881A   86 E8                STX $E8
+881A   86 E8                STX WORKPTRH
 881C   CA                   DEX
-881D   86 DC                STX $DC
+881D   86 DC                STX WORKPT2H
 881F   A9 FF                LDA #$FF
 8821   91 E7      L8821     STA (WORKPTR),Y
 8823   91 DB                STA (WORKPTR2),Y
 8825   88                   DEY
 8826   D0 F9                BNE L8821
-8828   20 72 8A             JSR L8A72
+8828   20 72 8A             JSR PRTPROM
 882B   20 E9 FE   CMDLOOP   JSR GETCHR
 882E   C9 41                CMP #$41
 8830   F0 17                BEQ ASMCMD
@@ -73,11 +75,11 @@
 883D   C9 60      CHROUTH   CMP #$60
 883F   F0 BF                BEQ ENCODER
 8841   4C 9B FF             JMP OUTPUT
-8844   C6 E0      DISCMD    DEC ASMMODE
+8844   C6 E0      DISCMD    DEC MODEFLG
 8846   4C 5E 8D             JMP DISPAGE
-8849   C6 F0      ASMCMD    DEC MODECNT
-884B   A0 10      L884B     LDY #$10
-884D   20 72 8A             JSR L8A72
+8849   C6 F0      ASMCMD    DEC CMDDEPTH
+884B   A0 10      PROMPT    LDY #$10
+884D   20 72 8A             JSR PRTPROM
 8850   20 E9 FE   ASMLOOP   JSR GETCHR
 8853   C9 4C                CMP #$4C
 8855   F0 21                BEQ ASMTAPE
@@ -86,7 +88,7 @@
 885B   4C 0C FE   GOMON     JMP MENTRY
 885E   C9 4D      ASMMEM    CMP #$4D
 8860   D0 EE                BNE ASMLOOP
-8862   E6 E0                INC ASMMODE
+8862   E6 E0                INC MODEFLG
 8864   20 97 8A             JSR ASMCHOUT
 8867   A9 FD                LDA #$FD
 8869   85 E1                STA ASMIDX
@@ -122,7 +124,7 @@
 88AE   A9 7F      L88AE     LDA #$7F
 88B0   A0 04                LDY #$04
 88B2   84 E6                STY $E6
-88B4   99 E8 00   L88B4     STA $00E8,Y
+88B4   99 E8 00   L88B4     STA WORKPTRH+$0000,Y
 88B7   88                   DEY
 88B8   D0 FA                BNE L88B4
 88BA   E8         L88BA     INX
@@ -133,7 +135,7 @@
 88C3   90 0D                BCC L88D2
 88C5   C9 3A                CMP #$3A
 88C7   B0 09                BCS L88D2
-88C9   99 E9 00   L88C9     STA $00E9,Y
+88C9   99 E9 00   L88C9     STA WORKPTRH+1+$0000,Y
 88CC   C8                   INY
 88CD   C0 04                CPY #$04
 88CF   90 E9                BCC L88BA
@@ -149,7 +151,7 @@
 88DE   88                   DEY
 88DF   B1 DB                LDA (WORKPTR2),Y
 88E1   30 11                BMI L88F4
-88E3   D5 E9                CMP $E9,X
+88E3   D5 E9                CMP WORKPTRH+1,X
 88E5   F0 F4                BEQ L88DB
 88E7   18                   CLC
 88E8   A5 E6                LDA $E6
@@ -158,7 +160,7 @@
 88EE   90 E7                BCC L88D7
 88F0   A9 4C      L88F0     LDA #$4C
 88F2   D0 54                BNE L8948
-88F4   B5 E9      L88F4     LDA $E9,X
+88F4   B5 E9      L88F4     LDA WORKPTRH+1,X
 88F6   91 DB                STA (WORKPTR2),Y
 88F8   88                   DEY
 88F9   CA                   DEX
@@ -194,10 +196,10 @@
 892B   D0 F5                BNE L8922
 892D   A5 E3      L892D     LDA $E3
 892F   0A                   ASL A
-8930   85 F0                STA MODECNT
+8930   85 F0                STA CMDDEPTH
 8932   0A                   ASL A
 8933   0A                   ASL A
-8934   65 F0                ADC MODECNT
+8934   65 F0                ADC CMDDEPTH
 8936   D0 DF                BNE L8917
 8938   E8         L8938     INX
 8939   E4 E2                CPX $E2
@@ -213,7 +215,7 @@
 894C   20 E6 FB             JSR SPCOUT
 894F   68                   PLA
 8950   20 EE FF             JSR OUTVEC
-8953   A5 E0                LDA ASMMODE
+8953   A5 E0                LDA MODEFLG
 8955   30 08                BMI L895F
 8957   A9 00                LDA #$00
 8959   8D 03 02             STA LDFLAG
@@ -364,11 +366,11 @@
 8A6D   E6 F1      L8A6D     INC OPCODE
 8A6F   85 FA      L8A6F     STA PCHI
 8A71   60                   RTS
-8A72   C8         L8A72     INY
+8A72   C8         PRTPROM   INY
 8A73   B9 7D 8A             LDA $8A7D,Y
 8A76   20 EE FF             JSR OUTVEC
 8A79   C9 3F                CMP #$3F
-8A7B   D0 F5                BNE L8A72
+8A7B   D0 F5                BNE PRTPROM
 8A7D   60                   RTS
 8A7E   1A                   .BYTE $1A          ;%00011010
 8A7F   0A                   .BYTE $0A          ;%00001010
@@ -424,7 +426,7 @@
 8AC7   95 EB      L8AC7     STA $EB,X
 8AC9   CA                   DEX
 8ACA   10 FB                BPL L8AC7
-8ACC   A5 E0                LDA ASMMODE
+8ACC   A5 E0                LDA MODEFLG
 8ACE   D0 03                BNE L8AD3
 8AD0   4C 84 88             JMP L8884
 8AD3   20 97 8A   L8AD3     JSR ASMCHOUT
@@ -446,9 +448,9 @@
 8AF4   20 8A 88             JSR INSCHOUT
 8AF7   8A                   TXA
 8AF8   D0 08                BNE ASMTERM
-8AFA   85 E0      L8AFA     STA ASMMODE
+8AFA   85 E0      L8AFA     STA MODEFLG
 8AFC   8D 03 02             STA LDFLAG
-8AFF   4C 4B 88             JMP L884B
+8AFF   4C 4B 88             JMP PROMPT
 8B02   A9 00      ASMTERM   LDA #$00
 8B04   95 12                STA SRCLINE,X
 8B06   A2 01      ASMNEXT   LDX #$01
@@ -460,7 +462,7 @@
 8B11   B5 13                LDA SRCLINE+1,X
 8B13   C9 2A                CMP #$2A
 8B15   F0 09                BEQ L8B20
-8B17   A4 F0                LDY MODECNT
+8B17   A4 F0                LDY CMDDEPTH
 8B19   F0 28                BEQ L8B43
 8B1B   A9 2A                LDA #$2A
 8B1D   4C 48 89             JMP L8948
@@ -575,7 +577,7 @@
 8BFC   68                   PLA
 8BFD   85 FE                STA LOFROM
 8BFF   4C 43 8B             JMP L8B43
-8C02   86 F0      L8C02     STX MODECNT
+8C02   86 F0      L8C02     STX CMDDEPTH
 8C04   E8                   INX
 8C05   E8                   INX
 8C06   B5 13                LDA SRCLINE+1,X
@@ -590,7 +592,7 @@
 8C16   88                   DEY
 8C17   D0 F8                BNE L8C11
 8C19   CA                   DEX
-8C1A   E4 F0                CPX MODECNT
+8C1A   E4 F0                CPX CMDDEPTH
 8C1C   10 EC                BPL L8C0A
 8C1E   A5 F3      L8C1E     LDA INSLEN
 8C20   D9 FF 8E             CMP MNEMLEN,Y
@@ -1288,7 +1290,6 @@
  L8989      $8989
  L8991      $8991
  L880A      $880A
- L8A72      $8A72
  L88A6      $88A6
  L88AD      $88AD
  L88B4      $88B4
@@ -1327,7 +1328,6 @@
  L8AB0      $8AB0
  L8AC7      $8AC7
  L8AD3      $8AD3
- L884B      $884B
  L8AFA      $8AFA
  L8B20      $8B20
  L8B43      $8B43
@@ -1436,6 +1436,7 @@
  ASMLOOP    $8850
  ASMTAPE    $8878
  INSCHOUT   $888A
+ PRTPROM    $8A72
  CMDLOOP    $882B
  DISPAGE    $8D5E
  ASMMEM     $885E
@@ -1443,6 +1444,7 @@
  ASMNEXT    $8B06
  RESTREG    $8AD8
  ASMTERM    $8B02
+ PROMPT     $884B
  ASMSKIP    $8B08
  DISLOOP    $8D90
  DISNEXT    $8D70
@@ -1489,13 +1491,15 @@
  MNEMTAB    $8F3F
  SRCLINE      $12
  WORKPTR2     $DB
+ WORKPT2H     $DC
  SAVEX        $DD
  SAVEY        $DE
  SAVEA        $DF
- ASMMODE      $E0
+ MODEFLG      $E0
  ASMIDX       $E1
  WORKPTR      $E7
- MODECNT      $F0
+ WORKPTRH     $E8
+ CMDDEPTH     $F0
  OPCODE       $F1
  OPMODE       $F2
  INSLEN       $F3
