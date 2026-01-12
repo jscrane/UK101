@@ -30,8 +30,13 @@
  SAVEA    = $DF
  MODEFLG  = $E0
  ASMIDX   = $E1
+ OPRSTAT  = $E3
+ ADDRLO   = $E4
+ ADDRHI   = $E5
+ SYMOFF   = $E6
  WORKPTR  = $E7
  WORKPTRH = $E8
+ ASMSTATE = $EB
  CMDDEPTH = $F0
  OPCODE   = $F1
  OPMODE   = $F2
@@ -124,7 +129,7 @@
 88AD   60         L88AD     RTS
 88AE   A9 7F      FINDLBL   LDA #$7F
 88B0   A0 04                LDY #$04
-88B2   84 E6                STY $E6
+88B2   84 E6                STY SYMOFF
 88B4   99 E8 00   L88B4     STA WORKPTRH+$0000,Y
 88B7   88                   DEY
 88B8   D0 FA                BNE L88B4
@@ -146,7 +151,7 @@
 88D4   98                   TYA
 88D5   F0 19                BEQ LABERR
 88D7   A2 04      L88D7     LDX #$04
-88D9   A4 E6                LDY $E6
+88D9   A4 E6                LDY SYMOFF
 88DB   CA         L88DB     DEX
 88DC   30 1F                BMI L88FD
 88DE   88                   DEY
@@ -155,9 +160,9 @@
 88E3   D5 E9                CMP WORKPTRH+1,X
 88E5   F0 F4                BEQ L88DB
 88E7   18                   CLC
-88E8   A5 E6                LDA $E6
+88E8   A5 E6                LDA SYMOFF
 88EA   69 04                ADC #$04
-88EC   85 E6                STA $E6
+88EC   85 E6                STA SYMOFF
 88EE   90 E7                BCC L88D7
 88F0   A9 4C      LABERR    LDA #$4C
 88F2   D0 54                BNE STATEXIT
@@ -183,19 +188,19 @@
 8911   D0 F0                BNE L8903
 8913   86 E2      L8913     STX $E2
 8915   A9 01                LDA #$01
-8917   85 E3      L8917     STA $E3
+8917   85 E3      L8917     STA OPRSTAT
 8919   CA                   DEX
 891A   B4 13                LDY SRCLINE+1,X
 891C   F0 0F                BEQ L892D
 891E   C0 0A                CPY #$0A
 8920   B0 16                BCS L8938
 8922   A5 F9      L8922     LDA PCLO
-8924   65 E3                ADC $E3
+8924   65 E3                ADC OPRSTAT
 8926   85 F9                STA PCLO
 8928   B0 5D      L8928     BCS NUMERR
 892A   88                   DEY
 892B   D0 F5                BNE L8922
-892D   A5 E3      L892D     LDA $E3
+892D   A5 E3      L892D     LDA OPRSTAT
 892F   0A                   ASL A
 8930   85 F0                STA CMDDEPTH
 8932   0A                   ASL A
@@ -230,13 +235,13 @@
 896B   B5 13                LDA SRCLINE+1,X
 896D   20 93 FE             JSR ASCHEX
 8970   30 0D                BMI L897F
-8972   E6 E3                INC $E3
+8972   E6 E3                INC OPRSTAT
 8974   86 E2                STX $E2
 8976   A2 00                LDX #$00
 8978   20 DA FE             JSR ROLSTR
 897B   A6 E2                LDX $E2
 897D   10 EB                BPL L896A
-897F   A5 E3      L897F     LDA $E3
+897F   A5 E3      L897F     LDA OPRSTAT
 8981   F0 04                BEQ NUMERR
 8983   C9 05                CMP #$05
 8985   90 04                BCC L898B
@@ -287,11 +292,11 @@
 89D3   A0 00      OPRSTART  LDY #$00
 89D5   84 F9                STY PCLO
 89D7   84 FA                STY PCHI
-89D9   84 E3                STY $E3
+89D9   84 E3                STY OPRSTAT
 89DB   C9 3A                CMP #$3A
 89DD   D0 83                BNE L8962
 89DF   20 AE 88             JSR FINDLBL
-89E2   84 E6                STY $E6
+89E2   84 E6                STY SYMOFF
 89E4   B5 13                LDA SRCLINE+1,X
 89E6   C9 2B                CMP #$2B
 89E8   D0 09                BNE L89F3
@@ -302,42 +307,42 @@
 89F3   A0 01      L89F3     LDY #$01
 89F5   A5 F9                LDA PCLO
 89F7   91 FE                STA (LOFROM),Y
-89F9   A5 E6                LDA $E6
+89F9   A5 E6                LDA SYMOFF
 89FB   B4 13                LDY SRCLINE+1,X
 89FD   C0 3E                CPY #$3E
 89FF   D0 03                BNE L8A04
 8A01   E8                   INX
 8A02   09 80                ORA #$80
 8A04   85 EE      L8A04     STA $EE
-8A06   A4 E6                LDY $E6
+8A06   A4 E6                LDY SYMOFF
 8A08   B1 E7                LDA (WORKPTR),Y
-8A0A   85 E4                STA $E4
+8A0A   85 E4                STA ADDRLO
 8A0C   C8                   INY
 8A0D   B1 E7                LDA (WORKPTR),Y
-8A0F   85 E5                STA $E5
+8A0F   85 E5                STA ADDRHI
 8A11   C9 FF                CMP #$FF
 8A13   D0 06                BNE OPRVALUE
-8A15   A5 E4                LDA $E4
+8A15   A5 E4                LDA ADDRLO
 8A17   C9 FF                CMP #$FF
 8A19   F0 91                BEQ L89AC
 8A1B   20 A2 8A   OPRVALUE  JSR CALCPC
 8A1E   A0 01                LDY #$01
 8A20   B1 FE                LDA (LOFROM),Y
 8A22   18                   CLC
-8A23   65 E4                ADC $E4
-8A25   85 E4                STA $E4
+8A23   65 E4                ADC ADDRLO
+8A25   85 E4                STA ADDRLO
 8A27   90 02                BCC L8A2B
-8A29   E6 E5                INC $E5
+8A29   E6 E5                INC ADDRHI
 8A2B   A5 F4      L8A2B     LDA INSFMT
 8A2D   C9 01                CMP #$01
 8A2F   D0 20                BNE L8A51
-8A31   A5 E4                LDA $E4
+8A31   A5 E4                LDA ADDRLO
 8A33   E5 F9                SBC PCLO
 8A35   A8                   TAY
 8A36   88                   DEY
 8A37   88                   DEY
 8A38   84 F9                STY PCLO
-8A3A   A5 E5                LDA $E5
+8A3A   A5 E5                LDA ADDRHI
 8A3C   E5 FA                SBC PCHI
 8A3E   F0 09                BEQ L8A49
 8A40   C9 FF                CMP #$FF
@@ -351,16 +356,16 @@
 8A4E   4C 48 89             JMP STATEXIT
 8A51   A5 EE      L8A51     LDA $EE
 8A53   10 0A                BPL L8A5F
-8A55   A5 E4                LDA $E4
+8A55   A5 E4                LDA ADDRLO
 8A57   48                   PHA
-8A58   A5 E5                LDA $E5
-8A5A   85 E4                STA $E4
+8A58   A5 E5                LDA ADDRHI
+8A5A   85 E4                STA ADDRLO
 8A5C   68                   PLA
-8A5D   85 E5                STA $E5
-8A5F   A5 E4      L8A5F     LDA $E4
+8A5D   85 E5                STA ADDRHI
+8A5F   A5 E4      L8A5F     LDA ADDRLO
 8A61   85 F9                STA PCLO
 8A63   E6 F1                INC OPCODE
-8A65   A5 E5                LDA $E5
+8A65   A5 E5                LDA ADDRHI
 8A67   D0 04                BNE L8A6D
 8A69   A4 F4                LDY INSFMT
 8A6B   D0 02                BNE L8A6F
@@ -424,7 +429,7 @@
 8AC0   20 B6 FE   ENDLINE   JSR QDDATD
 8AC3   A2 0B                LDX #$0B
 8AC5   A9 00                LDA #$00
-8AC7   95 EB      L8AC7     STA $EB,X
+8AC7   95 EB      L8AC7     STA ASMSTATE,X
 8AC9   CA                   DEX
 8ACA   10 FB                BPL L8AC7
 8ACC   A5 E0                LDA MODEFLG
@@ -526,10 +531,10 @@
 8B9A   48                   PHA
 8B9B   A4 ED      L8B9B     LDY $ED
 8B9D   B1 E7                LDA (WORKPTR),Y
-8B9F   85 E4                STA $E4
+8B9F   85 E4                STA ADDRLO
 8BA1   C8                   INY
 8BA2   B1 E7                LDA (WORKPTR),Y
-8BA4   85 E5                STA $E5
+8BA4   85 E5                STA ADDRHI
 8BA6   A0 7F                LDY #$7F
 8BA8   A5 ED      L8BA8     LDA $ED
 8BAA   C8                   INY
@@ -1499,8 +1504,13 @@
  SAVEA        $DF
  MODEFLG      $E0
  ASMIDX       $E1
+ OPRSTAT      $E3
+ ADDRLO       $E4
+ ADDRHI       $E5
+ SYMOFF       $E6
  WORKPTR      $E7
  WORKPTRH     $E8
+ ASMSTATE     $EB
  CMDDEPTH     $F0
  OPCODE       $F1
  OPMODE       $F2
