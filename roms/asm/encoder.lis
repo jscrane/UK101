@@ -103,7 +103,7 @@
 887B   20 70 FE             JSR SETLOD
 887E   20 57 A3             JSR FRMNUM
 8881   20 57 A3             JSR FRMNUM
-8884   20 57 A3   L8884     JSR FRMNUM
+8884   20 57 A3   TAPECONT  JSR FRMNUM
 8887   4C 06 8B             JMP ASMNEXT
 888A   A9 3D      INSCHOUT  LDA #$3D
 888C   8D 1A 02             STA CHROUTV
@@ -210,7 +210,7 @@
 8941   60         L8941     RTS
 8942   25 F4      MODEEXIT  AND INSFMT
 8944   D0 FB                BNE L8941
-8946   A9 4D      L8946     LDA #$4D
+8946   A9 4D      MODERR    LDA #$4D
 8948   48         STATEXIT  PHA
 8949   20 F5 FB             JSR CRLF
 894C   20 E6 FB             JSR SPCOUT
@@ -429,7 +429,7 @@
 8ACA   10 FB                BPL L8AC7
 8ACC   A5 E0                LDA MODEFLG
 8ACE   D0 03                BNE L8AD3
-8AD0   4C 84 88             JMP L8884
+8AD0   4C 84 88             JMP TAPECONT
 8AD3   20 97 8A   L8AD3     JSR ASMCHOUT
 8AD6   86 E1                STX ASMIDX
 8AD8   A6 DD      RESTREG   LDX SAVEX
@@ -464,7 +464,7 @@
 8B13   C9 2A                CMP #$2A
 8B15   F0 09                BEQ L8B20
 8B17   A4 F0                LDY CMDDEPTH
-8B19   F0 28                BEQ L8B43
+8B19   F0 28                BEQ OPRTAIL
 8B1B   A9 2A                LDA #$2A
 8B1D   4C 48 89             JMP STATEXIT
 8B20   20 D0 89   L8B20     JSR OPRESOLV
@@ -483,7 +483,7 @@
 8B3C   E5 FF                SBC HIFROM
 8B3E   85 F8                STA ABRTFLG
 8B40   4C C0 8A   L8B40     JMP ENDLINE
-8B43   20 B1 8A   L8B43     JSR SKIPSPC
+8B43   20 B1 8A   OPRTAIL   JSR SKIPSPC
 8B46   B0 F8                BCS L8B40
 8B48   C9 22                CMP #$22
 8B4A   D0 0A                BNE L8B56
@@ -499,10 +499,10 @@
 8B5F   90 03                BCC L8B64
 8B61   20 A4 88             JSR PRPCHI
 8B64   20 9D 88   L8B64     JSR PRPCHEX
-8B67   F0 DA                BEQ L8B43
+8B67   F0 DA                BEQ OPRTAIL
 8B69   C9 3A      L8B69     CMP #$3A
 8B6B   F0 03                BEQ L8B70
-8B6D   4C 02 8C             JMP L8C02
+8B6D   4C 02 8C             JMP FMTRESOL
 8B70   20 AE 88   L8B70     JSR FINDLBL
 8B73   84 ED                STY $ED
 8B75   20 A2 8A             JSR CALCPC
@@ -577,8 +577,8 @@
 8BFA   85 FF                STA HIFROM
 8BFC   68                   PLA
 8BFD   85 FE                STA LOFROM
-8BFF   4C 43 8B             JMP L8B43
-8C02   86 F0      L8C02     STX CMDDEPTH
+8BFF   4C 43 8B             JMP OPRTAIL
+8C02   86 F0      FMTRESOL  STX CMDDEPTH
 8C04   E8                   INX
 8C05   E8                   INX
 8C06   B5 13                LDA SRCLINE+1,X
@@ -652,7 +652,7 @@
 8C8E   C9 58                CMP #$58
 8C90   90 11                BCC L8CA3
 8C92   A9 00      L8C92     LDA #$00
-8C94   4C 3D 8D   L8C94     JMP L8D3D
+8C94   4C 3D 8D   L8C94     JMP DISDONE
 8C97   C9 41      L8C97     CMP #$41
 8C99   D0 0C                BNE L8CA7
 8C9B   C0 30                CPY #$30
@@ -693,15 +693,15 @@
 8CE2   C0 59                CPY #$59
 8CE4   D0 F5                BNE L8CDB
 8CE6   A9 10                LDA #$10
-8CE8   D0 53                BNE L8D3D
+8CE8   D0 53                BNE DISDONE
 8CEA   A5 F3      L8CEA     LDA INSLEN
 8CEC   C9 40                CMP #$40
 8CEE   F0 03                BEQ L8CF3
-8CF0   4C 46 89   L8CF0     JMP L8946
+8CF0   4C 46 89   L8CF0     JMP MODERR
 8CF3   A9 03      L8CF3     LDA #$03
 8CF5   85 F1                STA OPCODE
 8CF7   A9 2C                LDA #$2C
-8CF9   D0 42                BNE L8D3D
+8CF9   D0 42                BNE DISDONE
 8CFB   A5 F6      L8CFB     LDA $F6
 8CFD   F0 44                BEQ L8D43
 8CFF   C9 84                CMP #$84
@@ -716,7 +716,7 @@
 8D11   A9 08      L8D11     LDA #$08
 8D13   20 42 89             JSR MODEEXIT
 8D16   A9 1C      L8D16     LDA #$1C
-8D18   D0 23                BNE L8D3D
+8D18   D0 23                BNE DISDONE
 8D1A   C9 85      L8D1A     CMP #$85
 8D1C   D0 BD                BNE L8CDB
 8D1E   A5 F1                LDA OPCODE
@@ -726,7 +726,7 @@
 8D26   25 F4                AND INSFMT
 8D28   F0 04                BEQ L8D2E
 8D2A   A9 14      L8D2A     LDA #$14
-8D2C   D0 0F                BNE L8D3D
+8D2C   D0 0F                BNE DISDONE
 8D2E   E6 F1      L8D2E     INC OPCODE
 8D30   A9 04      L8D30     LDA #$04
 8D32   20 42 89             JSR MODEEXIT
@@ -734,7 +734,7 @@
 8D37   C9 58                CMP #$58
 8D39   F0 DB                BEQ L8D16
 8D3B   A9 18                LDA #$18
-8D3D   20 95 88   L8D3D     JSR PRNEXTPC
+8D3D   20 95 88   DISDONE   JSR PRNEXTPC
 8D40   4C C0 8A             JMP ENDLINE
 8D43   A5 F1      L8D43     LDA OPCODE
 8D45   C9 02                CMP #$02
@@ -743,12 +743,12 @@
 8D4B   25 F4                AND INSFMT
 8D4D   F0 04                BEQ L8D53
 8D4F   A9 04                LDA #$04
-8D51   D0 EA                BNE L8D3D
+8D51   D0 EA                BNE DISDONE
 8D53   E6 F1      L8D53     INC OPCODE
 8D55   A9 80      L8D55     LDA #$80
 8D57   20 42 89             JSR MODEEXIT
 8D5A   A9 0C                LDA #$0C
-8D5C   D0 DF                BNE L8D3D
+8D5C   D0 DF                BNE DISDONE
 8D5E   20 EE FF   DISPAGE   JSR OUTVEC
 8D61   A9 24                LDA #$24
 8D63   20 EE FF             JSR OUTVEC
@@ -1274,7 +1274,6 @@
 
 ;auto-generated symbols and labels
  L8821      $8821
- L8884      $8884
  L8903      $8903
  L8913      $8913
  L8917      $8917
@@ -1282,7 +1281,6 @@
  L8928      $8928
  L8938      $8938
  L8941      $8941
- L8946      $8946
  L8962      $8962
  L8989      $8989
  L8991      $8991
@@ -1320,14 +1318,12 @@
  L8AD3      $8AD3
  L8AFA      $8AFA
  L8B20      $8B20
- L8B43      $8B43
  L8B40      $8B40
  L8B56      $8B56
  L8B4C      $8B4C
  L8B69      $8B69
  L8B64      $8B64
  L8B70      $8B70
- L8C02      $8C02
  L8B8A      $8B8A
  L8B87      $8B87
  L8BF9      $8BF9
@@ -1349,7 +1345,6 @@
  L8C97      $8C97
  L8C83      $8C83
  L8CA3      $8CA3
- L8D3D      $8D3D
  L8CA7      $8CA7
  L8CF0      $8CF0
  L8C94      $8C94
@@ -1413,8 +1408,10 @@
  ASMCMD     $8849
  ASMLOOP    $8850
  ASMTAPE    $8878
+ TAPECONT   $8884
  PRNEXTPC   $8895
  MODEEXIT   $8942
+ MODERR     $8946
  STATEXIT   $8948
  NUMERR     $8987
  INSCHOUT   $888A
@@ -1435,12 +1432,15 @@
  ASMTERM    $8B02
  PROMPT     $884B
  ASMSKIP    $8B08
+ OPRTAIL    $8B43
  SKIPSPC    $8AB1
  OPRCONT    $89D1
  ENDLINE    $8AC0
  PRPCHI     $88A4
  PRPCHEX    $889D
+ FMTRESOL   $8C02
  SYNERR     $8C38
+ DISDONE    $8D3D
  OPRSTART   $89D3
  DISLOOP    $8D90
  DISADVPC   $8D97
