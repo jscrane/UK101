@@ -238,7 +238,7 @@ Labelled text:
 
 ```
 #:LABL     ; store low/high byte
-#:LABL>   ; store high/low byte
+#:LABL>    ; store high/low byte
 ```
 
 Immediate usage:
@@ -274,7 +274,7 @@ LDA #:LABL>
 80 INX;                     step up one
 90 CMP #$00;                test for null (.BYTE CHAR.)
 100 BNE :LOOP;              if not keep going
-110 RTS;                    finished!
+110 RTS;                    finished
 ```
 
 ```asm
@@ -286,7 +286,7 @@ LDA #:LABL>
 60 :LOOP LDA :STOR,X;       get next char from STOR
 70 STA $D100,X;             put to next screen location
 80 INX;                     step up one
-90 CPX #$OD;                test for all done
+90 CPX #$O0;                test for all done
 100 BNE :LOOP;              if not keep going
 110 RTS;                    finished
 ```
