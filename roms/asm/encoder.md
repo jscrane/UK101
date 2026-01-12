@@ -60,7 +60,7 @@ Enter the starting address followed by `RETURN`. Fifteen lines of code will be d
 
 While in the monitor:
 - Press `.U` to re-enter ENCODER
-- Press `RESET` (`BREAK` on OHIOS) to reinitialise ENCODER
+- Press `RESET` (`BREAK` on OHIOs) to reinitialise ENCODER
 
 ---
 
@@ -202,6 +202,19 @@ The 6502 processor supports the following addressing modes:
 
 ## Directives & Data
 
+Directives are used to tell the assembler where in memory to put the object
+code, define labels and set up data stores.
+
+### Start Address
+
+The syntax is *$xxxx* or *$xxxx$yyyy* and is used to tell the assembler where
+the object code is to be stored.
+
+### Label Definition
+
+The syntax is `:LABL=$xxxx` or `JSR :LABL`.
+All label entries must be preceded by a colon.
+
 ### Data Entry
 
 ```
@@ -224,8 +237,8 @@ Labelled text:
 ### Address Storage
 
 ```
-/:LABL     ; store low/high byte
-/!:LABL>   ; store high/low byte
+#:LABL     ; store low/high byte
+#:LABL>   ; store high/low byte
 ```
 
 Immediate usage:
@@ -236,7 +249,7 @@ LDA #:LABL>
 
 ---
 
-## Sample Program
+## Sample Programs
 
 ```asm
 10 *$1000
@@ -250,13 +263,42 @@ LDA #:LABL>
 90 RTS
 ```
 
+```asm
+10 *$1000$0300;             assembly and destination
+20 :X1 "THIS IS A SAMPLE;   text to write to screen
+30 #$00;                    equivalent of .BYTE
+40 :SCRN=$D300;             define screen label
+50 LDX #$00;                zero out X register
+60 :LOOP LDA :X1,X;         get new character from text
+70 STA :SCRN,X;             put to next screen location
+80 INX;                     step up one
+90 CMP #$00;                test for null (.BYTE CHAR.)
+100 BNE :LOOP;              if not keep going
+110 RTS;                    finished!
+```
+
+```asm
+10 *$1000;                  start address
+20 :STOR #$A1#$20#$A1;      look up table named :STOR
+30 #$20#$A1#$20#$A1#$20
+40 #$A1#$20#$A1#$20#$A1
+50 LDX #$00;                zero out X register
+60 :LOOP LDA :STOR,X;       get next char from STOR
+70 STA $D100,X;             put to next screen location
+80 INX;                     step up one
+90 CPX #$OD;                test for all done
+100 BNE :LOOP;              if not keep going
+110 RTS;                    finished
+```
+
 ---
 
 ## Error Messages
 
 | Code | Meaning |
 |------|--------|
-| L | No start address |
+| * | No start address |
+| L | Invalid Label |
 | M | Wrong addressing mode |
 | N | Illegal number |
 | O | Out of memory |
