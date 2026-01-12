@@ -16,6 +16,7 @@ MSTART = $F97E   ; entry to command/address mode
 OUTVEC = $FFEE   ; normally points to OUTPUT
 GETCHR = $FEE9   ; get char from keyboard or ACIA
 SETLOD = $FE70   ; sets BASIC load flag, clears save flag
+STBUMP = $FEF7   ; store A at (LOFROM),Y and increment pointer
 BUMP = $FEF9     ; increment 'current address' at (FE)
 ROLSTR = $FEDA   ; roll new nibble into (FE) if X=2, or into FC if X=0
 ASCHEX = $FE93   ; strip ASCII digit to hex; set to 0x80 if not hex
@@ -62,13 +63,15 @@ DISPAGE = $8D5E   ; disassemble one page (15 instructions) from address
 DISWAIT = $8D7E   ; wait for CR/LF/D during disassembly
 DISNEXT = $8D70   ; start next instruction line
 DISLOOP = $8D90   ; per-instruction disassembly loop (one page)
+DISADVPC = $8D97   ; advance PC and manage disassembly loop
 OPCDEC  = $8DA4   ; decode opcode, classify instruction
 DISFMT = $8DDA    ; format & emit one disassembled instruction
-PRNEXT = $8E66   ; compute and print next instruction address
+PRNXTAD = $8E66   ; compute & print next address
 PRADDR = $8E6F    ; print 16-bit address (A=hi, X=lo)
 PRHEX = $8E73     ; print A as two hex digits
 DISLINE = $8E7D   ; start new disassembly line (CRLF + print PC)
 NEXTPC = $8E90    ; compute next instruction address
+PCADD   = $8E93   ; add offset in A to PC -> A/Y
 ASMCMD = $8849    ; handle 'A' command, prompt for M/L
 ASMLOOP = $8850   ; wait for M, L, or CR after 'A'
 GOMON = $885B     ; CR: enter monitor

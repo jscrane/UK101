@@ -4,6 +4,7 @@
  OUTVEC   = $FFEE
  GETCHR   = $FEE9
  SETLOD   = $FE70
+ STBUMP   = $FEF7
  BUMP     = $FEF9
  ROLSTR   = $FEDA
  ASCHEX   = $FE93
@@ -118,7 +119,7 @@
 88A2   F0 09                BEQ L88AD
 88A4   A5 FA      PRPCHI    LDA PCHI
 88A6   A0 00      PRHEXDEC  LDY #$00
-88A8   20 F7 FE             JSR $FEF7
+88A8   20 F7 FE             JSR STBUMP
 88AB   C6 F1                DEC OPCODE
 88AD   60         L88AD     RTS
 88AE   A9 7F      FINDLBL   LDA #$7F
@@ -758,7 +759,7 @@
 8D70   20 F5 FB   DISNEXT   JSR CRLF
 8D73   85 F8                STA ABRTFLG
 8D75   20 90 8D             JSR DISLOOP
-8D78   20 97 8D             JSR L8D97
+8D78   20 97 8D             JSR DISADVPC
 8D7B   20 F5 FB             JSR CRLF
 8D7E   20 E9 FE   DISWAIT   JSR GETCHR
 8D81   C9 0A                CMP #$0A
@@ -771,7 +772,7 @@
 8D90   A9 0D      DISLOOP   LDA #$0D
 8D92   85 F7                STA PAGCNT
 8D94   20 A4 8D   L8D94     JSR OPCDEC
-8D97   20 90 8E   L8D97     JSR NEXTPC
+8D97   20 90 8E   DISADVPC  JSR NEXTPC
 8D9A   85 F9                STA PCLO
 8D9C   84 FA                STY PCHI
 8D9E   C6 F7                DEC PAGCNT
@@ -868,7 +869,7 @@
 8E42   A5 F1      L8E42     LDA OPCODE
 8E44   C9 E8                CMP #$E8
 8E46   B1 F9                LDA (PCLO),Y
-8E48   B0 1C                BCS PRNEXT
+8E48   B0 1C                BCS PRNXTAD
 8E4A   20 73 8E             JSR PRHEX
 8E4D   88                   DEY
 8E4E   D0 F2                BNE L8E42
@@ -882,7 +883,7 @@
 8E62   CA         L8E62     DEX
 8E63   D0 CA                BNE L8E2F
 8E65   60                   RTS
-8E66   20 93 8E   PRNEXT    JSR L8E93
+8E66   20 93 8E   PRNXTAD   JSR PCADD
 8E69   AA                   TAX
 8E6A   E8                   INX
 8E6B   D0 01                BNE L8E6E
@@ -908,7 +909,7 @@
 8E8F   60                   RTS
 8E90   A5 F2      NEXTPC    LDA OPMODE
 8E92   38                   SEC
-8E93   A4 FA      L8E93     LDY PCHI
+8E93   A4 FA      PCADD     LDY PCHI
 8E95   AA                   TAX
 8E96   10 01                BPL L8E99
 8E98   88                   DEY
@@ -1375,7 +1376,6 @@
  L8D16      $8D16
  L8D55      $8D55
  L8D53      $8D53
- L8D97      $8D97
  L8DD9      $8DD9
  L8D94      $8D94
  L8DB8      $8DB8
@@ -1393,7 +1393,6 @@
  L8E42      $8E42
  L8E62      $8E62
  L8E2F      $8E2F
- L8E93      $8E93
  L8E6E      $8E6E
  L8E99      $8E99
  L8E9E      $8E9E
@@ -1444,6 +1443,7 @@
  PRPCHEX    $889D
  OPRSTART   $89D3
  DISLOOP    $8D90
+ DISADVPC   $8D97
  DISNEXT    $8D70
  DISWAIT    $8D7E
  OPCDEC     $8DA4
@@ -1454,7 +1454,8 @@
  EMITSPC    $8E89
  EMITCHR    $8E3D
  INSTSEP    $8E87
- PRNEXT     $8E66
+ PRNXTAD    $8E66
+ PCADD      $8E93
  PRADDR     $8E6F
  OUTPUT     $FF9B
  MENTRY     $FE0C
@@ -1462,6 +1463,7 @@
  OUTVEC     $FFEE
  GETCHR     $FEE9
  SETLOD     $FE70
+ STBUMP     $FEF7
  BUMP       $FEF9
  ROLSTR     $FEDA
  ASCHEX     $FE93
