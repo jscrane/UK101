@@ -18,13 +18,15 @@
 #define TFT_ORIENT      landscape
 #endif
 
-// X-offset (in characters)
 #if defined(UK101)
 #define CHARS_PER_LINE	64
 #define DISPLAY_RAM_SIZE 2048
+#define DISPLAY_CENTER	CENTER_SCREEN | CENTER_DISPLAY_X
+
 #elif defined(OHIO)
 #define CHARS_PER_LINE	32
 #define DISPLAY_RAM_SIZE 1024
+#define DISPLAY_CENTER	CENTER_SCREEN
 #endif
 #define DISPLAY_LINES	(DISPLAY_RAM_SIZE / CHARS_PER_LINE)
 
