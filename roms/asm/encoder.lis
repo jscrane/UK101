@@ -109,14 +109,14 @@
 888F   A9 88                LDA #$88
 8891   8D 1B 02             STA CHROUTVH
 8894   60                   RTS
-8895   18         L8895     CLC
+8895   18         PRNEXTPC  CLC
 8896   65 F3                ADC INSLEN
 8898   20 A6 88             JSR PRHEXDEC
 889B   F0 10                BEQ L88AD
 889D   A5 F9      PRPCHEX   LDA PCLO
 889F   20 A6 88             JSR PRHEXDEC
 88A2   F0 09                BEQ L88AD
-88A4   A5 FA      L88A4     LDA PCHI
+88A4   A5 FA      PRPCHI    LDA PCHI
 88A6   A0 00      PRHEXDEC  LDY #$00
 88A8   20 F7 FE             JSR $FEF7
 88AB   C6 F1                DEC OPCODE
@@ -282,8 +282,8 @@
 89CD   E6 F1      L89CD     INC OPCODE
 89CF   60                   RTS
 89D0   E8         OPRESOLV  INX
-89D1   B5 13      L89D1     LDA SRCLINE+1,X
-89D3   A0 00      L89D3     LDY #$00
+89D1   B5 13      OPRCONT   LDA SRCLINE+1,X
+89D3   A0 00      OPRSTART  LDY #$00
 89D5   84 F9                STY PCLO
 89D7   84 FA                STY PCHI
 89D9   84 E3                STY $E3
@@ -315,11 +315,11 @@
 8A0D   B1 E7                LDA (WORKPTR),Y
 8A0F   85 E5                STA $E5
 8A11   C9 FF                CMP #$FF
-8A13   D0 06                BNE L8A1B
+8A13   D0 06                BNE OPRVALUE
 8A15   A5 E4                LDA $E4
 8A17   C9 FF                CMP #$FF
 8A19   F0 91                BEQ L89AC
-8A1B   20 A2 8A   L8A1B     JSR CALCPC
+8A1B   20 A2 8A   OPRVALUE  JSR CALCPC
 8A1E   A0 01                LDY #$01
 8A20   B1 FE                LDA (LOFROM),Y
 8A22   18                   CLC
@@ -473,7 +473,7 @@
 8B29   85 FF                STA HIFROM
 8B2B   20 B1 8A             JSR SKIPSPC
 8B2E   B0 10                BCS L8B40
-8B30   20 D1 89             JSR L89D1
+8B30   20 D1 89             JSR OPRCONT
 8B33   38                   SEC
 8B34   A5 F9                LDA PCLO
 8B36   E5 FE                SBC LOFROM
@@ -496,7 +496,7 @@
 8B5A   20 D0 89             JSR OPRESOLV
 8B5D   C0 80                CPY #$80
 8B5F   90 03                BCC L8B64
-8B61   20 A4 88             JSR L88A4
+8B61   20 A4 88             JSR PRPCHI
 8B64   20 9D 88   L8B64     JSR PRPCHEX
 8B67   F0 DA                BEQ L8B43
 8B69   C9 3A      L8B69     CMP #$3A
@@ -561,7 +561,7 @@
 8BDA   D0 F6                BNE L8BD2
 8BDC   B9 BF 8F             LDA L8FBF,Y
 8BDF   85 F4                STA INSFMT
-8BE1   20 1B 8A   L8BE1     JSR L8A1B
+8BE1   20 1B 8A   L8BE1     JSR OPRVALUE
 8BE4   A0 00                LDY #$00
 8BE6   B1 FE                LDA (LOFROM),Y
 8BE8   F0 0A                BEQ L8BF4
@@ -664,7 +664,7 @@
 8CA9   D0 03                BNE L8CAE
 8CAB   85 F5                STA INSFMT+1
 8CAD   E8                   INX
-8CAE   20 D1 89   L8CAE     JSR L89D1
+8CAE   20 D1 89   L8CAE     JSR OPRCONT
 8CB1   20 B1 8A   L8CB1     JSR SKIPSPC
 8CB4   B0 08                BCS L8CBE
 8CB6   A8                   TAY
@@ -733,7 +733,7 @@
 8D37   C9 58                CMP #$58
 8D39   F0 DB                BEQ L8D16
 8D3B   A9 18                LDA #$18
-8D3D   20 95 88   L8D3D     JSR L8895
+8D3D   20 95 88   L8D3D     JSR PRNEXTPC
 8D40   4C C0 8A             JMP L8AC0
 8D43   A5 F1      L8D43     LDA OPCODE
 8D45   C9 02                CMP #$02
@@ -754,7 +754,7 @@
 8D66   20 57 A3             JSR FRMNUM
 8D69   A2 FF                LDX #$FF
 8D6B   A9 24                LDA #$24
-8D6D   20 D3 89             JSR L89D3
+8D6D   20 D3 89             JSR OPRSTART
 8D70   20 F5 FB   DISNEXT   JSR CRLF
 8D73   85 F8                STA ABRTFLG
 8D75   20 90 8D             JSR DISLOOP
@@ -777,7 +777,7 @@
 8D9E   C6 F7                DEC PAGCNT
 8DA0   30 37                BMI L8DD9
 8DA2   D0 F0                BNE L8D94
-8DA4   20 7D 8E   OPCDEC    JSR L8E7D
+8DA4   20 7D 8E   OPCDEC    JSR DISLINE
 8DA7   A1 F9                LDA (PCLO,X)
 8DA9   A8                   TAY
 8DAA   4A                   LSR A
@@ -868,7 +868,7 @@
 8E42   A5 F1      L8E42     LDA OPCODE
 8E44   C9 E8                CMP #$E8
 8E46   B1 F9                LDA (PCLO),Y
-8E48   B0 1C                BCS L8E66
+8E48   B0 1C                BCS PRNEXT
 8E4A   20 73 8E             JSR PRHEX
 8E4D   88                   DEY
 8E4E   D0 F2                BNE L8E42
@@ -882,13 +882,13 @@
 8E62   CA         L8E62     DEX
 8E63   D0 CA                BNE L8E2F
 8E65   60                   RTS
-8E66   20 93 8E   L8E66     JSR L8E93
+8E66   20 93 8E   PRNEXT    JSR L8E93
 8E69   AA                   TAX
 8E6A   E8                   INX
 8E6B   D0 01                BNE L8E6E
 8E6D   C8                   INY
 8E6E   98         L8E6E     TYA
-8E6F   20 73 8E   L8E6F     JSR PRHEX
+8E6F   20 73 8E   PRADDR    JSR PRHEX
 8E72   8A                   TXA
 8E73   85 FC      PRHEX     STA $FC
 8E75   8A                   TXA
@@ -897,10 +897,10 @@
 8E7A   68                   PLA
 8E7B   AA                   TAX
 8E7C   60                   RTS
-8E7D   20 F5 FB   L8E7D     JSR CRLF
+8E7D   20 F5 FB   DISLINE   JSR CRLF
 8E80   A5 FA                LDA PCHI
 8E82   A6 F9                LDX PCLO
-8E84   20 6F 8E             JSR L8E6F
+8E84   20 6F 8E             JSR PRADDR
 8E87   A2 01      INSTSEP   LDX #$01
 8E89   20 E6 FB   EMITSPC   JSR SPCOUT
 8E8C   CA                   DEX
@@ -1274,7 +1274,6 @@
 ;auto-generated symbols and labels
  L8821      $8821
  L8884      $8884
- L8895      $8895
  L8903      $8903
  L8913      $8913
  L8917      $8917
@@ -1310,7 +1309,6 @@
  L89AE      $89AE
  L89F3      $89F3
  L8A04      $8A04
- L8A1B      $8A1B
  L89AC      $89AC
  L8A2B      $8A2B
  L8A51      $8A51
@@ -1327,13 +1325,11 @@
  L8B20      $8B20
  L8B43      $8B43
  L8B40      $8B40
- L89D1      $89D1
  L8AC0      $8AC0
  L8B56      $8B56
  L8B4C      $8B4C
  L8B69      $8B69
  L8B64      $8B64
- L88A4      $88A4
  L8B70      $8B70
  L8C02      $8C02
  L8B8A      $8B8A
@@ -1379,11 +1375,9 @@
  L8D16      $8D16
  L8D55      $8D55
  L8D53      $8D53
- L89D3      $89D3
  L8D97      $8D97
  L8DD9      $8DD9
  L8D94      $8D94
- L8E7D      $8E7D
  L8DB8      $8DB8
  L8DC7      $8DC7
  L8DC3      $8DC3
@@ -1397,12 +1391,10 @@
  L8E16      $8E16
  L8E50      $8E50
  L8E42      $8E42
- L8E66      $8E66
  L8E62      $8E62
  L8E2F      $8E2F
  L8E93      $8E93
  L8E6E      $8E6E
- L8E6F      $8E6F
  L8E99      $8E99
  L8E9E      $8E9E
  L8EAD      $8EAD
@@ -1428,6 +1420,7 @@
  ASMCMD     $8849
  ASMLOOP    $8850
  ASMTAPE    $8878
+ PRNEXTPC   $8895
  MODEEXIT   $8942
  INSCHOUT   $888A
  PRTPROM    $8A72
@@ -1439,23 +1432,30 @@
  PRHEXDEC   $88A6
  FINDLBL    $88AE
  OPRESOLV   $89D0
+ OPRVALUE   $8A1B
  CALCPC     $8AA2
  RESTREG    $8AD8
  ASMTERM    $8B02
  PROMPT     $884B
  ASMSKIP    $8B08
  SKIPSPC    $8AB1
+ OPRCONT    $89D1
+ PRPCHI     $88A4
  PRPCHEX    $889D
+ OPRSTART   $89D3
  DISLOOP    $8D90
  DISNEXT    $8D70
  DISWAIT    $8D7E
  OPCDEC     $8DA4
  NEXTPC     $8E90
+ DISLINE    $8E7D
  DISFMT     $8DDA
  PRHEX      $8E73
  EMITSPC    $8E89
  EMITCHR    $8E3D
  INSTSEP    $8E87
+ PRNEXT     $8E66
+ PRADDR     $8E6F
  OUTPUT     $FF9B
  MENTRY     $FE0C
  MSTART     $F97E
