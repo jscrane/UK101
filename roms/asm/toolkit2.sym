@@ -1,0 +1,105 @@
+.DATA $8027 ... $804D
+.DATA $806E ... $807B
+.DATA $8159 ... $819D
+.DATA $81C1 ... $81CF
+.DATA $8754 ... $8759
+.DATA $87FC ... $87FF
+
+; hardware
+ACIA = $F000     ; ACIA / serial port
+KEYBOARD = $DF00 ; polled keyboard
+
+; cegmon
+NEWMON = $FE00   ; reset entry to m/c monitor
+
+; BASIC
+CURLINL = $11    ; current BASIC line number (low)
+CURLINH = $12    ; current BASIC line number (high)
+INBUFL = $13     ; BASIC input line buffer (low)
+INBUFH = $14     ; BASIC input line buffer (high)
+INBUFLEN= $5D    ; BASIC input line length
+CMDEXEC = $00BC  ; statement executor (RTS trampoline)
+CHRGOT = $00C2   ; get current character without advancing
+CURLNPTR= $AA    ; current BASIC line pointer
+TXTPTR  = $C3    ; BASIC text pointer (low)
+TXTPTRH = $C4    ; BASIC text pointer (high)
+LINNUML = $F6    ; parsed line number (low)
+LINNUMH = $F7    ; parsed line number (high)
+KEYBUF = $0100   ; BASIC raw keyboard input buffer (page 1)
+PREPWMST = $A274 ; abort execution, return to READY
+NEXTSTMT = $A27D ; statement finished, maybe more on this line
+ERROR = $A280    ; general error
+NEXTLINE = $A29D ; line finished, go to next line
+CHRGET = $A432   ; character fetch
+WARMSTRT = $A491 ; warm start
+PRNREADY = $A4D4 ; READY prompt
+COLDSTRT = $A77F ; cold start
+STMTDISP = $A86C ; statement dispatcher
+PRINT = $A8C3    ; PRINT statement handler
+PRNTCRLF = $A8E5 ; end-of-PRINT, newline handler
+EVAL = $AC0C     ; expression evaluation
+CLEAR = $B7E8    ; CLEAR statement handler
+INPUT = $B96E    ; INPUT statement handler
+
+; ram addresses
+LOFROM = $FE      ; store 'current address' for most routines; 'from'
+HIFROM = $FF      ; ... address in save, move and tabular display
+EDFLAG = $0204    ; EDITOR flag: 00 disable cursor, FF enable it
+CCFLAG = $0212    ; BASIC CTRL-C flag: 00 enables CTRL-C break, 01 disables
+CHRINV = $0218    ; chr input vec (low)
+CHRINVH = $0219   ; chr input vec (high)
+SCHRINV = $02EE   ; stored vectors
+SCHROUTV = $02F0
+SLINEINV = $02F2
+TRACEFLG = $02F4  ; $FF = trace on, $00 = trace off
+
+; toolkit ii
+ARGPTR = $79     ; pointer to argument text (set by ARGINIT, used by many commands)
+ARGPTRH = $7A    ; high byte of argument pointer
+SCANPTR = $EA    ; pointer to program line being scanned
+SCANPTRH = $EB   ; high byte of scan pointer
+WORKLINL = $EE   ; working line number (low)
+WORKLINH = $EF   ; working line number (high)
+
+INITROM  = $8019 ; ROM initialization entry
+VECINST  = $804E ; install BASIC I/O vectors
+IOVECS = $806E   ; BASIC I/O vector table
+
+CHRINH = $80D8   ; BASIC I/O handlers
+CHROUTH = $807C
+LINEINH = $81E3
+SCHROUT = $8093  ; saved handlers
+SCHRIN = $80D5
+SLINEIN = $823A
+
+CMDRETNS = $8159 ; table of RTS return addresses (continuation points)
+CMDNAMES = $816F ; command name table (11 entries)
+ARGINIT  = $8324 ; initialize argument parsing
+INITSRCH = $85E9 ; initialise FIND/REPL/RENUM scan state
+INITSCAN = $859C ; initialise per-line scan state for FIND/REPL/RENUM
+SCANLINE = $85CE ; scans tokens in line
+
+BFERROR = $819E
+OFERROR = $81A1
+LNERROR = $81A4
+
+LISTCMD = $8248  ; toolkit LIST implementation
+AUTOCMD = $840E
+DELETCMD = $83BA
+RENUMCMD = $848A
+FINDCMD = $8652
+REPLCMD = $864B
+TRONCMD = $81D3
+TROFFCMD = $81DB
+MCCMD = $81D0
+VIEWCMD = $838B
+DUPLCMD = $87C9
+
+; line range / iteration workspace (toolkit & BASIC extensions)
+FROMLINL = $F0   ; start line (low)
+FROMLINH = $F1   ; start line (high)
+TOLINL   = $F2   ; end line (low)
+TOLINH   = $F3   ; end line (high)
+LINLIM   = $F4   ; line count / iteration limit
+SCANSTAT = $FA   ; scan status / end-of-line / condition flags
+SCANHIT  = $FB   ; secondary result (reference found, etc.)

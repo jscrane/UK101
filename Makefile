@@ -5,7 +5,7 @@ p ?= programs/$s
 FS_DIR := $p
 LIBRARIES = SimpleTimer PS2KeyRaw
 CPPFLAGS = -DSIMPLE_TIMER_MICROS
-#CPPFLAGS += -DDEBUGGING=0x00 -DTERMINAL_SPEED=$(TERMINAL_SPEED)
+CPPFLAGS += -DDEBUGGING=0xff
 
 ifeq ($t, rp2040)
 BOARD := adafruit_feather_dvi

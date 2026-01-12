@@ -33,7 +33,7 @@ static struct resolution {
 
 const char *screen::setResolution() {
 	struct resolution &r = resolutions[_resolution];
-	Display::setScreen(r.cw * CHARS_PER_LINE, r.ch * DISPLAY_LINES);
+	Display::setScreen(r.cw * CHARS_PER_LINE, r.ch * DISPLAY_LINES, DISPLAY_CENTER);
 	return r.name;
 }
 
@@ -47,12 +47,10 @@ const char *screen::changeResolution() {
 void screen::_draw(Memory::address a, uint8_t c)
 {
 	struct resolution &r = resolutions[_resolution];
-	int x = r.cw * (a % CHARS_PER_LINE);
-	if (x < 0 || x >= screenWidth())
-		return;
-
+	unsigned x = r.cw * (a % CHARS_PER_LINE);
 	unsigned y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);
-	if (y >= screenHeight())
+
+	if (!onScreen(x, y))
 		return;
 
 	uint16_t cg = 8*c, cm = 8*_mem[a];
