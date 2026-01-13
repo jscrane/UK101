@@ -307,6 +307,79 @@ LDA #:LABL>
 
 ---
 
+## 6502 Instruction Set and Timing
+
+*(Faithful matrix-style layout based on the original ENCODER manual)*
+
+Each cell shows **Opcode / Cycles**.  
+Branch cycles are shown as base cycles (add +1 if branch taken, +2 if page crossed).  
+Page-cross penalties for indexed addressing are not expanded inline, matching the original table style.
+
+Addressing mode headings follow the original layout as closely as Markdown allows.
+
+| MNEM | IMP | IMM | ZP | ZP,X | ZP,Y | ABS | ABS,X | ABS,Y | (ZP,X) | (ZP),Y |
+|------|-----|-----|----|------|------|-----|-------|-------|--------|--------|
+| ADC |     | 69/2 | 65/3 | 75/4 |      | 6D/4 | 7D/4 | 79/4 | 61/6 | 71/5 |
+| AND |     | 29/2 | 25/3 | 35/4 |      | 2D/4 | 3D/4 | 39/4 | 21/6 | 31/5 |
+| ASL | 0A/2 |     | 06/5 | 16/6 |      | 0E/6 | 1E/7 |       |        |        |
+| BCC |     |     |      |      |      |      |       |       |        |        |
+|     |     |     |      |      |      |      |       |       |        |        |
+|     |     |     |      |      |      |      |       |       |        |        |
+| BCS |     |     |      |      |      |      |       |       |        |        |
+| BEQ |     |     |      |      |      |      |       |       |        |        |
+| BIT |     |     | 24/3 |      |      | 2C/4 |       |       |        |        |
+| BMI |     |     |      |      |      |      |       |       |        |        |
+| BNE |     |     |      |      |      |      |       |       |        |        |
+| BPL |     |     |      |      |      |      |       |       |        |        |
+| BRK | 00/7 |     |      |      |      |      |       |       |        |        |
+| BVC |     |     |      |      |      |      |       |       |        |        |
+| BVS |     |     |      |      |      |      |       |       |        |        |
+| CLC | 18/2 |     |      |      |      |      |       |       |        |        |
+| CLD | D8/2 |     |      |      |      |      |       |       |        |        |
+| CLI | 58/2 |     |      |      |      |      |       |       |        |        |
+| CLV | B8/2 |     |      |      |      |      |       |       |        |        |
+| CMP |     | C9/2 | C5/3 | D5/4 |      | CD/4 | DD/4 | D9/4 | C1/6 | D1/5 |
+| CPX |     | E0/2 | E4/3 |      |      | EC/4 |       |       |        |        |
+| CPY |     | C0/2 | C4/3 |      |      | CC/4 |       |       |        |        |
+| DEC |     |     | C6/5 | D6/6 |      | CE/6 | DE/7 |       |        |        |
+| DEX | CA/2 |     |      |      |      |      |       |       |        |        |
+| DEY | 88/2 |     |      |      |      |      |       |       |        |        |
+| EOR |     | 49/2 | 45/3 | 55/4 |      | 4D/4 | 5D/4 | 59/4 | 41/6 | 51/5 |
+| INC |     |     | E6/5 | F6/6 |      | EE/6 | FE/7 |       |        |        |
+| INX | E8/2 |     |      |      |      |      |       |       |        |        |
+| INY | C8/2 |     |      |      |      |      |       |       |        |        |
+| JMP |     |     |      |      |      | 4C/3 |       |       |        |        |
+| JMP |     |     |      |      |      | 6C/5 |       |       |        |        |
+| JSR |     |     |      |      |      | 20/6 |       |       |        |        |
+| LDA |     | A9/2 | A5/3 | B5/4 |      | AD/4 | BD/4 | B9/4 | A1/6 | B1/5 |
+| LDX |     | A2/2 | A6/3 |      | B6/4 | AE/4 |       | BE/4 |        |        |
+| LDY |     | A0/2 | A4/3 | B4/4 |      | AC/4 | BC/4 |       |        |        |
+| LSR | 4A/2 |     | 46/5 | 56/6 |      | 4E/6 | 5E/7 |       |        |        |
+| NOP | EA/2 |     |      |      |      |      |       |       |        |        |
+| ORA |     | 09/2 | 05/3 | 15/4 |      | 0D/4 | 1D/4 | 19/4 | 01/6 | 11/5 |
+| PHA | 48/3 |     |      |      |      |      |       |       |        |        |
+| PHP | 08/3 |     |      |      |      |      |       |       |        |        |
+| PLA | 68/4 |     |      |      |      |      |       |       |        |        |
+| PLP | 28/4 |     |      |      |      |      |       |       |        |        |
+| ROL | 2A/2 |     | 26/5 | 36/6 |      | 2E/6 | 3E/7 |       |        |        |
+| ROR | 6A/2 |     | 66/5 | 76/6 |      | 6E/6 | 7E/7 |       |        |        |
+| RTI | 40/6 |     |      |      |      |      |       |       |        |        |
+| RTS | 60/6 |     |      |      |      |      |       |       |        |        |
+| SBC |     | E9/2 | E5/3 | F5/4 |      | ED/4 | FD/4 | F9/4 | E1/6 | F1/5 |
+| SEC | 38/2 |     |      |      |      |      |       |       |        |        |
+| SED | F8/2 |     |      |      |      |      |       |       |        |        |
+| SEI | 78/2 |     |      |      |      |      |       |       |        |        |
+| STA |     |     | 85/3 | 95/4 |      | 8D/4 | 9D/5 | 99/5 | 81/6 | 91/6 |
+| STX |     |     | 86/3 |      | 96/4 | 8E/4 |       |       |        |        |
+| STY |     |     | 84/3 | 94/4 |      | 8C/4 |       |       |        |        |
+| TAX | AA/2 |     |      |      |      |      |       |       |        |        |
+| TAY | A8/2 |     |      |      |      |      |       |       |        |        |
+| TSX | BA/2 |     |      |      |      |      |       |       |        |        |
+| TXA | 8A/2 |     |      |      |      |      |       |       |        |        |
+| TXS | 9A/2 |     |      |      |      |      |       |       |        |        |
+| TYA | 98/2 |     |      |      |      |      |       |       |        |        |
+
+---
 ## Copyright & Notice
 
 ENCODER, its subroutines, and all printed materials are copyright  
