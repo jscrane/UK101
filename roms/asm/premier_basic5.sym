@@ -1,0 +1,23 @@
+.DATA $9000 ... $91FF
+
+; main entry point
+BASIC5 = $9200
+
+; cegmon
+GETKEY = $FD00   ; wait till key pressed, return with ASCII value in A register
+KEYWRT = $FCBE   ; write-to-keyboard
+KEY2XR = $FCC6   ; read-X-from keyboard
+
+; basic
+WARMSTRT = $A491 ; warm start
+PRINT = $A8C3    ; PRINT statement handler
+SYNCHR = $A70C   ; require specific character in A, else syntax error
+CHRGOT = $A7CD   ; get current BASIC character (no skip), sets Z if end-of-line
+CHRPUT = $A74F   ; return current char (no advance) / pushback last char
+PRNTCRLF = $A8E5 ; end-of-PRINT, newline handler
+STMTDISP = $A86C ; statement dispatcher
+CHKCOM = $AAAD   ; syntax check: require comma, else SYNTAX ERROR
+NEWSTMT = $AC01  ;  statement restart / main execution dispatcher
+FRMEVL = $AD0B   ; evaluate expression (numeric or string)
+
+
