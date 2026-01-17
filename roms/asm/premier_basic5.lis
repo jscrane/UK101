@@ -1,15 +1,26 @@
  GETKEY   = $FD00
  KEYWRT   = $FCBE
  KEY2XR   = $FCC6
+ CURLINL  = $11
+ CURLINH  = $12
+ INBUFL   = $13
+ INBUFH   = $14
+ CMDEXEC  = $00BC
+ TXTPTR   = $C3
+ TXTPTRH  = $C4
+ PREPWMST = $A274
  WARMSTRT = $A491
  PRINT    = $A8C3
+ SYNCHR   = $A70C
  CHRGOT   = $A7CD
  CHRPUT   = $A74F
  PRNTCRLF = $A8E5
  STMTDISP = $A86C
  CHKCOM   = $AAAD
  NEWSTMT  = $AC01
+ EVAL     = $AC0C
  FRMEVL   = $AD0B
+ INPUT    = $B96E
 
                             * = $9000
 9000   D3                   .BYTE $D3          ;%11010011
@@ -527,7 +538,7 @@
 9200   A9 4C      BASIC5    LDA #$4C
 9202   85 00                STA $00
 9204   85 03                STA $03
-9206   85 C5                STA $C5
+9206   85 C5                STA TXTPTRH+1
 9208   A9 0C                LDA #$0C
 920A   8D 34 01             STA $0134
 920D   A9 AC                LDA #$AC
@@ -565,48 +576,84 @@
 924A   A9 54      L924A     LDA #$54
 924C   A0 92                LDY #$92
 924E   20 C3 A8             JSR PRINT
-9251   4C 74 A2             JMP $A274
-9254   0C                   ???                ;%00001100
-9255   0A                   ASL A
-9256   0A                   ASL A
-9257   2A                   ROL A
-9258   20 42 41             JSR $4142
-925B   53                   ???                ;%01010011 'S'
-925C   49 43                EOR #$43
-925E   20 35 20             JSR $2035
-9261   2A                   ROL A
-9262   20 20 56             JSR $5620
-9265   31 2E                AND ($2E),Y
-9267   33                   ???                ;%00110011 '3'
-9268   0D 0A 0A             ORA $0A0A
-926B   0A                   ASL A
-926C   5B                   ???                ;%01011011 '['
-926D   43                   ???                ;%01000011 'C'
-926E   5D 20 31             EOR $3120,X
-9271   39 38 31             AND $3138,Y
-9274   20 50 2E             JSR $2E50
-9277   52                   ???                ;%01010010 'R'
-9278   69 68                ADC #$68
-927A   61 6E                ADC ($6E,X)
-927C   2F                   ???                ;%00101111 '/'
-927D   50 52                BVC L92D1
-927F   45 4D                EOR $4D
-9281   49 45                EOR #$45
-9283   52                   ???                ;%01010010 'R'
-9284   0D 0A 0A             ORA $0A0A
-9287   00                   BRK
-9288   A9 E9                LDA #$E9
-928A   A0 97                LDY #$97
-928C   4C C3 A8             JMP PRINT
-928F   A9 F8                LDA #$F8
-9291   A0 97                LDY #$97
-9293   20 C3 A8             JSR PRINT
-9296   4C C2 00             JMP $00C2
-9299   00                   BRK
-929A   DB                   ???                ;%11011011
-929B   C9 26                CMP #$26
-929D   D0 02                BNE L92A1
-929F   F0 0F                BEQ L92B0
+9251   4C 74 A2             JMP PREPWMST
+9254   0C                   .BYTE $0C          ;%00001100
+9255   0A                   .BYTE $0A          ;%00001010
+9256   0A                   .BYTE $0A          ;%00001010
+9257   2A                   .BYTE $2A          ;%00101010 '*'
+9258   20                   .BYTE $20          ;%00100000 ' '
+9259   42                   .BYTE $42          ;%01000010 'B'
+925A   41                   .BYTE $41          ;%01000001 'A'
+925B   53                   .BYTE $53          ;%01010011 'S'
+925C   49                   .BYTE $49          ;%01001001 'I'
+925D   43                   .BYTE $43          ;%01000011 'C'
+925E   20                   .BYTE $20          ;%00100000 ' '
+925F   35                   .BYTE $35          ;%00110101 '5'
+9260   20                   .BYTE $20          ;%00100000 ' '
+9261   2A                   .BYTE $2A          ;%00101010 '*'
+9262   20                   .BYTE $20          ;%00100000 ' '
+9263   20                   .BYTE $20          ;%00100000 ' '
+9264   56                   .BYTE $56          ;%01010110 'V'
+9265   31                   .BYTE $31          ;%00110001 '1'
+9266   2E                   .BYTE $2E          ;%00101110 '.'
+9267   33                   .BYTE $33          ;%00110011 '3'
+9268   0D                   .BYTE $0D          ;%00001101
+9269   0A                   .BYTE $0A          ;%00001010
+926A   0A                   .BYTE $0A          ;%00001010
+926B   0A                   .BYTE $0A          ;%00001010
+926C   5B                   .BYTE $5B          ;%01011011 '['
+926D   43                   .BYTE $43          ;%01000011 'C'
+926E   5D                   .BYTE $5D          ;%01011101 ']'
+926F   20                   .BYTE $20          ;%00100000 ' '
+9270   31                   .BYTE $31          ;%00110001 '1'
+9271   39                   .BYTE $39          ;%00111001 '9'
+9272   38                   .BYTE $38          ;%00111000 '8'
+9273   31                   .BYTE $31          ;%00110001 '1'
+9274   20                   .BYTE $20          ;%00100000 ' '
+9275   50                   .BYTE $50          ;%01010000 'P'
+9276   2E                   .BYTE $2E          ;%00101110 '.'
+9277   52                   .BYTE $52          ;%01010010 'R'
+9278   69                   .BYTE $69          ;%01101001 'i'
+9279   68                   .BYTE $68          ;%01101000 'h'
+927A   61                   .BYTE $61          ;%01100001 'a'
+927B   6E                   .BYTE $6E          ;%01101110 'n'
+927C   2F                   .BYTE $2F          ;%00101111 '/'
+927D   50                   .BYTE $50          ;%01010000 'P'
+927E   52                   .BYTE $52          ;%01010010 'R'
+927F   45                   .BYTE $45          ;%01000101 'E'
+9280   4D                   .BYTE $4D          ;%01001101 'M'
+9281   49                   .BYTE $49          ;%01001001 'I'
+9282   45                   .BYTE $45          ;%01000101 'E'
+9283   52                   .BYTE $52          ;%01010010 'R'
+9284   0D                   .BYTE $0D          ;%00001101
+9285   0A                   .BYTE $0A          ;%00001010
+9286   0A                   .BYTE $0A          ;%00001010
+9287   00                   .BYTE $00          ;%00000000
+9288   A9                   .BYTE $A9          ;%10101001
+9289   E9                   .BYTE $E9          ;%11101001
+928A   A0                   .BYTE $A0          ;%10100000
+928B   97                   .BYTE $97          ;%10010111
+928C   4C                   .BYTE $4C          ;%01001100 'L'
+928D   C3                   .BYTE $C3          ;%11000011
+928E   A8                   .BYTE $A8          ;%10101000
+928F   A9                   .BYTE $A9          ;%10101001
+9290   F8                   .BYTE $F8          ;%11111000
+9291   A0                   .BYTE $A0          ;%10100000
+9292   97                   .BYTE $97          ;%10010111
+9293   20                   .BYTE $20          ;%00100000 ' '
+9294   C3                   .BYTE $C3          ;%11000011
+9295   A8                   .BYTE $A8          ;%10101000
+9296   4C                   .BYTE $4C          ;%01001100 'L'
+9297   C2                   .BYTE $C2          ;%11000010
+9298   00                   .BYTE $00          ;%00000000
+9299   00                   .BYTE $00          ;%00000000
+929A   DB                   .BYTE $DB          ;%11011011
+929B   C9                   .BYTE $C9          ;%11001001
+929C   26                   .BYTE $26          ;%00100110 '&'
+929D   D0                   .BYTE $D0          ;%11010000
+929E   02                   .BYTE $02          ;%00000010
+929F   F0                   .BYTE $F0          ;%11110000
+92A0   0F                   .BYTE $0F          ;%00001111
 92A1   C9 3A      L92A1     CMP #$3A
 92A3   B0 03                BCS L92A8
 92A5   4C C9 00             JMP $00C9
@@ -631,10 +678,10 @@
 92C5   68                   PLA
 92C6   A2 FF                LDX #$FF
 92C8   A0 FF                LDY #$FF
-92CA   20 BC 00             JSR $00BC
+92CA   20 BC 00             JSR CMDEXEC
 92CD   20 DF 92   L92CD     JSR L92DF
 92D0   B0 1E                BCS L92F0
-92D2   D1 C3                CMP ($C3),Y
+92D2   D1 C3                CMP (TXTPTR),Y
 92D4   F0 F7                BEQ L92CD
 92D6   20 DF 92   L92D6     JSR L92DF
 92D9   90 FB                BCC L92D6
@@ -652,11 +699,11 @@
 92EF   60                   RTS
 92F0   98         L92F0     TYA
 92F1   18                   CLC
-92F2   65 C3                ADC $C3
-92F4   85 C3                STA $C3
-92F6   A5 C4                LDA $C4
+92F2   65 C3                ADC TXTPTR
+92F4   85 C3                STA TXTPTR
+92F6   A5 C4                LDA TXTPTRH
 92F8   69 00                ADC #$00
-92FA   85 C4                STA $C4
+92FA   85 C4                STA TXTPTRH
 92FC   A0 91                LDY #$91
 92FE   98                   TYA
 92FF   48                   PHA
@@ -788,9 +835,9 @@
 9418   A5 5F                LDA $5F
 941A   48                   PHA
 941B   20 31 94             JSR L9431
-941E   85 13                STA $13
+941E   85 13                STA INBUFL
 9420   A0 00                LDY #$00
-9422   84 14                STY $14
+9422   84 14                STY INBUFH
 9424   A9 13                LDA #$13
 9426   20 AE B0             JSR $B0AE
 9429   68                   PLA
@@ -839,7 +886,7 @@
 9479   20 85 94   L9479     JSR L9485
 947C   20 82 94             JSR L9482
 947F   4C C2 00             JMP $00C2
-9482   6C 11 00   L9482     JMP ($0011)
+9482   6C 11 00   L9482     JMP (CURLINL)
 9485   20 C2 00   L9485     JSR $00C2
 9488   C9 24                CMP #$24
 948A   D0 04                BNE L9490
@@ -862,10 +909,10 @@
 94AF   EA                   NOP
 94B0   18         L94B0     CLC
 94B1   20 23 95             JSR L9523
-94B4   20 0C A7             JSR $A70C
+94B4   20 0C A7             JSR SYNCHR
 94B7   20 81 95   L94B7     JSR L9581
 94BA   90 41                BCC L94FD
-94BC   20 BC 00   L94BC     JSR $00BC
+94BC   20 BC 00   L94BC     JSR CMDEXEC
 94BF   F0 22                BEQ L94E3
 94C1   C9 3A                CMP #$3A
 94C3   F0 1E                BEQ L94E3
@@ -873,7 +920,7 @@
 94C8   A5 5F                LDA $5F
 94CA   85 5A                STA $5A
 94CC   30 06                BMI L94D4
-94CE   20 6E B9             JSR $B96E
+94CE   20 6E B9             JSR INPUT
 94D1   20 AE B0             JSR $B0AE
 94D4   20 C9 95   L94D4     JSR L95C9
 94D7   20 81 95             JSR L9581
@@ -892,7 +939,7 @@
 94F7   20 23 95             JSR L9523
 94FA   4C B7 94             JMP L94B7
 94FD   20 10 95   L94FD     JSR L9510
-9500   20 BC 00             JSR $00BC
+9500   20 BC 00             JSR CMDEXEC
 9503   C9 3A      L9503     CMP #$3A
 9505   D0 02                BNE L9509
 9507   F0 04                BEQ L950D
@@ -902,15 +949,15 @@
 9510   A0 00      L9510     LDY #$00
 9512   C4 57      L9512     CPY $57
 9514   B0 09                BCS L951F
-9516   B9 13 00             LDA $0013,Y
+9516   B9 13 00             LDA INBUFL+$0000,Y
 9519   20 E5 A8             JSR PRNTCRLF
 951C   C8                   INY
 951D   D0 F3                BNE L9512
 951F   20 6C A8   L951F     JSR STMTDISP
 9522   60                   RTS
-9523   A5 C3      L9523     LDA $C3
+9523   A5 C3      L9523     LDA TXTPTR
 9525   48                   PHA
-9526   A5 C4                LDA $C4
+9526   A5 C4                LDA TXTPTRH
 9528   48                   PHA
 9529   A5 87                LDA $87
 952B   48                   PHA
@@ -922,44 +969,44 @@
 9537   20 C2 00   L9537     JSR $00C2
 953A   20 D4 90             JSR L90D4
 953D   18         L953D     CLC
-953E   A5 C3                LDA $C3
+953E   A5 C3                LDA TXTPTR
 9540   69 04                ADC #$04
-9542   85 C3                STA $C3
+9542   85 C3                STA TXTPTR
 9544   90 02                BCC L9548
-9546   E6 C4                INC $C4
-9548   A5 11      L9548     LDA $11
+9546   E6 C4                INC TXTPTRH
+9548   A5 11      L9548     LDA CURLINL
 954A   85 87                STA $87
-954C   A5 12                LDA $12
+954C   A5 12                LDA CURLINH
 954E   85 88                STA $88
-9550   20 BC 00             JSR $00BC
+9550   20 BC 00             JSR CMDEXEC
 9553   C9 26                CMP #$26
 9555   D0 1A                BNE L9571
-9557   20 BC 00             JSR $00BC
+9557   20 BC 00             JSR CMDEXEC
 955A   C9 22                CMP #$22
 955C   D0 13                BNE L9571
 955E   A0 01                LDY #$01
-9560   B1 C3      L9560     LDA ($C3),Y
-9562   99 12 00             STA $0012,Y
+9560   B1 C3      L9560     LDA (TXTPTR),Y
+9562   99 12 00             STA CURLINH+$0000,Y
 9565   C9 00                CMP #$00
 9567   F0 0B                BEQ L9574
 9569   C8                   INY
 956A   CC 3E 01             CPY $013E
 956D   90 F1                BCC L9560
 956F   F0 EF                BEQ L9560
-9571   4C 0C AC   L9571     JMP $AC0C
+9571   4C 0C AC   L9571     JMP EVAL
 9574   68         L9574     PLA
 9575   85 88                STA $88
 9577   68                   PLA
 9578   85 87                STA $87
 957A   68                   PLA
-957B   85 C4                STA $C4
+957B   85 C4                STA TXTPTRH
 957D   68                   PLA
-957E   85 C3                STA $C3
+957E   85 C3                STA TXTPTR
 9580   60                   RTS
 9581   A2 00      L9581     LDX #$00
 9583   86 58                STX $58
 9585   86 59                STX $59
-9587   B5 13      L9587     LDA $13,X
+9587   B5 13      L9587     LDA INBUFL,X
 9589   86 57                STX $57
 958B   F0 32                BEQ L95BF
 958D   C9 3E                CMP #$3E
@@ -970,7 +1017,7 @@
 9596   D0 EF                BNE L9587
 9598   86 57      L9598     STX $57
 959A   E8         L959A     INX
-959B   B5 13                LDA $13,X
+959B   B5 13                LDA INBUFL,X
 959D   C9 23                CMP #$23
 959F   F0 F9                BEQ L959A
 95A1   C9 2E                CMP #$2E
@@ -979,12 +1026,12 @@
 95A6   86 58                STX $58
 95A8   E8                   INX
 95A9   E8                   INX
-95AA   B5 13                LDA $13,X
+95AA   B5 13                LDA INBUFL,X
 95AC   C9 23                CMP #$23
 95AE   F0 03                BEQ L95B3
-95B0   4C 0C AC             JMP $AC0C
+95B0   4C 0C AC             JMP EVAL
 95B3   E8         L95B3     INX
-95B4   B5 13                LDA $13,X
+95B4   B5 13                LDA INBUFL,X
 95B6   C9 23                CMP #$23
 95B8   F0 F9                BEQ L95B3
 95BA   CA                   DEX
@@ -1003,12 +1050,12 @@
 95CF   F0 27                BEQ L95F8
 95D1   A5 5A                LDA $5A
 95D3   10 3B                BPL L9610
-95D5   B5 13                LDA $13,X
+95D5   B5 13                LDA INBUFL,X
 95D7   C9 3E                CMP #$3E
 95D9   F0 1D                BEQ L95F8
 95DB   A0 00                LDY #$00
 95DD   B1 71      L95DD     LDA ($71),Y
-95DF   95 13      L95DF     STA $13,X
+95DF   95 13      L95DF     STA INBUFL,X
 95E1   C8                   INY
 95E2   E8                   INX
 95E3   C4 AC      L95E3     CPY $AC
@@ -1027,7 +1074,7 @@
 95FC   F0 0E                BEQ L960C
 95FE   88         L95FE     DEY
 95FF   B1 71                LDA ($71),Y
-9601   95 13      L9601     STA $13,X
+9601   95 13      L9601     STA INBUFL,X
 9603   E4 57                CPX $57
 9605   F0 E6                BEQ L95ED
 9607   CA                   DEX
@@ -1046,11 +1093,11 @@
 961C   D0 14                BNE L9632
 961E   A0 2A      L961E     LDY #$2A
 9620   A6 57                LDX $57
-9622   B5 13      L9622     LDA $13,X
+9622   B5 13      L9622     LDA INBUFL,X
 9624   C9 2E                CMP #$2E
 9626   D0 01                BNE L9629
 9628   E8                   INX
-9629   94 13      L9629     STY $13,X
+9629   94 13      L9629     STY INBUFL,X
 962B   E4 59                CPX $59
 962D   B0 BE                BCS L95ED
 962F   E8                   INX
@@ -1083,26 +1130,26 @@
 9660   98                   TYA
 9661   48         L9661     PHA
 9662   A6 57                LDX $57
-9664   B5 13                LDA $13,X
+9664   B5 13                LDA INBUFL,X
 9666   C9 3E                CMP #$3E
 9668   D0 28                BNE L9692
 966A   A6 58                LDX $58
 966C   20 FA 95             JSR L95FA
 966F   A6 57                LDX $57
-9671   B5 13      L9671     LDA $13,X
+9671   B5 13      L9671     LDA INBUFL,X
 9673   C9 20                CMP #$20
 9675   F0 10                BEQ L9687
 9677   C9 2D                CMP #$2D
 9679   D0 1C                BNE L9697
 967B   48                   PHA
 967C   A9 30                LDA #$30
-967E   95 13                STA $13,X
+967E   95 13                STA INBUFL,X
 9680   A6 57                LDX $57
 9682   68                   PLA
-9683   95 13                STA $13,X
+9683   95 13                STA INBUFL,X
 9685   D0 10                BNE L9697
 9687   A9 30      L9687     LDA #$30
-9689   95 13                STA $13,X
+9689   95 13                STA INBUFL,X
 968B   E4 58                CPX $58
 968D   B0 08                BCS L9697
 968F   E8                   INX
@@ -1121,11 +1168,11 @@
 96A5   A6 58      L96A5     LDX $58
 96A7   EA                   NOP
 96A8   EA                   NOP
-96A9   B5 13      L96A9     LDA $13,X
+96A9   B5 13      L96A9     LDA INBUFL,X
 96AB   C9 20                CMP #$20
 96AD   D0 04                BNE L96B3
 96AF   A9 30                LDA #$30
-96B1   95 13                STA $13,X
+96B1   95 13                STA INBUFL,X
 96B3   E8         L96B3     INX
 96B4   E4 59                CPX $59
 96B6   F0 F1                BEQ L96A9
@@ -1176,7 +1223,7 @@
 9715   10 E1                BPL L96F8
 9717   68                   PLA
 9718   4C C2 00   L9718     JMP $00C2
-971B   20 6E B9   L971B     JSR $B96E
+971B   20 6E B9   L971B     JSR INPUT
 971E   20 AE B0             JSR $B0AE
 9721   4C EE 96             JMP L96EE
 9724   20 C8 96   L9724     JSR L96C8
@@ -1193,7 +1240,7 @@
 973E   8D 3F 01             STA $013F
 9741   20 1D 93             JSR L931D
 9744   20 50 97   L9744     JSR L9750
-9747   99 13 00             STA $0013,Y
+9747   99 13 00             STA INBUFL+$0000,Y
 974A   20 1D 93             JSR L931D
 974D   C8                   INY
 974E   10 E7                BPL L9737
@@ -1225,7 +1272,7 @@
 9784   8D 3F 01             STA $013F
 9787   20 1D 93             JSR L931D
 978A   A9 00      L978A     LDA #$00
-978C   99 13 00             STA $0013,Y
+978C   99 13 00             STA INBUFL+$0000,Y
 978F   A8                   TAY
 9790   18                   CLC
 9791   AD 3A 01             LDA $013A
@@ -1240,16 +1287,16 @@
 97A7   20 01 AC             JSR NEWSTMT
 97AA   AE 3A 01             LDX $013A
 97AD   F0 17                BEQ L97C6
-97AF   A5 C3      L97AF     LDA $C3
+97AF   A5 C3      L97AF     LDA TXTPTR
 97B1   48                   PHA
-97B2   A5 C4                LDA $C4
+97B2   A5 C4                LDA TXTPTRH
 97B4   48                   PHA
 97B5   20 C2 00             JSR $00C2
 97B8   20 4F A9             JSR $A94F
 97BB   68                   PLA
-97BC   85 C4                STA $C4
+97BC   85 C4                STA TXTPTRH
 97BE   68                   PLA
-97BF   85 C3                STA $C3
+97BF   85 C3                STA TXTPTR
 97C1   CE 3A 01             DEC $013A
 97C4   D0 E9                BNE L97AF
 97C6   20 0B AD   L97C6     JSR FRMEVL
@@ -1270,17 +1317,29 @@
 97E4   A5 F1      L97E4     LDA $F1
 97E6   D0 E6                BNE L97CE
 97E8   60                   RTS
-97E9   0D 0A 0A             ORA $0A0A
-97EC   4F                   ???                ;%01001111 'O'
-97ED   4B                   ???                ;%01001011 'K'
-97EE   0D 52 65             ORA $6552
-97F1   61 64                ADC ($64,X)
-97F3   79 0D 0A             ADC $0A0D,Y
-97F6   0A                   ASL A
-97F7   00                   BRK
-97F8   0D 3A 32             ORA $323A
-97FB   31 39                AND ($39),Y
-97FD   20 02 00             JSR $0002
+97E9   0D                   .BYTE $0D          ;%00001101
+97EA   0A                   .BYTE $0A          ;%00001010
+97EB   0A                   .BYTE $0A          ;%00001010
+97EC   4F                   .BYTE $4F          ;%01001111 'O'
+97ED   4B                   .BYTE $4B          ;%01001011 'K'
+97EE   0D                   .BYTE $0D          ;%00001101
+97EF   52                   .BYTE $52          ;%01010010 'R'
+97F0   65                   .BYTE $65          ;%01100101 'e'
+97F1   61                   .BYTE $61          ;%01100001 'a'
+97F2   64                   .BYTE $64          ;%01100100 'd'
+97F3   79                   .BYTE $79          ;%01111001 'y'
+97F4   0D                   .BYTE $0D          ;%00001101
+97F5   0A                   .BYTE $0A          ;%00001010
+97F6   0A                   .BYTE $0A          ;%00001010
+97F7   00                   .BYTE $00          ;%00000000
+97F8   0D                   .BYTE $0D          ;%00001101
+97F9   3A                   .BYTE $3A          ;%00111010 ':'
+97FA   32                   .BYTE $32          ;%00110010 '2'
+97FB   31                   .BYTE $31          ;%00110001 '1'
+97FC   39                   .BYTE $39          ;%00111001 '9'
+97FD   20                   .BYTE $20          ;%00100000 ' '
+97FE   02                   .BYTE $02          ;%00000010
+97FF   00                   .BYTE $00          ;%00000000
                             .END
 
 ;auto-generated symbols and labels
@@ -1368,7 +1427,6 @@
  L924A      $924A
  L91CB      $91CB
  L91D0      $91D0
- L92D1      $92D1
  L92A1      $92A1
  L92B0      $92B0
  L92A8      $92A8
@@ -1450,13 +1508,24 @@
  GETKEY     $FD00
  KEYWRT     $FCBE
  KEY2XR     $FCC6
+ CURLINL      $11
+ CURLINH      $12
+ INBUFL       $13
+ INBUFH       $14
+ CMDEXEC    $00BC
+ TXTPTR       $C3
+ TXTPTRH      $C4
+ PREPWMST   $A274
  WARMSTRT   $A491
  PRINT      $A8C3
+ SYNCHR     $A70C
  CHRGOT     $A7CD
  CHRPUT     $A74F
  PRNTCRLF   $A8E5
  STMTDISP   $A86C
  CHKCOM     $AAAD
  NEWSTMT    $AC01
+ EVAL       $AC0C
  FRMEVL     $AD0B
+ INPUT      $B96E
 
