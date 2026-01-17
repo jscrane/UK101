@@ -23,9 +23,11 @@
  NEWSTMT  = $AC01
  EVAL     = $AC0C
  FRMEVL   = $AD0B
+ FRMEVL1  = $AE88
  CHRIN    = $B0AE
  CRLF     = $B2B6
  CHROUT   = $B3AE
+ ERRDISP  = $B408
  INPUT    = $B96E
 
                             * = $9000
@@ -778,7 +780,7 @@
 9386   18                   CLC
 9387   6D 3A 01             ADC $013A
 938A   90 03                BCC L938F
-938C   4C 88 AE   L938C     JMP $AE88
+938C   4C 88 AE   L938C     JMP FRMEVL1
 938F   CD 3E 01   L938F     CMP $013E
 9392   F0 02                BEQ L9396
 9394   B0 F6                BCS L938C
@@ -899,7 +901,7 @@
 948C   20 49 90             JSR L9049
 948F   60                   RTS
 9490   20 AD AA   L9490     JSR CHKCOM
-9493   20 08 B4             JSR $B408
+9493   20 08 B4             JSR ERRDISP
 9496   60                   RTS
 9497   20 4F A7   L9497     JSR CHRPUT
 949A   4C C2 00             JMP $00C2
@@ -1199,7 +1201,7 @@
 96D3   CD 3E 01             CMP $013E
 96D6   90 05                BCC L96DD
 96D8   F0 03                BEQ L96DD
-96DA   4C 88 AE             JMP $AE88
+96DA   4C 88 AE             JMP FRMEVL1
 96DD   8D 39 01   L96DD     STA $0139
 96E0   20 01 AC             JSR NEWSTMT
 96E3   60                   RTS
@@ -1308,7 +1310,7 @@
 97C6   20 0B AD   L97C6     JSR FRMEVL
 97C9   4C C2 00             JMP $00C2
 97CC   B0 03      L97CC     BCS L97D1
-97CE   4C 88 AE   L97CE     JMP $AE88
+97CE   4C 88 AE   L97CE     JMP FRMEVL1
 97D1   AE 3C 01   L97D1     LDX $013C
 97D4   8A         L97D4     TXA
 97D5   4A                   LSR A
@@ -1536,8 +1538,10 @@
  NEWSTMT    $AC01
  EVAL       $AC0C
  FRMEVL     $AD0B
+ FRMEVL1    $AE88
  CHRIN      $B0AE
  CRLF       $B2B6
  CHROUT     $B3AE
+ ERRDISP    $B408
  INPUT      $B96E
 
