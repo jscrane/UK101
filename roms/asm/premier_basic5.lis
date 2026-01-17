@@ -10,16 +10,22 @@
  TXTPTRH  = $C4
  PREPWMST = $A274
  WARMSTRT = $A491
- PRINT    = $A8C3
+ GETADR   = $A6BC
  SYNCHR   = $A70C
- CHRGOT   = $A7CD
  CHRPUT   = $A74F
+ GETBYT   = $A7CD
  PRNTCRLF = $A8E5
  STMTDISP = $A86C
+ PRINT    = $A8C3
+ PTRGET   = $A94F
  CHKCOM   = $AAAD
+ CHKNUM   = $AAC1
  NEWSTMT  = $AC01
  EVAL     = $AC0C
  FRMEVL   = $AD0B
+ CHRIN    = $B0AE
+ CRLF     = $B2B6
+ CHROUT   = $B3AE
  INPUT    = $B96E
 
                             * = $9000
@@ -712,7 +718,7 @@
 9304   48                   PHA
 9305   4C C2 00             JMP $00C2
 9308   20 62 91   L9308     JSR L9162
-930B   20 AE B3             JSR $B3AE
+930B   20 AE B3             JSR CHROUT
 930E   8E 3F 01             STX $013F
 9311   AE 3B 01             LDX $013B
 9314   AC 3A 01             LDY $013A
@@ -741,7 +747,7 @@
 9344   AA                   TAX
 9345   60                   RTS
 9346   20 62 91   L9346     JSR L9162
-9349   20 AE B3             JSR $B3AE
+9349   20 AE B3             JSR CHROUT
 934C   8A                   TXA
 934D   18                   CLC
 934E   6D 3B 01             ADC $013B
@@ -751,7 +757,7 @@
 9358   B0 32                BCS L938C
 935A   8E 39 01   L935A     STX $0139
 935D   20 01 AC             JSR NEWSTMT
-9360   20 AE B3             JSR $B3AE
+9360   20 AE B3             JSR CHROUT
 9363   8E 3F 01             STX $013F
 9366   AE 3B 01             LDX $013B
 9369   AC 39 01             LDY $0139
@@ -767,7 +773,7 @@
 937A   10 F0                BPL L936C
 937C   4C C2 00   L937C     JMP $00C2
 937F   20 62 91   L937F     JSR L9162
-9382   20 AE B3             JSR $B3AE
+9382   20 AE B3             JSR CHROUT
 9385   8A                   TXA
 9386   18                   CLC
 9387   6D 3A 01             ADC $013A
@@ -778,7 +784,7 @@
 9394   B0 F6                BCS L938C
 9396   8E 39 01   L9396     STX $0139
 9399   20 01 AC             JSR NEWSTMT
-939C   20 AE B3             JSR $B3AE
+939C   20 AE B3             JSR CHROUT
 939F   8E 3F 01             STX $013F
 93A2   20 A8 93             JSR L93A8
 93A5   4C C2 00             JMP $00C2
@@ -796,7 +802,7 @@
 93BC   10 F0                BPL L93AE
 93BE   60         L93BE     RTS
 93BF   20 62 91   L93BF     JSR L9162
-93C2   20 AE B3             JSR $B3AE
+93C2   20 AE B3             JSR CHROUT
 93C5   8A                   TXA
 93C6   18                   CLC
 93C7   6D 3A 01             ADC $013A
@@ -806,7 +812,7 @@
 93D1   B0 B9                BCS L938C
 93D3   8E 39 01   L93D3     STX $0139
 93D6   20 01 AC             JSR NEWSTMT
-93D9   20 AE B3             JSR $B3AE
+93D9   20 AE B3             JSR CHROUT
 93DC   8A                   TXA
 93DD   18                   CLC
 93DE   6D 3B 01             ADC $013B
@@ -816,7 +822,7 @@
 93E8   B0 A2                BCS L938C
 93EA   8E 38 01   L93EA     STX $0138
 93ED   20 01 AC             JSR NEWSTMT
-93F0   20 AE B3             JSR $B3AE
+93F0   20 AE B3             JSR CHROUT
 93F3   8E 3F 01             STX $013F
 93F6   AD 38 01             LDA $0138
 93F9   F0 0B      L93F9     BEQ L9406
@@ -827,7 +833,7 @@
 9406   4C C2 00   L9406     JMP $00C2
 9409   68         L9409     PLA
 940A   2A                   ROL A
-940B   20 CD A7             JSR CHRGOT
+940B   20 CD A7             JSR GETBYT
 940E   4C C2 00             JMP $00C2
 9411   20 0B AD   L9411     JSR FRMEVL
 9414   85 97                STA $97
@@ -839,10 +845,10 @@
 9420   A0 00                LDY #$00
 9422   84 14                STY INBUFH
 9424   A9 13                LDA #$13
-9426   20 AE B0             JSR $B0AE
+9426   20 AE B0             JSR CHRIN
 9429   68                   PLA
 942A   2A                   ROL A
-942B   20 CD A7             JSR CHRGOT
+942B   20 CD A7             JSR GETBYT
 942E   4C C2 00             JMP $00C2
 9431   8A         L9431     TXA
 9432   48                   PHA
@@ -903,7 +909,7 @@
 94A1   C5 58                CMP $58
 94A3   4C 5B 96             JMP L965B
 94A6   EA                   NOP
-94A7   20 B6 B2   L94A7     JSR $B2B6
+94A7   20 B6 B2   L94A7     JSR CRLF
 94AA   85 AC                STA $AC
 94AC   4C CC 95             JMP L95CC
 94AF   EA                   NOP
@@ -916,12 +922,12 @@
 94BF   F0 22                BEQ L94E3
 94C1   C9 3A                CMP #$3A
 94C3   F0 1E                BEQ L94E3
-94C5   20 C1 AA             JSR $AAC1
+94C5   20 C1 AA             JSR CHKNUM
 94C8   A5 5F                LDA $5F
 94CA   85 5A                STA $5A
 94CC   30 06                BMI L94D4
 94CE   20 6E B9             JSR INPUT
-94D1   20 AE B0             JSR $B0AE
+94D1   20 AE B0             JSR CHRIN
 94D4   20 C9 95   L94D4     JSR L95C9
 94D7   20 81 95             JSR L9581
 94DA   90 10                BCC L94EC
@@ -964,7 +970,7 @@
 952C   A5 88                LDA $88
 952E   48                   PHA
 952F   90 06                BCC L9537
-9531   20 BC A6             JSR $A6BC
+9531   20 BC A6             JSR GETADR
 9534   4C 3D 95             JMP L953D
 9537   20 C2 00   L9537     JSR $00C2
 953A   20 D4 90             JSR L90D4
@@ -1186,7 +1192,7 @@
 96C3   20 E3 95             JSR L95E3
 96C6   B0 DD                BCS L96A5
 96C8   20 62 91   L96C8     JSR L9162
-96CB   20 AE B3             JSR $B3AE
+96CB   20 AE B3             JSR CHROUT
 96CE   18                   CLC
 96CF   8A                   TXA
 96D0   6D 3A 01             ADC $013A
@@ -1198,10 +1204,10 @@
 96E0   20 01 AC             JSR NEWSTMT
 96E3   60                   RTS
 96E4   20 C8 96   L96E4     JSR L96C8
-96E7   20 C1 AA             JSR $AAC1
+96E7   20 C1 AA             JSR CHKNUM
 96EA   A5 5F                LDA $5F
 96EC   10 2D                BPL L971B
-96EE   20 B6 B2   L96EE     JSR $B2B6
+96EE   20 B6 B2   L96EE     JSR CRLF
 96F1   85 AC                STA $AC
 96F3   A0 00                LDY #$00
 96F5   AE 3B 01             LDX $013B
@@ -1224,7 +1230,7 @@
 9717   68                   PLA
 9718   4C C2 00   L9718     JMP $00C2
 971B   20 6E B9   L971B     JSR INPUT
-971E   20 AE B0             JSR $B0AE
+971E   20 AE B0             JSR CHRIN
 9721   4C EE 96             JMP L96EE
 9724   20 C8 96   L9724     JSR L96C8
 9727   20 0B AD             JSR FRMEVL
@@ -1277,12 +1283,12 @@
 9790   18                   CLC
 9791   AD 3A 01             LDA $013A
 9794   69 13                ADC #$13
-9796   20 AE B0             JSR $B0AE
+9796   20 AE B0             JSR CHRIN
 9799   68                   PLA
 979A   2A                   ROL A
-979B   20 CD A7             JSR CHRGOT
+979B   20 CD A7             JSR GETBYT
 979E   4C C2 00             JMP $00C2
-97A1   20 AE B3   L97A1     JSR $B3AE
+97A1   20 AE B3   L97A1     JSR CHROUT
 97A4   8E 3A 01             STX $013A
 97A7   20 01 AC             JSR NEWSTMT
 97AA   AE 3A 01             LDX $013A
@@ -1292,7 +1298,7 @@
 97B2   A5 C4                LDA TXTPTRH
 97B4   48                   PHA
 97B5   20 C2 00             JSR $00C2
-97B8   20 4F A9             JSR $A94F
+97B8   20 4F A9             JSR PTRGET
 97BB   68                   PLA
 97BC   85 C4                STA TXTPTRH
 97BE   68                   PLA
@@ -1517,15 +1523,21 @@
  TXTPTRH      $C4
  PREPWMST   $A274
  WARMSTRT   $A491
- PRINT      $A8C3
+ GETADR     $A6BC
  SYNCHR     $A70C
- CHRGOT     $A7CD
  CHRPUT     $A74F
+ GETBYT     $A7CD
  PRNTCRLF   $A8E5
  STMTDISP   $A86C
+ PRINT      $A8C3
+ PTRGET     $A94F
  CHKCOM     $AAAD
+ CHKNUM     $AAC1
  NEWSTMT    $AC01
  EVAL       $AC0C
  FRMEVL     $AD0B
+ CHRIN      $B0AE
+ CRLF       $B2B6
+ CHROUT     $B3AE
  INPUT      $B96E
 
