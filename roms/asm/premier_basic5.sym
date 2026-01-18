@@ -1,12 +1,18 @@
-.DATA $9000 ... $9120
+.DATA $9000 ... $9048
+.DATA $907E ... $90D3
 .DATA $923C ... $9249
 .DATA $9254 ... $9287
 .DATA $97E9 ... $97FF
 
 ; this rom
 EXTCMDS = $9000  ; extension command name table
+GETADDR2 = $90D4  ; comma + line check + address parse
+ADDRREPL = $90E6  ; unwind + reparse address
 CMDCHAR = $9162  ; process command character with bounds checking
 BASIC5 = $9200
+RDHEX4  = $9049  ; read 4 hex digits into CURLIN
+HEXIN   = $905E  ; convert ASCII hex digit into CURLIN
+LINCMP  = $90F1  ; compare CURLIN with target line (F2/F3)
 READYMSG = $9288 ; prints "OK\r\nReady\r\n"
 EXTGETCH = $92E1 ; fetch next extended-command byte, restart stmt if end
 OKREADY = $97E9  ; OK / Ready message string
@@ -14,6 +20,10 @@ EXTDISP = $929B  ; '&' extension statement dispatcher
 EXTSCAN = $92DF  ; scan extension command table at $9000
 EXTCHAR = $92ED  ; return current extension char (mask bit 7)
 CMDSTORE = $931D ; store command character into indexed buffer
+CMDCOPY = $93A8  ; copy command characters via CMDSTORE
+PRINBUF = $9510  ; print input buffer then redisplay statement
+CMDOUT = $96C8   ; output command char and advance column
+LINSTEP = $97CC  ; validate & step line delta
 
 ; cegmon
 GETKEY = $FD00   ; wait till key pressed, return with ASCII value in A register
@@ -23,13 +33,14 @@ KEY2XR = $FCC6   ; read-X-from keyboard
 ; BASIC
 BASICV = $0000   ; BASIC cold/warm entry JMP vector (patched to $9200)
 READYV = $0003   ; print OK / Ready → $9288
-CHRGOTV  = $00C2 ; character re-entry (no TXTPTR advance): JMP into BASIC text stream
-TXTPTR  = $00C3   ; low byte of JMP target / BASIC text pointer
-TXTPTRH = $00C4   ; high byte of JMP target / BASIC text pointer
+CHRGOTV = $00C2  ; character re-entry (no TXTPTR advance): JMP into BASIC text stream
+TXTPTR = $00C3   ; low byte of JMP target / BASIC text pointer
+TXTPTRH = $00C4  ; high byte of JMP target / BASIC text pointer
 STMTV = $00C5    ; extension statement dispatcher JMP vector (patched to $929B)
 STMTCTV  = $00C9 ; resume statement execution
 KEYDSPV  = $00D3 ; keyword dispatcher vector
 NEWSTMTV = $0134 ; statement restart vector
+LINESIZE = $013C ; record size used to move from one stored line to the next
 
 CURLINL = $11    ; current BASIC line number (low)
 CURLINH = $12    ; current BASIC line number (high)
@@ -38,6 +49,7 @@ INBUFH = $14     ; BASIC input line buffer (high)
 CMDEXEC = $00BC  ; statement executor (RTS trampoline)
 
 PREPWMST = $A274 ; abort execution, return to READY
+BASCONT = $A5C2  ; BASIC statement continuation
 WARMSTRT = $A491 ; warm start
 GETADR = $A6BC   ; locate variable and return its address/descriptors
 SYNCHR = $A70C   ; require specific character in A, else syntax error
