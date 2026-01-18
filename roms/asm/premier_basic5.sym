@@ -1,18 +1,22 @@
 .DATA $9000 ... $9048
-.DATA $907E ... $90D3
 .DATA $923C ... $9249
 .DATA $9254 ... $9287
 .DATA $97E9 ... $97FF
 
 ; this rom
+FMTBEG = $57     ; start of format/channel spec
+FMTDOT = $58     ; dot modifier position
+FMTEND = $59     ; end of format/channel spec
 EXTCMDS = $9000  ; extension command name table
-GETADDR2 = $90D4  ; comma + line check + address parse
-ADDRREPL = $90E6  ; unwind + reparse address
+CMDINIT  = $907E ; initialise command buffer and limits
+BASREENT = $90AF ; prepare state and re-enter BASIC
+GETADDR2 = $90D4 ; comma + line check + address parse
+ADDRREPL = $90E6 ; unwind + reparse address
 CMDCHAR = $9162  ; process command character with bounds checking
 BASIC5 = $9200
-RDHEX4  = $9049  ; read 4 hex digits into CURLIN
-HEXIN   = $905E  ; convert ASCII hex digit into CURLIN
-LINCMP  = $90F1  ; compare CURLIN with target line (F2/F3)
+RDHEX4  = $9049  ; read 4 hex digits into EXECPTR
+HEXIN   = $905E  ; convert ASCII hex digit into EXECPTR
+LINCMP  = $90F1  ; compare EXECPTR with target line (F2/F3)
 READYMSG = $9288 ; prints "OK\r\nReady\r\n"
 EXTGETCH = $92E1 ; fetch next extended-command byte, restart stmt if end
 OKREADY = $97E9  ; OK / Ready message string
@@ -21,8 +25,14 @@ EXTSCAN = $92DF  ; scan extension command table at $9000
 EXTCHAR = $92ED  ; return current extension char (mask bit 7)
 CMDSTORE = $931D ; store command character into indexed buffer
 CMDCOPY = $93A8  ; copy command characters via CMDSTORE
+KEYSCAN = $9431  ; keyboard scan and decode
+INDJMP  = $9482  ; indirect JMP via EXECPTR
+GETADDR = $9485  ; parse hex address or comma
 PRINBUF = $9510  ; print input buffer then redisplay statement
+EXECADDR = $9523 ; execute inline address operand
+SCANMARK = $9581 ; scan input for > # .# markers
 CMDOUT = $96C8   ; output command char and advance column
+KEYWAIT = $9750   ; wait for valid keypress (with filtering)
 LINSTEP = $97CC  ; validate & step line delta
 
 ; cegmon
@@ -42,12 +52,13 @@ KEYDSPV  = $00D3 ; keyword dispatcher vector
 NEWSTMTV = $0134 ; statement restart vector
 LINESIZE = $013C ; record size used to move from one stored line to the next
 
-CURLINL = $11    ; current BASIC line number (low)
-CURLINH = $12    ; current BASIC line number (high)
+EXECPTRL = $11   ; execution address vector (low)
+EXECPTRH = $12   ;
 INBUFL = $13     ; BASIC input line buffer (low)
 INBUFH = $14     ; BASIC input line buffer (high)
 CMDEXEC = $00BC  ; statement executor (RTS trampoline)
 
+BASSTK = $A212   ; initialise BASIC execution stack/frame
 PREPWMST = $A274 ; abort execution, return to READY
 BASCONT = $A5C2  ; BASIC statement continuation
 WARMSTRT = $A491 ; warm start
@@ -70,5 +81,3 @@ CRLF = $B2B6     ; output carriage return + line feed
 CHROUT = $B3AE   ; output character in A to current output device
 ERRDISP = $B408  ; display BASIC error and return to READY
 INPUT = $B96E    ; INPUT statement handler
-
-
