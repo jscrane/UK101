@@ -1,9 +1,19 @@
-.DATA $9000 ... $91FF
-.DATA $9254 ... $92A0
+.DATA $9000 ... $9120
+.DATA $923C ... $9249
+.DATA $9254 ... $9287
 .DATA $97E9 ... $97FF
 
-; main entry point
+; this rom
+EXTCMDS = $9000  ; extension command name table
+CMDCHAR = $9162  ; process command character with bounds checking
 BASIC5 = $9200
+READYMSG = $9288 ; prints "OK\r\nReady\r\n"
+EXTGETCH = $92E1 ; fetch next extended-command byte, restart stmt if end
+OKREADY = $97E9  ; OK / Ready message string
+EXTDISP = $929B  ; '&' extension statement dispatcher
+EXTSCAN = $92DF  ; scan extension command table at $9000
+EXTCHAR = $92ED  ; return current extension char (mask bit 7)
+CMDSTORE = $931D ; store command character into indexed buffer
 
 ; cegmon
 GETKEY = $FD00   ; wait till key pressed, return with ASCII value in A register
@@ -11,13 +21,22 @@ KEYWRT = $FCBE   ; write-to-keyboard
 KEY2XR = $FCC6   ; read-X-from keyboard
 
 ; BASIC
+BASICV = $0000   ; BASIC cold/warm entry JMP vector (patched to $9200)
+READYV = $0003   ; print OK / Ready → $9288
+CHRGOTV  = $00C2 ; character re-entry (no TXTPTR advance): JMP into BASIC text stream
+TXTPTR  = $00C3   ; low byte of JMP target / BASIC text pointer
+TXTPTRH = $00C4   ; high byte of JMP target / BASIC text pointer
+STMTV = $00C5    ; extension statement dispatcher JMP vector (patched to $929B)
+STMTCTV  = $00C9 ; resume statement execution
+KEYDSPV  = $00D3 ; keyword dispatcher vector
+NEWSTMTV = $0134 ; statement restart vector
+
 CURLINL = $11    ; current BASIC line number (low)
 CURLINH = $12    ; current BASIC line number (high)
 INBUFL = $13     ; BASIC input line buffer (low)
 INBUFH = $14     ; BASIC input line buffer (high)
 CMDEXEC = $00BC  ; statement executor (RTS trampoline)
-TXTPTR  = $C3    ; BASIC text pointer (low)
-TXTPTRH = $C4    ; BASIC text pointer (high)
+
 PREPWMST = $A274 ; abort execution, return to READY
 WARMSTRT = $A491 ; warm start
 GETADR = $A6BC   ; locate variable and return its address/descriptors
@@ -39,3 +58,5 @@ CRLF = $B2B6     ; output carriage return + line feed
 CHROUT = $B3AE   ; output character in A to current output device
 ERRDISP = $B408  ; display BASIC error and return to READY
 INPUT = $B96E    ; INPUT statement handler
+
+
