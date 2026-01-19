@@ -4,6 +4,10 @@
 .DATA $97E9 ... $97FF
 
 ; this rom
+TMPLO   = $F0    ; temp pointer / integer low byte
+TMPHI   = $F1    ; temp pointer / integer high byte
+TMP2LO  = $F2    ; secondary temp low (often compare/base)
+TMP2HI  = $F3    ; secondary temp high
 FMTBEG = $57     ; start of format/channel spec
 FMTDOT = $58     ; dot modifier position
 FMTEND = $59     ; end of format/channel spec
@@ -75,6 +79,7 @@ LINSTEP = $97CC  ; validate & step line delta
 GETKEY = $FD00   ; wait till key pressed, return with ASCII value in A register
 KEYWRT = $FCBE   ; write-to-keyboard
 KEY2XR = $FCC6   ; read-X-from keyboard
+OUTVEC = $FFEE   ; output vector
 
 ; BASIC
 BASICV = $0000   ; BASIC cold/warm entry JMP vector (patched to $9200)
@@ -112,6 +117,7 @@ NEWSTMT = $AC01  ; statement restart / main execution dispatcher
 EVAL = $AC0C     ; expression evaluation
 FRMEVL = $AD0B   ; evaluate expression (numeric or string)
 FRMEVL1 = $AE88  ; expression evaluator continuation / operator-precedence loop
+INT2FAC = $AFC1  ; convert integer in A:Y to FAC
 CHRIN = $B0AE    ; get next input character into A
 CRLF = $B2B6     ; output carriage return + line feed
 CHROUT = $B3AE   ; output character in A to current output device

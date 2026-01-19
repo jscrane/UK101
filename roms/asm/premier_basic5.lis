@@ -1,9 +1,14 @@
+ TMPLO    = $F0
+ TMPHI    = $F1
+ TMP2LO   = $F2
+ TMP2HI   = $F3
  FMTBEG   = $57
  FMTDOT   = $58
  FMTEND   = $59
  GETKEY   = $FD00
  KEYWRT   = $FCBE
  KEY2XR   = $FCC6
+ OUTVEC   = $FFEE
  BASICV   = $0000
  READYV   = $03
  CHRGOTV  = $C2
@@ -37,6 +42,7 @@
  EVAL     = $AC0C
  FRMEVL   = $AD0B
  FRMEVL1  = $AE88
+ INT2FAC  = $AFC1
  CHRIN    = $B0AE
  CRLF     = $B2B6
  CHROUT   = $B3AE
@@ -160,7 +166,7 @@
 909C   A9 30                LDA #$30
 909E   8D 3E 01             STA $013E
 90A1   4C C2 00             JMP CHRGOTV
-90A4   A5 F0                LDA $F0
+90A4   A5 F0                LDA TMPLO
 90A6   8D 3D 01             STA LINESIZE+1
 90A9   EE 3D 01             INC LINESIZE+1
 90AC   4C C2 00             JMP CHRGOTV
@@ -199,25 +205,25 @@
 90EE   4C C2 A5             JMP BASCONT
 90F1   38         LINCMP    SEC
 90F2   A5 11                LDA EXECPTRL
-90F4   E5 F2                SBC $F2
-90F6   85 F0                STA $F0
+90F4   E5 F2                SBC TMP2LO
+90F6   85 F0                STA TMPLO
 90F8   A5 12                LDA EXECPTRH
-90FA   E5 F3                SBC $F3
-90FC   85 F1                STA $F1
+90FA   E5 F3                SBC TMP2HI
+90FC   85 F1                STA TMPHI
 90FE   4C CC 97             JMP LINSTEP
 9101   24 24                BIT $24
 9103   20 AE B3             JSR CHROUT
 9106   A9 D0                LDA #$D0
-9108   85 F1                STA $F1
+9108   85 F1                STA TMPHI
 910A   8A                   TXA
 910B   A2 07                LDX #$07
 910D   A0 00                LDY #$00
-910F   84 F0                STY $F0
-9111   91 F0      L9111     STA ($F0),Y
+910F   84 F0                STY TMPLO
+9111   91 F0      L9111     STA (TMPLO),Y
 9113   C8                   INY
 9114   D0 FB                BNE L9111
 9116   48                   PHA
-9117   E6 F1                INC $F1
+9117   E6 F1                INC TMPHI
 9119   68                   PLA
 911A   CA                   DEX
 911B   10 F4                BPL L9111
@@ -232,26 +238,26 @@
 912F   A5 5F                LDA $5F
 9131   48                   PHA
 9132   AD 36 01             LDA $0136
-9135   85 F1                STA $F1
+9135   85 F1                STA TMPHI
 9137   AD 37 01             LDA $0137
-913A   85 F0                STA $F0
+913A   85 F0                STA TMPLO
 913C   AE 3B 01             LDX $013B
 913F   AC 3A 01             LDY $013A
 9142   E0 00                CPX #$00
 9144   F0 11      L9144     BEQ L9157
-9146   A5 F0                LDA $F0
+9146   A5 F0                LDA TMPLO
 9148   38                   SEC
 9149   ED 3C 01             SBC LINESIZE
-914C   85 F0                STA $F0
-914E   A5 F1                LDA $F1
+914C   85 F0                STA TMPLO
+914E   A5 F1                LDA TMPHI
 9150   E9 00                SBC #$00
-9152   85 F1                STA $F1
+9152   85 F1                STA TMPHI
 9154   CA                   DEX
 9155   10 ED                BPL L9144
-9157   B1 F0      L9157     LDA ($F0),Y
+9157   B1 F0      L9157     LDA (TMPLO),Y
 9159   A8                   TAY
 915A   A9 00                LDA #$00
-915C   20 C1 AF             JSR $AFC1
+915C   20 C1 AF             JSR INT2FAC
 915F   4C 09 94             JMP L9409
 9162   20 AE B3   CMDCHAR   JSR CHROUT
 9165   EC 3D 01             CPX LINESIZE+1
@@ -295,19 +301,19 @@
 91B7   4C 88 AE             JMP FRMEVL1
 91BA   20 01 AC   CMDEXIT   JSR NEWSTMT
 91BD   A5 11                LDA EXECPTRL
-91BF   85 F2                STA $F2
+91BF   85 F2                STA TMP2LO
 91C1   A5 12                LDA EXECPTRH
-91C3   85 F3                STA $F3
+91C3   85 F3                STA TMP2HI
 91C5   20 85 94             JSR GETADDR
 91C8   20 01 AC             JSR NEWSTMT
 91CB   20 F1 90   L91CB     JSR LINCMP
-91CE   A5 F0                LDA $F0
+91CE   A5 F0                LDA TMPLO
 91D0   C9 20      L91D0     CMP #$20
 91D2   90 03                BCC L91D7
 91D4   4C 88 AE   L91D4     JMP FRMEVL1
-91D7   A5 F2      L91D7     LDA $F2
+91D7   A5 F2      L91D7     LDA TMP2LO
 91D9   8D 23 02             STA $0223
-91DC   A5 F3                LDA $F3
+91DC   A5 F3                LDA TMP2HI
 91DE   8D 24 02             STA $0224
 91E1   A5 11                LDA EXECPTRL
 91E3   8D 25 02             STA $0225
@@ -319,7 +325,7 @@
 91F2   B0 E0                BCS L91D4
 91F4   8E 22 02             STX $0222
 91F7   A9 0C                LDA #$0C
-91F9   20 EE FF             JSR $FFEE
+91F9   20 EE FF             JSR OUTVEC
 91FC   4C C2 00             JMP CHRGOTV
 91FF   24 A9                BIT $A9
 9201   4C 85 00             JMP $0085
@@ -500,22 +506,22 @@
 931D   8A         CMDSTORE  TXA
 931E   48                   PHA
 931F   AD 37 01             LDA $0137
-9322   85 F0                STA $F0
+9322   85 F0                STA TMPLO
 9324   AD 36 01             LDA $0136
-9327   85 F1                STA $F1
+9327   85 F1                STA TMPHI
 9329   E0 00                CPX #$00
 932B   F0 11      L932B     BEQ L933E
 932D   38                   SEC
-932E   A5 F0                LDA $F0
+932E   A5 F0                LDA TMPLO
 9330   ED 3C 01             SBC LINESIZE
-9333   85 F0                STA $F0
-9335   A5 F1                LDA $F1
+9333   85 F0                STA TMPLO
+9335   A5 F1                LDA TMPHI
 9337   E9 00                SBC #$00
-9339   85 F1                STA $F1
+9339   85 F1                STA TMPHI
 933B   CA                   DEX
 933C   10 ED                BPL L932B
 933E   AD 3F 01   L933E     LDA $013F
-9341   91 F0                STA ($F0),Y
+9341   91 F0                STA (TMPLO),Y
 9343   68                   PLA
 9344   AA                   TAX
 9345   60                   RTS
@@ -1087,13 +1093,13 @@
 97D5   4A                   LSR A
 97D6   B0 0C                BCS L97E4
 97D8   AA                   TAX
-97D9   A5 F1                LDA $F1
+97D9   A5 F1                LDA TMPHI
 97DB   4A                   LSR A
-97DC   85 F1                STA $F1
-97DE   66 F0                ROR $F0
+97DC   85 F1                STA TMPHI
+97DE   66 F0                ROR TMPLO
 97E0   90 F2                BCC L97D4
 97E2   B0 EA                BCS L97CE
-97E4   A5 F1      L97E4     LDA $F1
+97E4   A5 F1      L97E4     LDA TMPHI
 97E6   D0 E6                BNE L97CE
 97E8   60                   RTS
 97E9   0D         OKREADY   .BYTE $0D          ;%00001101
@@ -1295,6 +1301,10 @@
  CMDSTORE   $931D
  CMDCOPY    $93A8
  CMDOUT     $96C8
+ TMPLO        $F0
+ TMPHI        $F1
+ TMP2LO       $F2
+ TMP2HI       $F3
  FMTBEG       $57
  FMTDOT       $58
  FMTEND       $59
@@ -1311,6 +1321,7 @@
  GETKEY     $FD00
  KEYWRT     $FCBE
  KEY2XR     $FCC6
+ OUTVEC     $FFEE
  BASICV     $0000
  READYV       $03
  CHRGOTV      $C2
@@ -1343,6 +1354,7 @@
  NEWSTMT    $AC01
  EVAL       $AC0C
  FRMEVL     $AD0B
+ INT2FAC    $AFC1
  CHRIN      $B0AE
  CRLF       $B2B6
  CHROUT     $B3AE
