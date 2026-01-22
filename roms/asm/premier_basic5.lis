@@ -1,10 +1,17 @@
+ FMTBEG   = $57
+ FMTDOT   = $58
+ FMTEND   = $59
  TMPLO    = $F0
  TMPHI    = $F1
  TMP2LO   = $F2
  TMP2HI   = $F3
- FMTBEG   = $57
- FMTDOT   = $58
- FMTEND   = $59
+ BASELO   = $0136
+ BASEHI   = $0137
+ CURROW   = $013A
+ ROWIDX   = $013B
+ ROWMAX   = $013D
+ COLMAX   = $013E
+ CHARVAL  = $013F
  GETKEY   = $FD00
  KEYWRT   = $FCBE
  KEY2XR   = $FCC6
@@ -153,22 +160,22 @@
 907E   A9 40      CMDINIT   LDA #$40
 9080   8D 3C 01             STA LINESIZE
 9083   A9 CD                LDA #$CD
-9085   8D 37 01             STA $0137
+9085   8D 37 01             STA BASEHI
 9088   A9 D3                LDA #$D3
-908A   8D 36 01             STA $0136
+908A   8D 36 01             STA BASELO
 908D   A9 10                LDA #$10
-908F   8D 3D 01             STA LINESIZE+1
+908F   8D 3D 01             STA ROWMAX
 9092   A9 30                LDA #$30
-9094   8D 3E 01             STA $013E
+9094   8D 3E 01             STA COLMAX
 9097   4C C2 00             JMP CHRGOTV
 909A   EA                   NOP
 909B   EA                   NOP
 909C   A9 30                LDA #$30
-909E   8D 3E 01             STA $013E
+909E   8D 3E 01             STA COLMAX
 90A1   4C C2 00             JMP CHRGOTV
 90A4   A5 F0                LDA TMPLO
-90A6   8D 3D 01             STA LINESIZE+1
-90A9   EE 3D 01             INC LINESIZE+1
+90A6   8D 3D 01             STA ROWMAX
+90A9   EE 3D 01             INC ROWMAX
 90AC   4C C2 00             JMP CHRGOTV
 90AF   68         PUTATCMD  PLA
 90B0   68                   PLA
@@ -237,12 +244,12 @@
 912D   84 98                STY $98
 912F   A5 5F                LDA $5F
 9131   48                   PHA
-9132   AD 36 01             LDA $0136
+9132   AD 36 01             LDA BASELO
 9135   85 F1                STA TMPHI
-9137   AD 37 01             LDA $0137
+9137   AD 37 01             LDA BASEHI
 913A   85 F0                STA TMPLO
-913C   AE 3B 01             LDX $013B
-913F   AC 3A 01             LDY $013A
+913C   AE 3B 01             LDX ROWIDX
+913F   AC 3A 01             LDY CURROW
 9142   E0 00                CPX #$00
 9144   F0 11      L9144     BEQ L9157
 9146   A5 F0                LDA TMPLO
@@ -260,15 +267,15 @@
 915C   20 C1 AF             JSR INT2FAC
 915F   4C 09 94             JMP L9409
 9162   20 AE B3   CMDCHAR   JSR CHROUT
-9165   EC 3D 01             CPX LINESIZE+1
+9165   EC 3D 01             CPX ROWMAX
 9168   B0 0E                BCS L9178
-916A   8E 3B 01             STX $013B
+916A   8E 3B 01             STX ROWIDX
 916D   20 01 AC             JSR NEWSTMT
 9170   20 AE B3             JSR CHROUT
-9173   EC 3E 01             CPX $013E
+9173   EC 3E 01             CPX COLMAX
 9176   90 03                BCC L917B
 9178   4C 88 AE   L9178     JMP FRMEVL1
-917B   8E 3A 01   L917B     STX $013A
+917B   8E 3A 01   L917B     STX CURROW
 917E   20 01 AC             JSR NEWSTMT
 9181   60                   RTS
 9182   EA         CMDJUMPT  NOP
@@ -280,7 +287,7 @@
 918E   EA                   NOP
 918F   4C BF 93             JMP VLINCMD
 9192   EA                   NOP
-9193   4C 11 94             JMP HLINCMD
+9193   4C 11 94             JMP QUOTCMD
 9196   EA                   NOP
 9197   4C 79 94             JMP BLKCMD
 919A   EA                   NOP
@@ -464,14 +471,14 @@
 92C6   A2 FF                LDX #$FF
 92C8   A0 FF                LDY #$FF
 92CA   20 BC 00             JSR CMDEXEC
-92CD   20 DF 92   L92CD     JSR EXTSCAN
+92CD   20 DF 92   CMDLOOK   JSR EXTSCAN
 92D0   B0 1E                BCS L92F0
 92D2   D1 C3                CMP (TXTPTR),Y
-92D4   F0 F7                BEQ L92CD
+92D4   F0 F7                BEQ CMDLOOK
 92D6   20 DF 92   L92D6     JSR EXTSCAN
 92D9   90 FB                BCC L92D6
 92DB   A0 FF                LDY #$FF
-92DD   D0 EE                BNE L92CD
+92DD   D0 EE                BNE CMDLOOK
 92DF   E8         EXTSCAN   INX
 92E0   C8                   INY
 92E1   18         EXTNEXT   CLC
@@ -493,21 +500,21 @@
 92FE   98                   TYA
 92FF   48                   PHA
 9300   20 E1 92             JSR EXTNEXT
-9303   0A                   ASL A
+9303   0A         CMDIDX4   ASL A
 9304   48                   PHA
 9305   4C C2 00             JMP CHRGOTV
 9308   20 62 91   SCRCMD    JSR CMDCHAR
 930B   20 AE B3             JSR CHROUT
-930E   8E 3F 01             STX $013F
-9311   AE 3B 01             LDX $013B
-9314   AC 3A 01             LDY $013A
+930E   8E 3F 01             STX CHARVAL
+9311   AE 3B 01             LDX ROWIDX
+9314   AC 3A 01             LDY CURROW
 9317   20 1D 93             JSR CMDSTORE
 931A   4C C2 00             JMP CHRGOTV
 931D   8A         CMDSTORE  TXA
 931E   48                   PHA
-931F   AD 37 01             LDA $0137
+931F   AD 37 01             LDA BASEHI
 9322   85 F0                STA TMPLO
-9324   AD 36 01             LDA $0136
+9324   AD 36 01             LDA BASELO
 9327   85 F1                STA TMPHI
 9329   E0 00                CPX #$00
 932B   F0 11      L932B     BEQ L933E
@@ -520,7 +527,7 @@
 9339   85 F1                STA TMPHI
 933B   CA                   DEX
 933C   10 ED                BPL L932B
-933E   AD 3F 01   L933E     LDA $013F
+933E   AD 3F 01   L933E     LDA CHARVAL
 9341   91 F0                STA (TMPLO),Y
 9343   68                   PLA
 9344   AA                   TAX
@@ -529,21 +536,21 @@
 9349   20 AE B3             JSR CHROUT
 934C   8A                   TXA
 934D   18                   CLC
-934E   6D 3B 01             ADC $013B
+934E   6D 3B 01             ADC ROWIDX
 9351   B0 39                BCS L938C
-9353   CD 3D 01             CMP LINESIZE+1
+9353   CD 3D 01             CMP ROWMAX
 9356   F0 02                BEQ L935A
 9358   B0 32                BCS L938C
 935A   8E 39 01   L935A     STX $0139
 935D   20 01 AC             JSR NEWSTMT
 9360   20 AE B3             JSR CHROUT
-9363   8E 3F 01             STX $013F
-9366   AE 3B 01             LDX $013B
+9363   8E 3F 01             STX CHARVAL
+9366   AE 3B 01             LDX ROWIDX
 9369   AC 39 01             LDY $0139
 936C   F0 0E      L936C     BEQ L937C
 936E   98                   TYA
 936F   48                   PHA
-9370   AC 3A 01             LDY $013A
+9370   AC 3A 01             LDY CURROW
 9373   20 1D 93             JSR CMDSTORE
 9376   68                   PLA
 9377   A8                   TAY
@@ -555,24 +562,24 @@
 9382   20 AE B3             JSR CHROUT
 9385   8A                   TXA
 9386   18                   CLC
-9387   6D 3A 01             ADC $013A
+9387   6D 3A 01             ADC CURROW
 938A   90 03                BCC L938F
 938C   4C 88 AE   L938C     JMP FRMEVL1
-938F   CD 3E 01   L938F     CMP $013E
+938F   CD 3E 01   L938F     CMP COLMAX
 9392   F0 02                BEQ L9396
 9394   B0 F6                BCS L938C
 9396   8E 39 01   L9396     STX $0139
 9399   20 01 AC             JSR NEWSTMT
 939C   20 AE B3             JSR CHROUT
-939F   8E 3F 01             STX $013F
+939F   8E 3F 01             STX CHARVAL
 93A2   20 A8 93             JSR CMDCOPY
 93A5   4C C2 00             JMP CHRGOTV
-93A8   AC 3A 01   CMDCOPY   LDY $013A
+93A8   AC 3A 01   CMDCOPY   LDY CURROW
 93AB   AE 39 01             LDX $0139
 93AE   F0 0E      L93AE     BEQ L93BE
 93B0   8A                   TXA
 93B1   48                   PHA
-93B2   AE 3B 01             LDX $013B
+93B2   AE 3B 01             LDX ROWIDX
 93B5   20 1D 93             JSR CMDSTORE
 93B8   68                   PLA
 93B9   AA                   TAX
@@ -584,9 +591,9 @@
 93C2   20 AE B3             JSR CHROUT
 93C5   8A                   TXA
 93C6   18                   CLC
-93C7   6D 3A 01             ADC $013A
+93C7   6D 3A 01             ADC CURROW
 93CA   B0 C0                BCS L938C
-93CC   CD 3E 01             CMP $013E
+93CC   CD 3E 01             CMP COLMAX
 93CF   F0 02                BEQ L93D3
 93D1   B0 B9                BCS L938C
 93D3   8E 39 01   L93D3     STX $0139
@@ -594,19 +601,19 @@
 93D9   20 AE B3             JSR CHROUT
 93DC   8A                   TXA
 93DD   18                   CLC
-93DE   6D 3B 01             ADC $013B
+93DE   6D 3B 01             ADC ROWIDX
 93E1   B0 A9                BCS L938C
-93E3   CD 3D 01             CMP LINESIZE+1
+93E3   CD 3D 01             CMP ROWMAX
 93E6   F0 02                BEQ L93EA
 93E8   B0 A2                BCS L938C
 93EA   8E 38 01   L93EA     STX $0138
 93ED   20 01 AC             JSR NEWSTMT
 93F0   20 AE B3             JSR CHROUT
-93F3   8E 3F 01             STX $013F
+93F3   8E 3F 01             STX CHARVAL
 93F6   AD 38 01             LDA $0138
 93F9   F0 0B      L93F9     BEQ L9406
 93FB   20 A8 93             JSR CMDCOPY
-93FE   EE 3B 01             INC $013B
+93FE   EE 3B 01             INC ROWIDX
 9401   CE 38 01             DEC $0138
 9404   10 F3                BPL L93F9
 9406   4C C2 00   L9406     JMP CHRGOTV
@@ -614,7 +621,7 @@
 940A   2A                   ROL A
 940B   20 CD A7             JSR GETBYT
 940E   4C C2 00             JMP CHRGOTV
-9411   20 0B AD   HLINCMD   JSR FRMEVL
+9411   20 0B AD   QUOTCMD   JSR FRMEVL
 9414   85 97                STA $97
 9416   84 98                STY $98
 9418   A5 5F                LDA $5F
@@ -775,7 +782,7 @@
 9565   C9 00                CMP #$00
 9567   F0 0B                BEQ L9574
 9569   C8                   INY
-956A   CC 3E 01             CPY $013E
+956A   CC 3E 01             CPY COLMAX
 956D   90 F1                BCC L9560
 956F   F0 EF                BEQ L9560
 9571   4C 0C AC   L9571     JMP EVAL
@@ -974,8 +981,8 @@
 96CB   20 AE B3             JSR CHROUT
 96CE   18                   CLC
 96CF   8A                   TXA
-96D0   6D 3A 01             ADC $013A
-96D3   CD 3E 01             CMP $013E
+96D0   6D 3A 01             ADC CURROW
+96D3   CD 3E 01             CMP COLMAX
 96D6   90 05                BCC L96DD
 96D8   F0 03                BEQ L96DD
 96DA   4C 88 AE             JMP FRMEVL1
@@ -989,19 +996,19 @@
 96EE   20 B6 B2   L96EE     JSR CRLF
 96F1   85 AC                STA $AC
 96F3   A0 00                LDY #$00
-96F5   AE 3B 01             LDX $013B
+96F5   AE 3B 01             LDX ROWIDX
 96F8   C4 AC      L96F8     CPY $AC
 96FA   B0 1C                BCS L9718
 96FC   98                   TYA
 96FD   48                   PHA
 96FE   B1 71                LDA ($71),Y
-9700   8D 3F 01             STA $013F
-9703   AC 3A 01             LDY $013A
+9700   8D 3F 01             STA CHARVAL
+9703   AC 3A 01             LDY CURROW
 9706   CC 39 01             CPY $0139
 9709   B0 0B                BCS L9716
 970B   20 1D 93             JSR CMDSTORE
 970E   C8                   INY
-970F   8C 3A 01             STY $013A
+970F   8C 3A 01             STY CURROW
 9712   68                   PLA
 9713   A8                   TAY
 9714   C8                   INY
@@ -1017,12 +1024,12 @@
 972C   84 98                STY $98
 972E   A5 5F                LDA $5F
 9730   48                   PHA
-9731   AE 3B 01             LDX $013B
-9734   AC 3A 01             LDY $013A
+9731   AE 3B 01             LDX ROWIDX
+9734   AC 3A 01             LDY CURROW
 9737   A9 04      L9737     LDA #$04
 9739   CC 39 01             CPY $0139
 973C   B0 06                BCS L9744
-973E   8D 3F 01             STA $013F
+973E   8D 3F 01             STA CHARVAL
 9741   20 1D 93             JSR CMDSTORE
 9744   20 50 97   L9744     JSR KEYWAIT
 9747   99 13 00             STA INBUFL+$0000,Y
@@ -1030,7 +1037,7 @@
 974D   C8                   INY
 974E   10 E7                BPL L9737
 9750   20 00 FD   KEYWAIT   JSR GETKEY
-9753   8D 3F 01             STA $013F
+9753   8D 3F 01             STA CHARVAL
 9756   C9 0D                CMP #$0D
 9758   F0 21                BEQ L977B
 975A   C9 1C                CMP #$1C
@@ -1041,9 +1048,9 @@
 9764   CC 39 01   L9764     CPY $0139
 9767   B0 08                BCS L9771
 9769   A9 20                LDA #$20
-976B   8D 3F 01             STA $013F
+976B   8D 3F 01             STA CHARVAL
 976E   20 1D 93             JSR CMDSTORE
-9771   CC 3A 01   L9771     CPY $013A
+9771   CC 3A 01   L9771     CPY CURROW
 9774   F0 01                BEQ L9777
 9776   88                   DEY
 9777   68         L9777     PLA
@@ -1054,13 +1061,13 @@
 977D   CC 39 01             CPY $0139
 9780   B0 08                BCS L978A
 9782   A9 20                LDA #$20
-9784   8D 3F 01             STA $013F
+9784   8D 3F 01             STA CHARVAL
 9787   20 1D 93             JSR CMDSTORE
 978A   A9 00      L978A     LDA #$00
 978C   99 13 00             STA INBUFL+$0000,Y
 978F   A8                   TAY
 9790   18                   CLC
-9791   AD 3A 01             LDA $013A
+9791   AD 3A 01             LDA CURROW
 9794   69 13                ADC #$13
 9796   20 AE B0             JSR CHRIN
 9799   68                   PLA
@@ -1068,9 +1075,9 @@
 979B   20 CD A7             JSR GETBYT
 979E   4C C2 00             JMP CHRGOTV
 97A1   20 AE B3   RDCMD     JSR CHROUT
-97A4   8E 3A 01             STX $013A
+97A4   8E 3A 01             STX CURROW
 97A7   20 01 AC             JSR NEWSTMT
-97AA   AE 3A 01             LDX $013A
+97AA   AE 3A 01             LDX CURROW
 97AD   F0 17                BEQ L97C6
 97AF   A5 C3      L97AF     LDA TXTPTR
 97B1   48                   PHA
@@ -1082,7 +1089,7 @@
 97BC   85 C4                STA TXTPTRH
 97BE   68                   PLA
 97BF   85 C3                STA TXTPTR
-97C1   CE 3A 01             DEC $013A
+97C1   CE 3A 01             DEC CURROW
 97C4   D0 E9                BNE L97AF
 97C6   20 0B AD   L97C6     JSR FRMEVL
 97C9   4C C2 00             JMP CHRGOTV
@@ -1189,7 +1196,6 @@
  L92A8      $92A8
  L92AB      $92AB
  L92F0      $92F0
- L92CD      $92CD
  L92D6      $92D6
  L933E      $933E
  L932B      $932B
@@ -1270,9 +1276,10 @@
  CMDCHAR    $9162
  CMDJUMPT   $9182
  READYMSG   $9288
+ CMDIDX4    $9303
  SCRCMD     $9308
  SETCMD     $9346
- HLINCMD    $9411
+ QUOTCMD    $9411
  KEYSCAN    $9431
  BLKCMD     $9479
  INDJMP     $9482
@@ -1296,18 +1303,27 @@
  PUTATCMD   $90AF
  LINCMP     $90F1
  EXTSCAN    $92DF
+ CMDLOOK    $92CD
  EXTCHAR    $92ED
  EXTNEXT    $92E1
  CMDSTORE   $931D
  CMDCOPY    $93A8
  CMDOUT     $96C8
+ FMTBEG       $57
+ FMTDOT       $58
+ FMTEND       $59
  TMPLO        $F0
  TMPHI        $F1
  TMP2LO       $F2
  TMP2HI       $F3
- FMTBEG       $57
- FMTDOT       $58
- FMTEND       $59
+ BASELO     $0136
+ BASEHI     $0137
+ CURROW     $013A
+ ROWIDX     $013B
+ LINESIZE   $013C
+ ROWMAX     $013D
+ COLMAX     $013E
+ CHARVAL    $013F
  CMD_VLIN   $900D
  CMD_GET    $901F
  CMD_RD     $903F
@@ -1331,7 +1347,6 @@
  STMTCTV    $00C9
  KEYDSPV      $D3
  NEWSTMTV   $0134
- LINESIZE   $013C
  EXECPTRL     $11
  EXECPTRH     $12
  INBUFL       $13
