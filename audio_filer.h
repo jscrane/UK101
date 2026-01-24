@@ -1,5 +1,4 @@
-#ifndef _AUDIO_FILER_H
-#define _AUDIO_FILER_H
+#pragma once
 
 // make filers configurable:
 // sd_filer
@@ -36,4 +35,3 @@ private:
 	unsigned _data_bits, _stop_bits, _bit_delay;
 	parity _parity;
 };
-#endif

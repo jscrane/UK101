@@ -48,8 +48,6 @@
 #define DRIVE_SELECT	0x40	// 1 = A/C, 0 = B/D
 #define INDEX_HOLE	0x80
 
-#define TICK_FREQ	1000	// 1ms
-
 // 5.25" floppy disk
 #if USE_DISK == DISK525
 #define DISK_TRACKS	40
@@ -86,12 +84,6 @@ static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * 
 void disk::reset() {
 
 	DBG_EMU(printf("disk reset\r\n"));
-
-	static bool first_time = true;
-	if (first_time) {
-		hardware_interval_timer(TICK_FREQ, [this]() { tick(); });
-		first_time = false;
-	}
 
 	drive = &driveA;
 	track = 0xff;

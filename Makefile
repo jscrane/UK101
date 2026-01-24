@@ -11,7 +11,7 @@ ifeq ($t, rp2040)
 BOARD := adafruit_feather_dvi
 FLASH := 8388608_2097152
 TERMINAL_SPEED := 115200
-CPPFLAGS += -DHARDWARE_H=\"hw/adafruit_feather_dvi.h\" -DDVI_BIT_DEPTH=1 -DDVI_RESOLUTION=DVI_RES_640x480p60
+CPPFLAGS += -DHARDWARE_H=\"hw/adafruit_feather_dvi.h\" -DDVI_BIT_DEPTH=1 -DDVI_RESOLUTION=DVI_RES_640x240p60
 LIBRARIES += LittleFS PicoDVI Adafruit_GFX Adafruit_BusIO Wire
 endif
 

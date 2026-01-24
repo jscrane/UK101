@@ -93,6 +93,8 @@ tape tape(audio);
 flash_file drive_a(1), drive_b(2), drive_c(3), drive_d(4);
 disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
+
+#define TICK_FREQ	1000	// 1ms
 #endif
 
 ukkbd kbd;
@@ -100,8 +102,7 @@ ps2_raw_kbd keyboard(kbd);
 screen screen;
 Memory memory;
 r6502 cpu(memory);
-
-static void reset();
+Machine machine(cpu);
 
 static void file_status() {
 	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
@@ -114,7 +115,7 @@ static void function_keys(uint8_t key) {
 
 	switch (key) {
 	case 1:
-		reset();
+		machine.reset();
 		return;
 	case 2:
 		files.next_file();
@@ -142,14 +143,13 @@ static void function_keys(uint8_t key) {
 		files.next_device();
 		break;
 	case 10:
-		hardware_debug_cpu();
+		machine.debug_cpu();
 		return;
 	}
 	file_status();
 }
 
-static void reset() {
-	bool sd = hardware_reset();
+static void reset(bool sd) {
 
 	keyboard.reset();
 	screen.begin();
@@ -169,7 +169,7 @@ static void reset() {
 }
 
 void setup() {
-	hardware_init(cpu);
+	machine.init();
 
 	for (unsigned i = 0; i < RAM_PAGES; i++)
 		memory.put(pages[i], i * ram<>::page_size);
@@ -191,6 +191,8 @@ void setup() {
 #if defined(USE_DISK)
 	memory.put(disk, 0xc000);
 	memory.put(disk_timer, 0xde00);
+
+	machine.interval_timer(TICK_FREQ, []() { disk.tick(); });
 #endif
 
 	memory.put(screen, 0xd000);
@@ -201,10 +203,12 @@ void setup() {
 
 	keyboard.register_fnkey_handler(function_keys);
 
-	reset();
+	machine.register_reset_handler(reset);
+	machine.reset();
 }
 
 void loop() {
+
 	keyboard.poll();
-	hardware_run();
+	machine.run();
 }

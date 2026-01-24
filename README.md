@@ -18,6 +18,7 @@ Hardware
 - See the [6502 Emulation](https://github.com/jscrane/r65emu) library's
   hardware requirements and wiring.
 - See _config.h_ for configuration options.
+- This emulation requires a PS/2 keyboard.
 
 Firmware
 --------
