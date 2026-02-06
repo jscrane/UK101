@@ -7,8 +7,8 @@ public:
 	sprom(const byte *mem, int bytes): prom(mem, bytes) {}
 	void delegate(Checkpointable *chk) { _chk = chk; }
 
-	void checkpoint(Stream &s) { _chk->checkpoint(s); }
-	void restore(Stream &s) { _chk->restore(s); }
+	void checkpoint(Checkpoint &s) { _chk->checkpoint(s); }
+	void restore(Checkpoint &s) { _chk->restore(s); }
 
 private:
 	Checkpointable *_chk;
@@ -27,8 +27,8 @@ public:
 	void set(int c) { _curr=c; memory.put(_sproms[c], _addr); }
 	void next() { int c=_curr; set(++c == _n? 0: c); }
 
-	void checkpoint(Stream &s) { s.write(_curr); }
-	void restore(Stream &s) { set(s.read()); }
+	void checkpoint(Checkpoint &s) { s.write(_curr); }
+	void restore(Checkpoint &s) { set(s.read()); }
 
 private:
 	sprom *_sproms;

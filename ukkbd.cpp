@@ -1,7 +1,6 @@
-#if defined(ARDUINO)
-#include <Arduino.h>
-#endif
 #include <stdint.h>
+
+#include <machine.h>
 #include <memory.h>
 #include <ps2_raw_kbd.h>
 #include "ukkbd.h"
