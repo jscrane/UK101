@@ -1,4 +1,6 @@
 #include <Arduino.h>
+
+#include <machine.h>
 #include <memory.h>
 #include <serialio.h>
 #include <acia.h>

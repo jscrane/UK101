@@ -3,11 +3,13 @@
  */
 #include <Arduino.h>
 #include <stdint.h>
+
+#include <machine.h>
 #include <memory.h>
 #include <serialio.h>
 #include <filer.h>
 #include <acia.h>
-#include <hardware.h>
+
 #include "config.h"
 #include "audio_filer.h"
 

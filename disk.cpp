@@ -1,6 +1,7 @@
 #include <Arduino.h>
+
+#include <machine.h>
 #include <memory.h>
-#include <hardware.h>
 #include <serialio.h>
 #include <filer.h>
 #include <flash_filer.h>
@@ -83,7 +84,7 @@ static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * 
 
 void disk::reset() {
 
-	DBG_EMU(printf("disk reset\r\n"));
+	DBG_EMU("disk reset");
 
 	drive = &driveA;
 	track = 0xff;
@@ -113,7 +114,7 @@ void disk::operator=(uint8_t b) {
 }
 
 void disk::on_write_pia_portb(uint8_t b) {
-	DBG_EMU(printf("DRB! %02x\r\n", b));
+	DBG_EMU("DRB! %02x", b);
 
 	uint8_t dra = pia.read_porta(), drb = pia.read_portb();
 
@@ -136,7 +137,7 @@ void disk::on_write_pia_portb(uint8_t b) {
 		else
 			track--;
 
-		DBG_EMU(printf("track: %d\r\n", track));
+		DBG_EMU("track: %d", track);
 		seek_start();
 	}
 
@@ -170,13 +171,13 @@ uint8_t disk::on_read_pia_porta() {
 	if (!driveB && !driveD)
 		dra |= DRIVE2_READY;
 
-	DBG_EMU(printf("DRA? %02x\r\n", dra));
+	DBG_EMU("DRA? %02x", dra);
 	return dra;
 }
 
 uint8_t disk::on_read_acia_data() {
 	uint8_t b = drive->read();
-	DBG_EMU(printf("ADR? %04x %02x\r\n", pos, b));
+	DBG_EMU("ADR? %04x %02x", pos, b);
 	pos++;
 	return b;
 }
@@ -198,7 +199,7 @@ void disk::on_write_acia_data(uint8_t b) {
 		}
 		write(b);
 	}
-	DBG_EMU(printf("ADR! %04x %02x\r\n", pos, b));
+	DBG_EMU("ADR! %04x %02x", pos, b);
 }
 
 uint8_t disk::on_acia_rw() {

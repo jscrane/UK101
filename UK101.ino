@@ -102,7 +102,7 @@ ps2_raw_kbd keyboard(kbd);
 screen screen;
 Memory memory;
 r6502 cpu(memory);
-Machine machine(cpu);
+Arduino machine(cpu);
 
 static void file_status() {
 	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
@@ -159,17 +159,17 @@ static void reset(bool sd) {
 #endif
 
 	if (!sd) {
-		DBG_EMU(println(F("No SD Card")));
+		DBG_EMU("No SD Card");
 		screen.status("No SD Card");
 	} else if (!files.start()) {
-		DBG_EMU(println(F("Failed to open " PROGRAMS)));
+		DBG_EMU("Failed to open " PROGRAMS);
 		screen.status("Failed to open " PROGRAMS);
 	} else
 		file_status();
 }
 
 void setup() {
-	machine.init();
+	machine.begin();
 
 	for (unsigned i = 0; i < RAM_PAGES; i++)
 		memory.put(pages[i], i * ram<>::page_size);
