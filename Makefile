@@ -24,7 +24,7 @@ ifeq ($b, lilygo)
 BOARD := ttgo-t7-v14-mini32
 TERMINAL_EXTRA_FLAGS := -C serialout.txt
 SERIAL_PORT := /dev/ttyACM0
-CPPFLAGS += -DHARDWARE_H=\"hw/ttgo-t7-v14-mini32.h\" -DVGA_BIT_DEPTH=1 -DVGA_RESOLUTION=VGAMode::MODE640x350
+CPPFLAGS += -DHARDWARE_H=\"hw/ttgo-t7-v14-mini32.h\" -DVGA_BIT_DEPTH=1 -DVGA_RESOLUTION=VGAMode::MODE640x480
 LIBRARIES += ESP32Lib
 
 else
