@@ -8,6 +8,7 @@ public:
 		pos(0), track(0xff), ticks(0) {}
 
 	void reset();
+	void tick();
 
 	virtual void operator=(uint8_t);
 	virtual operator uint8_t();
@@ -27,7 +28,6 @@ private:
 	uint32_t pos;
 	uint8_t track;
 
-	void tick();
 	unsigned ticks;
 
 	PIA pia;

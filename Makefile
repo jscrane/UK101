@@ -11,7 +11,7 @@ ifeq ($t, rp2040)
 BOARD := adafruit_feather_dvi
 FLASH := 8388608_2097152
 TERMINAL_SPEED := 115200
-CPPFLAGS += -DHARDWARE_H=\"hw/adafruit_feather_dvi.h\" -DDVI_BIT_DEPTH=1 -DDVI_RESOLUTION=DVI_RES_640x480p60
+CPPFLAGS += -DDVI_BIT_DEPTH=1 -DDVI_RESOLUTION=DVI_RES_640x240p60
 LIBRARIES += LittleFS PicoDVI Adafruit_GFX Adafruit_BusIO Wire
 endif
 
@@ -24,8 +24,16 @@ ifeq ($b, lilygo)
 BOARD := ttgo-t7-v14-mini32
 TERMINAL_EXTRA_FLAGS := -C serialout.txt
 SERIAL_PORT := /dev/ttyACM0
-CPPFLAGS += -DHARDWARE_H=\"hw/ttgo-t7-v14-mini32.h\" -DVGA_BIT_DEPTH=1 -DVGA_RESOLUTION=VGAMode::MODE640x480
-LIBRARIES += ESP32Lib
+CPPFLAGS += -DVGA_BIT_DEPTH=1 -DVGA_RESOLUTION=VGAMode::MODE640x480
+LIBRARIES += ESP32Lib SD
+
+else ifeq ($b, olimex)
+BOARD := esp32-sbc-fabgl
+TERMINAL_EXTRA_FLAGS := -C serialout.txt
+SERIAL_PORT := /dev/ttyUSB0
+DebugLevel := verbose
+CPPFLAGS += -DVGA_BIT_DEPTH=1 -DVGA_RESOLUTION=VGAMode::MODE640x480 -DVGA_FONT=Font8x8
+LIBRARIES += ESP32Lib SD
 
 else
 BOARD := lolin32

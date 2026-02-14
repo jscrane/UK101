@@ -42,12 +42,16 @@
 #define RAM_PAGES	(RAM_SIZE / ram<>::page_size)
 
 // flash_filer directory containing programs
-#define PROGRAMS	"/"
+#if defined(UK101)
+#define PROGRAMS	"/uk101"
+#elif defined(OHIO)
+#define HOSTNAME	"/ohio"
+#endif
 
-// for socket_filer
+// hostname for socket_filer
 #if defined(UK101)
 #define HOSTNAME	"uk101"
-#else
+#elif defined(OHIO)
 #define HOSTNAME	"ohio"
 #endif
 
