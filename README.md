@@ -2,8 +2,7 @@ UK101
 =====
 
 [UK101](https://en.wikipedia.org/wiki/Compukit_UK101) Hardware emulator on 
-[Stellarpad](http://www.energia.nu/Guide_StellarisLaunchPad.html) using 
-[Energia](http://energia.nu/) and ESP8266 / ESP32 with Arduino.
+ESP8266 / ESP32 / Pico with Arduino.
 
 See blog [article](http://programmablehardware.blogspot.ie/2014/08/retrocomputer-resurrection.html).
 

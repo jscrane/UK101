@@ -1,7 +1,6 @@
 #pragma once
 
 // make filers configurable:
-// sd_filer
 // fs_filer
 // serial_filer
 // audio_filer

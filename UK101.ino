@@ -202,12 +202,12 @@ void setup() {
 	monitors.set(0);
 
 	keyboard.register_fnkey_handler(function_keys);
+	machine.register_pollable(keyboard);
 
 	machine.register_reset_handler(reset);
 	machine.reset();
 }
 
 void loop() {
-	keyboard.poll();
 	machine.run();
 }

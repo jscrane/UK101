@@ -8,7 +8,7 @@
 #define TFT_BG		BLACK
 #define TFT_FG		WHITE
 
-#if defined(USE_UTFT) || defined(USE_VGA_FABGL) || defined(USE_VGA_BITLUNI) || defined(USE_DVI)
+#if defined(USE_VGA) || defined(USE_DVI)
 #define TFT_ORIENT      landscape
 #elif defined(USE_ESPI)
 #define TFT_ORIENT      reverse_landscape
