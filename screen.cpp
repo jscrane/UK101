@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <display.h>
 #include <hardware.h>
+#include <debugging.h>
 
 #include "config.h"
 #include "screen.h"
@@ -51,9 +52,6 @@ void screen::_draw(Memory::address a, uint8_t c)
 	struct resolution &r = resolutions[_resolution];
 	unsigned x = r.cw * (a % CHARS_PER_LINE);
 	unsigned y = (r.double_size? 2*r.ch: r.ch) * (a / CHARS_PER_LINE);
-
-	if (!onScreen(x, y))
-		return;
 
 	uint16_t cg = 8*c, cm = 8*_mem[a];
 	for (unsigned j = 0; j < r.ch; j++) {

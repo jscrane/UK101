@@ -9,7 +9,7 @@
 #define TFT_FG		WHITE
 
 #if defined(USE_VGA) || defined(USE_DVI)
-#define TFT_ORIENT      landscape
+#define TFT_ORIENT      portrait
 #elif defined(USE_ESPI)
 #define TFT_ORIENT      reverse_landscape
 #endif
