@@ -1,5 +1,4 @@
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#pragma once
 
 #if !defined(UK101) && !defined(OHIO)
 #define UK101
@@ -66,5 +65,3 @@
 // floppy disk
 #define USE_DISK	DISK525
 //#define USE_DISK	DISK8
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SPROM_H
-#define _SPROM_H
+#pragma once
 
 // a switchable prom: the state of the switch is checkpointable
 class sprom: public prom {
@@ -35,5 +34,3 @@ private:
 	int _n, _curr;
 	Memory::address _addr;
 };
-
-#endif

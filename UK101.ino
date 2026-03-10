@@ -10,7 +10,6 @@
 #include "config.h"
 #include "screen.h"
 #include "ukkbd.h"
-#include "tape.h"
 #include "sprom.h"
 #include "disk.h"
 #include "audio_filer.h"
@@ -87,7 +86,6 @@ flash_filer files(PROGRAMS);
 
 // novelty wrapper to send saved files to audio device
 audio_filer audio(files);
-tape tape(audio);
 
 #if defined(USE_DISK)
 flash_file drive_a(1), drive_b(2), drive_c(3), drive_d(4);
@@ -103,6 +101,7 @@ screen screen;
 Memory memory;
 r6502 cpu(memory);
 Arduino machine(cpu);
+ACIA acia;
 
 static void file_status() {
 	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
@@ -198,7 +197,11 @@ void setup() {
 	memory.put(screen, 0xd000);
 	memory.put(kbd, 0xdf00);
 
-	memory.put(tape, 0xf000);
+	memory.put(acia, 0xf000, 0x0400);
+	acia.register_read_data_handler([]() { return audio.read(); });
+	acia.register_write_data_handler([](uint8_t b) { audio.write(b); });
+	acia.register_can_rw_handler([](void) { return audio.more()? 3: 2; });
+
 	monitors.set(0);
 
 	keyboard.register_fnkey_handler(function_keys);

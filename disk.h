@@ -1,17 +1,11 @@
 #pragma once
 
-class disk: public Memory::Device {
+class disk: public Memory::Devices {
 public:
-	disk(flash_file &a, flash_file &b, flash_file &c, flash_file &d):
-		Memory::Device(Memory::page_size),
-		driveA(a), driveB(b), driveC(c), driveD(d), drive(&a),
-		pos(0), track(0xff), ticks(0) {}
+	disk(flash_file &a, flash_file &b, flash_file &c, flash_file &d);
 
 	void reset();
 	void tick();
-
-	virtual void operator=(uint8_t);
-	virtual operator uint8_t();
 
 private:
 	uint8_t on_read_pia_porta();

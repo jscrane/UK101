@@ -1,5 +1,4 @@
-#ifndef __UKKBD_H
-#define __UKKBD_H
+#pragma once
 
 class ukkbd: public Memory::Device, public matrix_keyboard {
 public:
@@ -10,7 +9,7 @@ public:
 	void down(uint8_t);
 	void reset();
 
-	ukkbd(): Memory::Device(1024) {}
+	ukkbd(): Memory::Device(1) {}
 
 private:
 	uint8_t _rows[8];
@@ -21,4 +20,3 @@ private:
 	uint8_t pattern();
 	bool _shifted;
 };
-#endif

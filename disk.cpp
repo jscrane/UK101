@@ -82,6 +82,14 @@ static inline bool is_drive_ac(uint8_t b) { return b & DRIVE_SELECT; }
 
 static inline uint32_t start_offset(int track) { return track * TRACK_SECTORS * SECTOR_BYTES; }
 
+disk::disk(flash_file &a, flash_file &b, flash_file &c, flash_file &d):
+	driveA(a), driveB(b), driveC(c), driveD(d), drive(&a),
+	pos(0), track(0xff), ticks(0)
+{
+	put(pia, 0x00);
+	put(acia, 0x10);
+}
+
 void disk::reset() {
 
 	DBG_EMU("disk reset");
@@ -104,13 +112,6 @@ void disk::tick() {
 	ticks++;
 	if (ticks == T_REV_MS)
 		ticks = 0;
-}
-
-void disk::operator=(uint8_t b) {
-	if (_acc < 0x10)
-		pia.write(_acc, b);
-	else
-		acia.write(_acc, b);
 }
 
 void disk::on_write_pia_portb(uint8_t b) {
@@ -143,13 +144,6 @@ void disk::on_write_pia_portb(uint8_t b) {
 
 	if (is_load_head(b))
 		seek_start();
-}
-
-disk::operator uint8_t() {
-	if (_acc < 0x10)
-		return pia.read(_acc);
-
-	return acia.read(_acc - 0x10);
 }
 
 uint8_t disk::on_read_pia_porta() {

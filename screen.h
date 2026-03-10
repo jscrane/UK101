@@ -1,13 +1,12 @@
-#ifndef _SCREEN_H
-#define _SCREEN_H
+#pragma once
 
 class screen: public Display, public Memory::Device {
 public:
 	virtual void operator= (uint8_t c) { _set(_acc, c); }
 	virtual operator uint8_t () { return _mem[_acc]; }
 
-	virtual void checkpoint(Stream &s);
-	virtual void restore(Stream &s);
+	virtual void checkpoint(Checkpoint &);
+	virtual void restore(Checkpoint &);
 
 	screen(): Memory::Device(sizeof(_mem)), _resolution(0) {}
 	void begin();
@@ -24,4 +23,3 @@ private:
 	int _resolution;
 	const char *setResolution();
 };
-#endif

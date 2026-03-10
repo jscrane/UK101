@@ -73,28 +73,17 @@ void screen::_draw(Memory::address a, uint8_t c)
 	}
 }
 
-void screen::checkpoint(Stream &s)
-{
-	s.write(_resolution); 
-	s.write(_mem, sizeof(_mem));
+void screen::checkpoint(Checkpoint &c) {
+	c.write(_resolution);
+	c.write(_mem, sizeof(_mem));
 }
 
-void screen::restore(Stream &s)
-{
+void screen::restore(Checkpoint &c) {
 	int r = _resolution;
-	_resolution = s.read();
+	_resolution = c.read();
 
-	if (_resolution == r) {
-		char buf[Memory::page_size];
-		for (unsigned p = 0; p < pages(); p++) {
-			s.readBytes(buf, sizeof(buf));
-			for (unsigned i = 0; i < Memory::page_size; i++)
-				_set(i + p*Memory::page_size, buf[i]);
-		}
-	} else {
-		clear();
-		s.readBytes((char *)_mem, sizeof(_mem));
-		for (unsigned i = 0; i < sizeof(_mem); i++)
-			_draw(i, _mem[i]);
-	}
+	clear();
+	c.read(_mem, sizeof(_mem));
+	for (unsigned i = 0; i < sizeof(_mem); i++)
+		_draw(i, _mem[i]);
 }
