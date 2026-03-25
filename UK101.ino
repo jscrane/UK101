@@ -170,12 +170,15 @@ static void reset(bool sd) {
 void setup() {
 	machine.begin();
 
+	DBG_INI("RAM:   %dkB at 0x%04x", RAM_PAGES, RAM_BASE);
 	for (unsigned i = 0; i < RAM_PAGES; i++)
-		memory.put(pages[i], i * ram<>::page_size);
+		memory.put(pages[i], RAM_BASE + i * ram<>::page_size);
 
 #if defined(USE_SPIRAM)
+	DBG_INI("SpiRAM: %dkB at 0x%04x", SPIRAM_EXTENT / 1024, SPIRAM_BASE);
 	memory.put(sram, SPIRAM_BASE, SPIRAM_EXTENT);
 #endif
+
 #if defined(UK101)
 	memory.put(tk2, 0x8000);
 	memory.put(enc, 0x8800);
@@ -190,7 +193,6 @@ void setup() {
 #if defined(USE_DISK)
 	memory.put(disk, 0xc000);
 	memory.put(disk_timer, 0xde00);
-
 	machine.interval_timer(TICK_FREQ, []() { disk.tick(); });
 #endif
 

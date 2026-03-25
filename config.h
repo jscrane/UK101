@@ -17,11 +17,13 @@
 #define CHARS_PER_LINE	64
 #define DISPLAY_RAM_SIZE 2048
 #define DISPLAY_CENTER	CENTER_SCREEN | CENTER_DISPLAY_X
+#define RAM_END		0x8000u
 
 #elif defined(OHIO)
 #define CHARS_PER_LINE	32
 #define DISPLAY_RAM_SIZE 1024
 #define DISPLAY_CENTER	CENTER_SCREEN
+#define RAM_END		0xb000u
 #endif
 #define DISPLAY_LINES	(DISPLAY_RAM_SIZE / CHARS_PER_LINE)
 
@@ -31,13 +33,10 @@
 // RAM
 #if defined(USE_SPIRAM)
 #define SPIRAM_BASE     RAM_SIZE
-#if defined(UK101)
-#define SPIRAM_EXTENT	(0xa000u - RAM_SIZE) / Memory::page_size
-#elif defined(OHIO)
-#define SPIRAM_EXTENT	(0xb000u - RAM_SIZE) / Memory::page_size
-#endif
+#define SPIRAM_EXTENT	(RAM_END - RAM_SIZE)
 #endif
 
+#define RAM_BASE        0x0000u
 #define RAM_PAGES	(RAM_SIZE / ram<>::page_size)
 
 // flash_filer directory containing programs
