@@ -109,6 +109,8 @@ static void file_status() {
 	screen.statusf("%s%s", device_names[files.device()], filename? filename: "No file");
 }
 
+static bool debug_cpu;
+
 static void function_keys(uint8_t key) {
 	const char *filename = files.filename();
 
@@ -142,7 +144,7 @@ static void function_keys(uint8_t key) {
 		files.next_device();
 		break;
 	case 10:
-		machine.debug_cpu();
+		debug_cpu = !debug_cpu;
 		return;
 	}
 	file_status();
@@ -209,6 +211,7 @@ void setup() {
 	keyboard.register_fnkey_handler(function_keys);
 	machine.register_pollable(keyboard);
 
+	machine.set_cpu_debugging([]() { return debug_cpu; });
 	machine.register_reset_handler(reset);
 	machine.reset();
 }
