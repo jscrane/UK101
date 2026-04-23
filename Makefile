@@ -3,10 +3,9 @@ s ?= uk101
 p ?= programs/$s
 
 FS_DIR := $p
-LIBRARIES = SimpleTimer PS2KeyRaw Adafruit_GFX Adafruit_BusIO Wire
+LIBRARIES = PS2KeyRaw Adafruit_GFX Adafruit_BusIO Wire
 TERMINAL_EXTRA_FLAGS := -C serialout.txt
-CPPFLAGS = -DSIMPLE_TIMER_MICROS
-#CPPFLAGS += -DDEBUGGING=0xff
+#CPPFLAGS = -DDEBUGGING=0xff
 TERMINAL_SPEED := 115200
 
 ifeq ($t, rp2040)
