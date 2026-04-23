@@ -43,14 +43,7 @@
 #if defined(UK101)
 #define PROGRAMS	"/uk101"
 #elif defined(OHIO)
-#define HOSTNAME	"/ohio"
-#endif
-
-// hostname for socket_filer
-#if defined(UK101)
-#define HOSTNAME	"uk101"
-#elif defined(OHIO)
-#define HOSTNAME	"ohio"
+#define PROGRAMS	"/ohio"
 #endif
 
 #if defined(UK101)

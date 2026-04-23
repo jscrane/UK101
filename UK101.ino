@@ -80,7 +80,6 @@ promswitch monitors(sproms, 3, 0xf800);
 
 ram<> pages[RAM_PAGES];
 
-//socket_filer files(HOSTNAME);
 //serial_filer files(Serial);
 flash_filer files(PROGRAMS);
 
