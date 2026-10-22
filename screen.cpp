@@ -79,9 +79,7 @@ void screen::checkpoint(Checkpoint &c) {
 }
 
 void screen::restore(Checkpoint &c) {
-	int r = _resolution;
-	_resolution = c.read();
-
+	c.read(_resolution);
 	clear();
 	c.read(_mem, sizeof(_mem));
 	for (unsigned i = 0; i < sizeof(_mem); i++)

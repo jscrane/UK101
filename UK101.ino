@@ -108,6 +108,8 @@ static void file_status() {
 	screen.statusf("%s%s", device_names[files.device()], filename? filename: "No file");
 }
 
+static const char *device_extensions[MAX_FILES] = { "ceg;m02;bas", "img;65d", "img;65d", "img;65d", "img;65d" };
+
 static bool debug_cpu;
 
 static void function_keys(uint8_t key) {
@@ -118,7 +120,7 @@ static void function_keys(uint8_t key) {
 		machine.reset();
 		return;
 	case 2:
-		files.next_file();
+		files.next_file(device_extensions[files.device()]);
 		break;
 	case 3:
 		files.rewind();

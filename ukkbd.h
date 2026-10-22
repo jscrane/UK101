@@ -2,12 +2,15 @@
 
 class ukkbd: public Memory::Device, public matrix_keyboard {
 public:
-	void operator= (uint8_t);
-	operator uint8_t() { return pattern(); }
+	void operator= (uint8_t) override;
+	operator uint8_t() override { return pattern(); }
 
-	void up(uint8_t);
-	void down(uint8_t);
-	void reset();
+	void checkpoint(Checkpoint &) override {}
+	void restore(Checkpoint &) override {}
+
+	void up(uint8_t) override;
+	void down(uint8_t) override;
+	void reset() override;
 
 	ukkbd(): Memory::Device(1) {}
 

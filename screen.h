@@ -20,6 +20,6 @@ private:
 		if (c != _mem[a]) { _draw(a, c); _mem[a] = c; }
 	}
 	uint8_t _mem[DISPLAY_RAM_SIZE];
-	int _resolution;
+	uint8_t _resolution;
 	const char *setResolution();
 };
