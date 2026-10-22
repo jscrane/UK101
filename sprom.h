@@ -6,8 +6,8 @@ public:
 	sprom(const byte *mem, int bytes): prom(mem, bytes) {}
 	void delegate(Checkpointable *chk) { _chk = chk; }
 
-	void checkpoint(Checkpoint &s) { _chk->checkpoint(s); }
-	void restore(Checkpoint &s) { _chk->restore(s); }
+	void checkpoint(Checkpoint &s) override { _chk->checkpoint(s); }
+	void restore(Checkpoint &s) override { _chk->restore(s); }
 
 private:
 	Checkpointable *_chk;
@@ -23,14 +23,14 @@ public:
 			sproms[i].delegate(this);
 	}
 
-	void set(int c) { _curr=c; memory.put(_sproms[c], _addr); }
+	void set(uint8_t c) { _curr=c; memory.put(_sproms[c], _addr); }
 	void next() { int c=_curr; set(++c == _n? 0: c); }
 
-	void checkpoint(Checkpoint &s) { s.write(_curr); }
-	void restore(Checkpoint &s) { set(s.read()); }
+	void checkpoint(Checkpoint &s) override { s.write(_curr); }
+	void restore(Checkpoint &s) override { uint8_t c; if (s.read(c)) set(c); }
 
 private:
 	sprom *_sproms;
-	int _n, _curr;
+	uint8_t _n, _curr;
 	Memory::address _addr;
 };

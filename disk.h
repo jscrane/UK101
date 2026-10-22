@@ -35,8 +35,11 @@ class disk_timer: public Memory::Device {
 public:
 	disk_timer(): Memory::Device(Memory::page_size), _state(0) {}
 
-	virtual void operator= (uint8_t) {}
-	virtual operator uint8_t() { return _get(_acc); }
+	void operator= (uint8_t) override {}
+	operator uint8_t() override { return _get(_acc); }
+
+	void checkpoint(Checkpoint &) override { /* FIXME */ }
+	void restore(Checkpoint &) override { /* FIXME */ }
 
 private:
 	uint8_t _get(Memory::address a);
