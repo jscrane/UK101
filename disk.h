@@ -38,8 +38,8 @@ public:
 	void operator= (uint8_t) override {}
 	operator uint8_t() override { return _get(_acc); }
 
-	void checkpoint(Checkpoint &) override { /* FIXME */ }
-	void restore(Checkpoint &) override { /* FIXME */ }
+	void checkpoint(Checkpoint &) override {}
+	void restore(Checkpoint &) override {}
 
 private:
 	uint8_t _get(Memory::address a);
