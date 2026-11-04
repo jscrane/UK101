@@ -6,6 +6,9 @@
 #include <r6502.h>
 #include <acia.h>
 #include <pia.h>
+#include <ps2_raw_kbd.h>
+#include <debugging.h>
+#include <flash_filer.h>
 
 #include "config.h"
 #include "screen.h"
@@ -112,39 +115,39 @@ static const char *device_extensions[MAX_FILES] = { "ceg;m02;bas", "img;65d", "i
 
 static bool debug_cpu;
 
-static void function_keys(uint8_t key) {
+static void function_keys(uint16_t fn) {
 	const char *filename = files.filename();
 
-	switch (key) {
-	case 1:
+	switch (fn) {
+	case F1:
 		machine.reset();
 		return;
-	case 2:
+	case F2:
 		files.next_file(device_extensions[files.device()]);
 		break;
-	case 3:
+	case F3:
 		files.rewind();
 		break;
-	case 4:
-		monitors.next();
-		cpu.reset();
-		return;
-	case 5:
+	case F4:
+		files.next_device();
+		break;
+	case F5:
 		screen.clear();
 		screen.status(screen.changeResolution());
 		cpu.reset();
 		return;
-	case 6:
+	case F6:
 		filename = files.checkpoint();
 		break;
-	case 7:
+	case F7:
 		if (filename)
 			files.restore(filename);
 		return;
-	case 8:
-		files.next_device();
-		break;
-	case 10:
+	case F8:
+		monitors.next();
+		cpu.reset();
+		return;
+	case F10:
 		debug_cpu = !debug_cpu;
 		return;
 	}
@@ -172,6 +175,7 @@ static void reset(bool sd) {
 
 void setup() {
 	machine.begin();
+	keyboard.begin();
 
 	DBG_INI("RAM:   %dkB at 0x%04x", RAM_PAGES, RAM_BASE);
 	for (unsigned i = 0; i < RAM_PAGES; i++)

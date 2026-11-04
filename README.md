@@ -24,13 +24,13 @@ Some of the function keys on the PS/2 keyboard control the machine's inner worki
 - F1: full reset (cpu, keyboard, SD card, etc.)
 - F2: advance to next file on current device
 - F3: rewind current device
-- F4: toggle monitor rom
+- F4: select device for current file (`Tape`, `A:`, `B:`, `C:`, `D:`)
 - F5: change display resolution: 
   - 40x30, 40x15, 45x30, 45x32, 45x16 (on UK101)
   - 32x30, 32x32 (on Superboard)
 - F6: checkpoint to file (default `chkxxx.img`)
 - F7: restore from checkpoint (select image with F2)
-- F8: select device for current file (`Tape`, `A:`, `B:`, `C:`, `D:`)
+- F8: toggle monitor rom
 - F10: toggle CPU debugging on serial port
 
 Filename filtering:

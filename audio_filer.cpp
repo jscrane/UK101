@@ -34,7 +34,7 @@ void audio_filer::write_bit(bool bit) {
 }
 
 // FIXME: parity
-void audio_filer::write(uint8_t b) {
+size_t audio_filer::write(uint8_t b) {
 	write_bit(0);
 	for (int i = 0; i < _data_bits; i++) {
 		write_bit(b & 1);
@@ -46,4 +46,5 @@ void audio_filer::write(uint8_t b) {
 #if defined(PWM_SOUND)
 	noTone(PWM_SOUND);
 #endif
+	return 1;
 }

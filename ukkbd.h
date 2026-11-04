@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ps2_raw_kbd.h>
+
 class ukkbd: public Memory::Device, public matrix_keyboard {
 public:
 	void operator= (uint8_t) override;
@@ -8,8 +10,8 @@ public:
 	void checkpoint(Checkpoint &) override {}
 	void restore(Checkpoint &) override {}
 
-	void up(uint8_t) override;
-	void down(uint8_t) override;
+	void up(uint16_t) override;
+	void down(uint16_t) override;
 	void reset() override;
 
 	ukkbd(): Memory::Device(1) {}

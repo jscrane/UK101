@@ -1,12 +1,12 @@
-#include <stdint.h>
+#include <cstdint>
 
-#include <machine.h>
 #include <memory.h>
-#include <ps2_raw_kbd.h>
+#include <compat.h>
+
 #include "ukkbd.h"
 
 // maps scan codes to uk101 rows/cols + left-shift (where applicable)
-static const uint16_t scanmap[128] = {
+static const uint16_t scanmap[128] PROGMEM = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x00
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x08
 	0xffff, 0xffff, 0x0002, 0xffff, 0x0006, 0x0017, 0x0077, 0xffff,	// 0x10
@@ -25,7 +25,7 @@ static const uint16_t scanmap[128] = {
 	0xffff, 0x0212, 0xffff, 0x0063, 0x0264, 0x0013, 0xffff, 0xffff,	// 0x78
 };
 
-static const uint16_t shiftmap[128] = {
+static const uint16_t shiftmap[128] PROGMEM = {
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x00
 	0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,	// 0x08
 	0xffff, 0xffff, 0x0002, 0xffff, 0xffff, 0xffff, 0x0277, 0xffff,	// 0x10
@@ -47,13 +47,13 @@ static const uint16_t shiftmap[128] = {
 uint16_t ukkbd::_map(uint8_t scan)
 {
 	if (_shifted) {
-		uint16_t sh = shiftmap[scan];
+		uint16_t sh = pgm_read_word(shiftmap + scan);
 		if (sh == 0x0000)
 			return 0xffff;
 		if (sh != 0xffff)
 			return sh;
 	}
-	return scanmap[scan];
+	return pgm_read_word(scanmap + scan);
 }
 
 void ukkbd::reset() {
@@ -82,17 +82,20 @@ void ukkbd::_reset(uint8_t k) {
 	_rows[(k & 0xf0) >> 4] &= ~(1 << (k & 0x0f));
 }
 
-void ukkbd::up(uint8_t scan) {
-	if (scan > 127) {
+void ukkbd::up(uint16_t scan) {
+
+	uint8_t pk = ps2_key(scan);
+	if (pk > 127) {
 		reset();
 		return;
 	}
 	if (is_ps2_shift(scan))
 		_shifted = false;
-	uint16_t k = _map(scan);
+
+	uint16_t k = _map(pk);
 	if (k != 0xffff) {
 		if (!_shifted && k > 0xff)
-			_reset (k / 0xff);
+			_reset (k >> 8);
 		if (k > 0)
 			_reset(k & 0xff);
 	}
@@ -102,8 +105,10 @@ void ukkbd::_set(uint8_t k) {
 	_rows[(k & 0xf0) >> 4] |= 1 << (k & 0x0f);
 }
 
-void ukkbd::down(uint8_t scan) {
-	if (scan > 127) {
+void ukkbd::down(uint16_t scan) {
+
+	uint8_t pk = ps2_key(scan);
+	if (pk > 127) {
 		reset();
 		return;
 	}
@@ -112,7 +117,8 @@ void ukkbd::down(uint8_t scan) {
 		reset();
 		_shifted = true;
 	}
-	uint16_t k = _map(scan);
+
+	uint16_t k = _map(pk);
 	if (k == 0xffff) {
 		reset();
 		return;
@@ -121,10 +127,10 @@ void ukkbd::down(uint8_t scan) {
 		if (k < 0xff)
 			_reset(0x02);
 	} else if (k > 0xff)
-		_set(k / 0xff);
+		_set(k >> 8);
+
 	if (k > 0)
 		_set(k & 0xff);
 	else	// toggle caps lock
 		_rows[0] ^= 1;
 }
-
