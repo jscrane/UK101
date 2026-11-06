@@ -111,7 +111,24 @@ static void file_status() {
 
 static const char *device_extensions[MAX_FILES] = { "ceg;m02;bas", "img;65d", "img;65d", "img;65d", "img;65d" };
 
-static bool debug_cpu, sound_enabled;
+static bool debug_cpu;
+
+static void toggle_sound() {
+	static bool sound_enabled = false;
+
+	sound_enabled = !sound_enabled;
+	if (sound_enabled) {
+		acia.register_write_data_bit_handler([](bool b) {
+			sound.tone(b? 2400: 1200);
+			machine.sleep(1000000/ BAUD_RATE);
+			sound.off();
+		});
+		screen.statusf("sound on: %d baud", BAUD_RATE);
+	} else {
+		acia.register_write_data_bit_handler(nullptr);
+		screen.status("sound off");
+	}
+}
 
 static void function_keys(uint16_t fn) {
 	const char *filename = files.filename();
@@ -149,11 +166,7 @@ static void function_keys(uint16_t fn) {
 		debug_cpu = !debug_cpu;
 		return;
 	case F11:
-		sound_enabled = !sound_enabled;
-		if (sound_enabled)
-			screen.statusf("sound enabled: %d baud", BAUD_RATE);
-		else
-			screen.status("sound disabled");
+		toggle_sound();
 		return;
 	}
 	file_status();
@@ -176,15 +189,6 @@ static void reset(bool sd) {
 		screen.status("Failed to open " PROGRAMS);
 	} else
 		file_status();
-}
-
-static void on_write_bit(bool b) {
-
-	if (sound_enabled) {
-		sound.tone(b? 2400: 1200);
-		machine.sleep(1000000/ BAUD_RATE);
-	}
-	sound.off();
 }
 
 void setup() {
@@ -223,7 +227,6 @@ void setup() {
 	memory.put(acia, 0xf000, 0x0400);
 	acia.register_read_data_handler([]() { return files.read(); });
 	acia.register_can_rw_handler([](void) { return files.more()? 3: 2; });
-	acia.register_write_data_bit_handler(on_write_bit);
 
 	monitors.set(0);
 
