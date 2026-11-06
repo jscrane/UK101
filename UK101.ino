@@ -9,13 +9,14 @@
 #include <ps2_raw_kbd.h>
 #include <debugging.h>
 #include <flash_filer.h>
+#include <spiram.h>
+#include <pwm_sound.h>
 
 #include "config.h"
 #include "screen.h"
 #include "ukkbd.h"
 #include "sprom.h"
 #include "disk.h"
-#include "audio_filer.h"
 
 #if defined(UK101)
 #include "roms/uk101/cegmonuk_32.h"
@@ -83,11 +84,7 @@ promswitch monitors(sproms, 3, 0xf800);
 
 ram<> pages[RAM_PAGES];
 
-//serial_filer files(Serial);
 flash_filer files(PROGRAMS);
-
-// novelty wrapper to send saved files to audio device
-audio_filer audio(files);
 
 #if defined(USE_DISK)
 flash_file drive_a(1), drive_b(2), drive_c(3), drive_d(4);
@@ -104,6 +101,7 @@ Memory memory;
 r6502 cpu(memory);
 Arduino machine(cpu);
 ACIA acia;
+sound_sink &sound = machine.sound_pwm();
 
 static void file_status() {
 	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
@@ -113,7 +111,7 @@ static void file_status() {
 
 static const char *device_extensions[MAX_FILES] = { "ceg;m02;bas", "img;65d", "img;65d", "img;65d", "img;65d" };
 
-static bool debug_cpu;
+static bool debug_cpu, sound_enabled;
 
 static void function_keys(uint16_t fn) {
 	const char *filename = files.filename();
@@ -150,6 +148,13 @@ static void function_keys(uint16_t fn) {
 	case F10:
 		debug_cpu = !debug_cpu;
 		return;
+	case F11:
+		sound_enabled = !sound_enabled;
+		if (sound_enabled)
+			screen.statusf("sound enabled: %d baud", BAUD_RATE);
+		else
+			screen.status("sound disabled");
+		return;
 	}
 	file_status();
 }
@@ -171,6 +176,15 @@ static void reset(bool sd) {
 		screen.status("Failed to open " PROGRAMS);
 	} else
 		file_status();
+}
+
+static void on_write_bit(bool b) {
+
+	if (sound_enabled) {
+		sound.tone(b? 2400: 1200);
+		machine.sleep(1000000/ BAUD_RATE);
+	}
+	sound.off();
 }
 
 void setup() {
@@ -207,9 +221,9 @@ void setup() {
 	memory.put(kbd, 0xdf00);
 
 	memory.put(acia, 0xf000, 0x0400);
-	acia.register_read_data_handler([]() { return audio.read(); });
-	acia.register_write_data_handler([](uint8_t b) { audio.write(b); });
-	acia.register_can_rw_handler([](void) { return audio.more()? 3: 2; });
+	acia.register_read_data_handler([]() { return files.read(); });
+	acia.register_can_rw_handler([](void) { return files.more()? 3: 2; });
+	acia.register_write_data_bit_handler(on_write_bit);
 
 	monitors.set(0);
 

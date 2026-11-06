@@ -32,6 +32,7 @@ Some of the function keys on the PS/2 keyboard control the machine's inner worki
 - F7: restore from checkpoint (select image with F2)
 - F8: toggle monitor rom
 - F10: toggle CPU debugging on serial port
+- F11: toggle ACIA "sound"
 
 Filename filtering:
 - `Tape` reports only `.bas`, `.ceg` and `.m02` files
