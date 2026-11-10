@@ -111,9 +111,25 @@ static void file_status() {
 
 static const char *device_extensions[MAX_FILES] = { "ceg;m02;bas", "img;65d", "img;65d", "img;65d", "img;65d" };
 
-static bool debug_cpu;
+static void toggle_cpu_debugging() {
+#if DEBUGGING & DEBUG_CPU
+	static bool debug_cpu = false;
+
+	debug_cpu = !debug_cpu;
+	if (debug_cpu) {
+		machine.set_cpu_debugging(debug_always);
+		screen.status("CPU debugging on");
+	} else {
+		machine.set_cpu_debugging(debug_never);
+		screen.status("CPU debugging off");
+	}
+#else
+	screen.status("CPU debugging not available");
+#endif
+}
 
 static void toggle_sound() {
+#if defined(PWM_SOUND)
 	static bool sound_enabled = false;
 
 	sound_enabled = !sound_enabled;
@@ -121,13 +137,16 @@ static void toggle_sound() {
 		acia.register_write_data_bit_handler([](bool b) {
 			sound.tone(b? 2400: 1200);
 			machine.sleep(1000000/ BAUD_RATE);
-			sound.off();
 		});
-		screen.statusf("sound on: %d baud", BAUD_RATE);
+		screen.statusf("Sound on: %d baud", BAUD_RATE);
 	} else {
 		acia.register_write_data_bit_handler(nullptr);
-		screen.status("sound off");
+		screen.status("Sound off");
+		sound.off();
 	}
+#else
+	screen.status("Sound not available");
+#endif
 }
 
 static void function_keys(uint16_t fn) {
@@ -163,7 +182,7 @@ static void function_keys(uint16_t fn) {
 		cpu.reset();
 		return;
 	case F10:
-		debug_cpu = !debug_cpu;
+		toggle_cpu_debugging();
 		return;
 	case F11:
 		toggle_sound();
@@ -233,7 +252,6 @@ void setup() {
 	keyboard.register_fnkey_handler(function_keys);
 	machine.register_pollable(keyboard);
 
-	machine.set_cpu_debugging([]() { return debug_cpu; });
 	machine.register_reset_handler(reset);
 	machine.reset();
 }
