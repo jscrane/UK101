@@ -101,7 +101,7 @@ Memory memory;
 r6502 cpu(memory);
 Arduino machine(cpu);
 ACIA acia;
-sound_sink &sound = machine.sound_pwm();
+sound_sink &sound = machine.sound();
 
 static void file_status() {
 	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
