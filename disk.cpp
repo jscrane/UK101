@@ -3,7 +3,6 @@
 #include <machine.h>
 #include <memory.h>
 #include <serialio.h>
-#include <filer.h>
 #include <flash_filer.h>
 #include <acia.h>
 #include <pia.h>
@@ -65,7 +64,6 @@
 #define T_REV_MS	60000 / RPM	// 166 ms
 #endif
 
-#if defined(USE_DISK)
 static inline bool is_step_head(uint8_t b) { return !(b & STEP_HEAD); }
 
 static inline bool is_step_in(uint8_t b) { return !(b & STEP_DIR); }
@@ -216,4 +214,3 @@ uint8_t disk_timer::_get(Memory::address a) {
 	}
 	return 0;
 }
-#endif

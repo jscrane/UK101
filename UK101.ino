@@ -84,16 +84,15 @@ promswitch monitors(sproms, 3, 0xf800);
 
 ram<> pages[RAM_PAGES];
 
-flash_filer files(PROGRAMS);
-
-#if defined(USE_DISK)
-flash_file drive_a(1), drive_b(2), drive_c(3), drive_d(4);
+flash_device tape("Tape", "ceg;m02;bas");
+flash_device drive_a("A", "img;65d", readwrite), drive_b("B", "img;65d", readwrite), drive_c("C", "img;65d", readwrite), drive_d("D", "img;65d", readwrite);
+flash_device chk("Checkpoint", "chk");
 disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
 
 #define TICK_FREQ	1000	// 1ms
-#endif
 
+flash_filer files(PROGRAMS, tape, drive_a, drive_b, drive_c, drive_d, chk);
 ukkbd kbd;
 ps2_raw_kbd keyboard(kbd);
 screen screen;
@@ -104,12 +103,9 @@ ACIA acia;
 sound_sink &sound = machine.sound();
 
 static void file_status() {
-	static const char *device_names[MAX_FILES] = { "Tape:", "A:", "B:", "C:", "D:" };
 	const char *filename = files.filename();
-	screen.statusf("%s%s", device_names[files.device()], filename? filename: "No file");
+	screen.statusf("%s:%s", files.current().name(), filename? filename: "No file");
 }
-
-static const char *device_extensions[MAX_FILES] = { "ceg;m02;bas", "img;65d", "img;65d", "img;65d", "img;65d" };
 
 static void toggle_cpu_debugging() {
 #if DEBUGGING & DEBUG_CPU
@@ -157,7 +153,7 @@ static void function_keys(uint16_t fn) {
 		machine.reset();
 		return;
 	case F2:
-		files.next_file(device_extensions[files.device()]);
+		files.advance();
 		break;
 	case F3:
 		files.rewind();
@@ -174,8 +170,8 @@ static void function_keys(uint16_t fn) {
 		filename = files.checkpoint();
 		break;
 	case F7:
-		if (filename)
-			files.restore(filename);
+		if (chk.filename())
+			files.restore(chk.filename());
 		return;
 	case F8:
 		monitors.next();
@@ -196,9 +192,7 @@ static void reset(bool sd) {
 	keyboard.reset();
 	screen.begin();
 	files.reset();
-#if defined(USE_DISK)
 	disk.reset();
-#endif
 
 	if (!sd) {
 		DBG_EMU("No SD Card");
@@ -234,18 +228,16 @@ void setup() {
 	memory.put(basic3, 0xb000);
 	memory.put(basic4, 0xb800);
 
-#if defined(USE_DISK)
 	memory.put(disk, 0xc000);
 	memory.put(disk_timer, 0xde00);
 	machine.interval_timer(TICK_FREQ, []() { disk.tick(); });
-#endif
 
 	memory.put(screen, 0xd000);
 	memory.put(kbd, 0xdf00);
 
 	memory.put(acia, 0xf000, 0x0400);
-	acia.register_read_data_handler([]() { return files.read(); });
-	acia.register_can_rw_handler([](void) { return files.more()? 3: 2; });
+	acia.register_read_data_handler([]() { return tape.read(); });
+	acia.register_can_rw_handler([](void) { return tape.more()? 3: 2; });
 
 	monitors.set(0);
 

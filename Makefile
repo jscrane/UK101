@@ -4,8 +4,9 @@ p ?= programs/$s
 
 FS_DIR := $p
 LIBRARIES = PS2KeyRaw Adafruit_GFX Adafruit_BusIO Wire
+CPPFLAGS = -DMAX_DEVICES=6
 #TERMINAL_EXTRA_FLAGS := -C serialout.txt
-#CPPFLAGS = -DDEBUGGING=0xff
+#CPPFLAGS += -DDEBUGGING=0xff
 TERMINAL_SPEED := 115200
 
 ifeq ($t, rp2040)
