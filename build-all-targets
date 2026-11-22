@@ -1,0 +1,8 @@
+#!/bin/bash
+
+make t=rp2040 all clean && \
+make t=esp8266 all clean && \
+make t=esp32 all clean && \
+make t=esp32 b=lilygo all clean && \
+make t=esp32 b=olimex all clean && \
+echo done

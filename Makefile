@@ -13,7 +13,7 @@ ifeq ($t, rp2040)
 BOARD := adafruit_feather_dvi
 flash := 8388608_2097152
 CPPFLAGS += -DDVI_BIT_DEPTH=1 -DDVI_RESOLUTION=DVI_640x480
-LIBRARIES += LittleFS PicoDVI
+LIBRARIES += SD SDFS SdFat PicoDVI
 endif
 
 ifeq ($t, esp32)

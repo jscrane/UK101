@@ -23,7 +23,7 @@ See blog [article](http://programmablehardware.blogspot.ie/2014/08/retrocomputer
 Some of the function keys on the PS/2 keyboard control the machine's inner workings:
 - F1: full reset (cpu, keyboard, SD card, etc.)
 - F2: advance to next file on current device
-- F3: rewind current device
+- Ctrl-F2: rewind current device
 - F4: select device for current file (`Tape`, `A:`, `B:`, `C:`, `D:`)
 - F5: change display resolution: 
   - 40x30, 40x15, 45x30, 45x32, 45x16 (on UK101)

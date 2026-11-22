@@ -9,6 +9,7 @@
 #include <ps2_raw_kbd.h>
 #include <debugging.h>
 #include <flash_filer.h>
+#include <checkpoint_device.h>
 #include <spiram.h>
 #include <pwm_sound.h>
 
@@ -86,7 +87,7 @@ ram<> pages[RAM_PAGES];
 
 flash_device tape("Tape", "ceg;m02;bas");
 flash_device drive_a("A", "img;65d", readwrite), drive_b("B", "img;65d", readwrite), drive_c("C", "img;65d", readwrite), drive_d("D", "img;65d", readwrite);
-flash_device chk("Checkpoint", "chk");
+checkpoint_device chk("Checkpoint");
 disk disk(drive_a, drive_b, drive_c, drive_d);
 disk_timer disk_timer;
 
@@ -155,7 +156,7 @@ static void function_keys(uint16_t fn) {
 	case F2:
 		files.advance();
 		break;
-	case F3:
+	case F2 | keys::MOD_CTRL:
 		files.rewind();
 		break;
 	case F4:
@@ -167,12 +168,18 @@ static void function_keys(uint16_t fn) {
 		cpu.reset();
 		return;
 	case F6:
-		filename = files.checkpoint();
+	case F6 | keys::MOD_SHIFT:
+		if (!chk.save(fn & keys::MOD_SHIFT)) {
+			screen.status("Checkpoint failed");
+			return;
+		}
 		break;
 	case F7:
-		if (chk.filename())
-			files.restore(chk.filename());
-		return;
+		if (chk.filename() && !chk.restore()) {
+			screen.status("Restore failed");
+			return;
+		}
+		break;
 	case F8:
 		monitors.next();
 		cpu.reset();
